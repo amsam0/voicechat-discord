@@ -1,5 +1,7 @@
 plugins {
-    id 'java'
+    id "java"
+    id "xyz.jpenilla.run-paper" version "2.0.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 sourceCompatibility = JavaLanguageVersion.of(java_version as int)
@@ -16,25 +18,45 @@ processResources {
     }
 }
 
+tasks {
+    runServer {
+        if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
+        minecraftVersion("1.19.2")
+    }
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency {
+            it.moduleGroup == "com.google.code.findbugs" ||
+                    it.moduleGroup == "io.papermc.paper" ||
+                    it.moduleGroup == "de.maxhenkel.voicechat"
+        })
+    }
+
+    archiveBaseName.set(project.archivesBaseName)
+    archiveClassifier.set("")
+    archiveVersion.set(project.version)
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
 dependencies {
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
 
-    // To use this dependency, you need to compile bukkit by yourself
-    // See https://www.spigotmc.org/wiki/buildtools/
-    // implementation "org.bukkit:craftbukkit:${bukkit_version}"
-
-    // Use this dependency if you don't want to compile bukkit
     implementation "io.papermc.paper:paper-api:${bukkit_version}"
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+
+    implementation "net.dv8tion:JDA:5.0.0-alpha.22"
+    //implementation "net.java.dev.jna:jna:5.12.1"
 }
 
 repositories {
     mavenCentral()
     maven {
         name = "henkelmax.public"
-        url = 'https://maven.maxhenkel.de/repository/public'
+        url = "https://maven.maxhenkel.de/repository/public"
     }
-    // You need this maven repository if you want to use the paper dependency
     maven {
         url = uri("https://papermc.io/repo/repository/maven-public/")
     }

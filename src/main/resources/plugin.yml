@@ -1,9 +1,13 @@
-name: example_plugin
+name: voicechat-discord
 version: ${version}
-main: com.example.voicechatplugin.ExamplePlugin
+main: dev.naturecodevoid.voicechatdiscord.BukkitPlugin
 api-version: ${bukkit_api_version}
-prefix: example_plugin
-authors: [ "Example Author" ]
-description: A Simple Voice Chat API plugin example
-website: https://example.com
+prefix: voicechat-discord
+authors: [ "naturecodevoid" ]
+description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.
+website: https://naturecodevoid.dev
 depend: [ voicechat ]
+commands:
+  startdiscordvoicechat:
+    description: Starts a bridge between Simple Voice Chat and Discord.
+    usage: /<command>
