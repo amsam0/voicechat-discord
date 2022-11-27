@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "xyz.jpenilla.run-paper" version "2.0.0"
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 sourceCompatibility = JavaLanguageVersion.of(java_version as int)
@@ -61,3 +62,17 @@ repositories {
     maven { url "https://jitpack.io" }
     mavenLocal()
 }
+
+modrinth {
+    projectId = "S1jG5YV5"
+    uploadFile = shadowJar
+    gameVersions = ["1.19.2"]
+    loaders = ["paper", "purpur", "spigot", "bukkit"]
+    dependencies {
+        required.project "simple-voice-chat"
+    }
+    detectLoaders = false
+    syncBodyFrom = rootProject.file("README.md").text
+}
+
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
