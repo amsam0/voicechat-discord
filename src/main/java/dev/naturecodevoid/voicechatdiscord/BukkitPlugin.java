@@ -2,34 +2,44 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import de.maxhenkel.voicechat.api.opus.OpusDecoder;
-import de.maxhenkel.voicechat.api.opus.OpusEncoder;
 import dev.naturecodevoid.voicechatdiscord.listeners.PlayerLeave;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
 public final class BukkitPlugin extends JavaPlugin {
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    public static final HashMap<UUID, ConnectedPlayerData> connectedPlayers = new HashMap<>();
-    public static JDA jda;
-    public static long vcId;
+    public static final ArrayList<Bot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
-    public static OpusDecoder decoder;
-    public static OpusEncoder encoder;
-
     @Nullable
     private VoicechatPlugin voicechatPlugin;
 
+    public static Bot getBotForPlayer(UUID playerUuid) {
+        for (Bot bot : bots) {
+            if (bot.player != null)
+                if (bot.player.getUuid().compareTo(playerUuid) == 0)
+                    return bot;
+        }
+        return null;
+    }
+
+    public static Bot getAvailableBot() {
+        for (Bot bot : bots) {
+            if (bot.player == null)
+                return bot;
+        }
+        return null;
+    }
+
+    @SuppressWarnings({"DataFlowIssue", "unchecked"})
     @Override
     public void onEnable() {
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
@@ -44,15 +54,36 @@ public final class BukkitPlugin extends JavaPlugin {
         getCommand("startdiscordvoicechat").setExecutor(new StartVoicechatCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerLeave(), this);
 
-        getConfig().addDefault("token", "DISCORD_BOT_TOKEN_HERE");
-        getConfig().addDefault("vc_id", "VOICE_CHANNEL_ID_HERE");
+        LinkedHashMap<String, String> defaultBot = new LinkedHashMap<>();
+        defaultBot.put("token", "DISCORD_BOT_TOKEN_HERE");
+        defaultBot.put("vc_id", "VOICE_CHANNEL_ID_HERE");
+        getConfig().addDefault("bots", new ArrayList<>(List.of(defaultBot)));
 
         getConfig().options().copyDefaults(true);
+        getConfig().options().setHeader(List.of(
+                "To add a bot, just copy paste the following into bots:",
+                "",
+                "bots:",
+                "- token: DISCORD_BOT_TOKEN_HERE",
+                "  vc_id: VOICE_CHANNEL_ID_HERE",
+                "",
+                "Example for 2 bots:",
+                "",
+                "bots:",
+                "- token: MyFirstBotsToken",
+                "  vc_id: 1234567890123456789",
+                "- token: MySecondBotsToken",
+                "  vc_id: 9876543210987654321",
+                "",
+                "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID."
+        ));
         saveConfig();
 
-        vcId = (long) getConfig().get("vc_id");
+        for (LinkedHashMap<String, Object> bot : (ArrayList<LinkedHashMap<String, Object>>) getConfig().getList("bots")) {
+            bots.add(new Bot((String) bot.get("token"), (Long) bot.get("vc_id")));
+        }
 
-        jda = JDABuilder.createDefault((String) getConfig().get("token")).enableCache(CacheFlag.VOICE_STATE).build();
+        LOGGER.info("Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
     }
 
     @Override

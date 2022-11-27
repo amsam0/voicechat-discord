@@ -1,15 +1,9 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
-import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.managers.AudioManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.*;
 
@@ -23,35 +17,23 @@ public class StartVoicechatCommand implements CommandExecutor {
 
         Player player = api.fromServerPlayer(sender);
 
-        if (connectedPlayers.containsKey(player.getUuid())) {
+        if (getBotForPlayer(player.getUuid()) != null) {
             sender.sendMessage("§cYou have already started a voice chat!");
             return true;
         }
 
-        VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
-        Guild guild = channel.getGuild();
-        AudioManager manager = guild.getAudioManager();
+        Bot bot = getAvailableBot();
 
-        EntityAudioChannel audioChannel = api.createEntityAudioChannel(UUID.randomUUID(), player);
-        DiscordAudioHandler handler = new DiscordAudioHandler();
+        if (bot == null) {
+            sender.sendMessage(
+                    "§cThere are currently no bots available. You might want to contact your server owner to add more.");
+            return true;
+        }
 
-        manager.setSendingHandler(handler);
-        manager.setReceivingHandler(handler);
-        manager.openAudioConnection(channel);
+        sender.sendMessage("§eStarting a voice chat...");
 
-        connectedPlayers.put(
-                player.getUuid(),
-                new ConnectedPlayerData(audioChannel, handler)
-        );
-
-        api.createAudioPlayer(
-                audioChannel,
-                api.createEncoder(),
-                handler::provide20MsIncomingAudio
-        ).startPlaying();
-
-        LOGGER.info("Starting voice chat for " + sender.getName());
-        sender.sendMessage("§aStarted a voice chat!");
+        bot.login();
+        bot.start(player, sender);
 
         return true;
     }

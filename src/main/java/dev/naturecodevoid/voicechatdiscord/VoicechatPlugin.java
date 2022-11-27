@@ -6,6 +6,7 @@ import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
+import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,8 +22,6 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
     @Override
     public void initialize(VoicechatApi api) {
         BukkitPlugin.api = (VoicechatServerApi) api;
-        BukkitPlugin.decoder = api.createDecoder();
-        BukkitPlugin.encoder = api.createEncoder();
     }
 
     @Override
@@ -46,26 +45,31 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
                 ),
                 api.getVoiceChatDistance()
         )) {
-            if (player.getUuid().compareTo(sender.getUniqueId()) == 0 || !connectedPlayers.containsKey(player.getUuid()))
+            Bot bot = getBotForPlayer(player.getUuid());
+
+            if (player.getUuid().compareTo(sender.getUniqueId()) == 0 || bot == null)
                 continue;
 
-            DiscordAudioHandler handler = connectedPlayers.get(player.getUuid()).handler();
+            if (!bot.outgoingAudio.containsKey(player.getUuid()))
+                bot.outgoingAudio.put(player.getUuid(), new ConcurrentLinkedQueue<>());
 
-            if (!handler.outgoingAudio.containsKey(player.getUuid()))
-                handler.outgoingAudio.put(player.getUuid(), new ConcurrentLinkedQueue<>());
+            // I don't know if this is the correct volume formula but it's close enough
+            double volume = Math.cos((distance(
+                    player.getPosition(),
+                    e.getSenderConnection().getPlayer().getPosition()
+            ) / api.getVoiceChatDistance()) * (Math.PI / 2));
 
-            handler.outgoingAudio
+            byte[] opusEncodedData = e.getPacket().getOpusEncodedData();
+            OpusDecoder decoder = bot.getPlayerDecoder(player.getUuid());
+
+            bot.outgoingAudio
                     .get(player.getUuid())
-                    .add(
-                            adjustVolumeOfOpusEncodedAudio(
-                                    e.getPacket().getOpusEncodedData(),
-                                    1 - (distance(
-                                            player.getPosition(),
-                                            e.getSenderConnection().getPlayer().getPosition()
-                                    ) / api.getVoiceChatDistance())
-                            )
-                    );
+                    .add(adjustVolumeOfOpusEncodedAudio(opusEncodedData, clamp(volume, 0, 1), decoder));
         }
+    }
+
+    private double clamp(double val, double min, double max) {
+        return Math.min(max, Math.max(min, val));
     }
 
     private double distance(Position pos1, Position pos2) {
@@ -76,7 +80,7 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
         );
     }
 
-    private short[] adjustVolumeOfOpusEncodedAudio(byte[] opusEncodedData, double volume) {
+    private short[] adjustVolumeOfOpusEncodedAudio(byte[] opusEncodedData, double volume, OpusDecoder decoder) {
         short[] decoded = decoder.decode(opusEncodedData);
         byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);

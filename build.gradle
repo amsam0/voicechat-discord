@@ -26,13 +26,9 @@ tasks {
 }
 
 shadowJar {
-    dependencies {
-        exclude(dependency {
-            it.moduleGroup == "com.google.code.findbugs" ||
-                    it.moduleGroup == "io.papermc.paper" ||
-                    it.moduleGroup == "de.maxhenkel.voicechat"
-        })
-    }
+    configurations = [project.configurations.shadow]
+    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
+    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
@@ -47,8 +43,10 @@ dependencies {
     implementation "io.papermc.paper:paper-api:${bukkit_version}"
     implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
-    implementation "net.dv8tion:JDA:5.0.0-alpha.22"
-    //implementation "net.java.dev.jna:jna:5.12.1"
+    // for maven local
+    //shadow "net.dv8tion:JDA:5.0.0-alpha.22_DEV"
+
+    shadow "com.github.naturecodevoid:JDA-concentus:da162b8997"
 }
 
 repositories {
@@ -60,5 +58,6 @@ repositories {
     maven {
         url = uri("https://papermc.io/repo/repository/maven-public/")
     }
+    maven { url "https://jitpack.io" }
     mavenLocal()
 }

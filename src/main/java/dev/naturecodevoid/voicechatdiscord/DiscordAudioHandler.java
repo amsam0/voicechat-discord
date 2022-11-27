@@ -2,36 +2,48 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
-import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.audio.OpusPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.api;
-import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.encoder;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandler {
-    public final HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
-    public final Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
+    private final Bot bot;
+//    private boolean hasRefreshedEncoder = false;
+//    private boolean hasRefreshedDecoder = false;
+
+    public DiscordAudioHandler(Bot bot) {
+        this.bot = bot;
+    }
 
     @Nullable
     @Override
     public ByteBuffer provide20MsAudio() {
-        if (outgoingIsEmpty())
+        if (outgoingIsEmpty()) {
+//            if (!hasRefreshedEncoder) {
+//                bot.discordEncoder.close();
+//                bot.discordEncoder = api.createEncoder();
+//                hasRefreshedEncoder = true;
+//            }
             return null;
+        }
+
+//        hasRefreshedEncoder = false;
 
         List<short[]> audioParts = new LinkedList<>();
 
-        for (Queue<short[]> queue : outgoingAudio.values())
+        for (Queue<short[]> queue : bot.outgoingAudio.values())
             if (!queue.isEmpty())
                 audioParts.add(queue.poll());
 
         // https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
         int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
-        short[] mix = new short[1920];  // 960 PCM samples for each channel
+        short[] mix = new short[1920]; // 960 PCM samples for each channel
         int sample;
         for (int i = 0; i < audioLength; i++) {
             sample = 0;
@@ -50,41 +62,31 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
                 mix[i] = (short) sample;
         }
 
-        return ByteBuffer.wrap(encoder.encode(mix));
+        return ByteBuffer.wrap(bot.discordEncoder.encode(mix));
     }
 
     public short[] provide20MsIncomingAudio() {
-        if (incomingAudio.isEmpty())
+        if (bot.incomingAudio.isEmpty()) {
+//            if (!hasRefreshedDecoder) {
+//                bot.discordDecoder.close();
+//                bot.discordDecoder = api.createDecoder();
+//                hasRefreshedDecoder = true;
+//            }
             return new short[960];
-        return incomingAudio.poll();
+        }
+
+//        hasRefreshedDecoder = false;
+
+        return bot.incomingAudio.poll();
     }
 
     @Override
-    public void handleCombinedAudio(@NotNull CombinedAudio combinedAudio) {
-        incomingAudio.add(api.getAudioConverter().bytesToShorts(stereoToMono(combinedAudio.getAudioData(1.0))));
-    }
-
-    private static final int HI = 0;
-    private static final int LO = 1;
-
-    // https://stackoverflow.com/questions/16466515/convert-audio-stereo-to-audio-byte
-    private byte[] stereoToMono(byte[] stereo) {
-        byte[] mono = new byte[stereo.length / 2];
-
-        for (int i = 0; i < mono.length / 2; ++i) {
-
-            int left = (stereo[i * 4 + HI] << 8) | (stereo[i * 4 + LO] & 0xff);
-            int right = (stereo[i * 4 + 2 + HI] << 8) | (stereo[i * 4 + 2 + LO] & 0xff);
-            int avg = (left + right) / 2;
-            mono[i * 2 + HI] = (byte) ((avg >> 8) & 0xff);
-            mono[i * 2 + LO] = (byte) (avg & 0xff);
-        }
-
-        return mono;
+    public void handleEncodedAudio(@NotNull OpusPacket packet) {
+        bot.incomingAudio.add(bot.discordDecoder.decode(packet.getOpusAudio()));
     }
 
     public boolean outgoingIsEmpty() {
-        for (Queue queue : outgoingAudio.values())
+        for (Queue queue : bot.outgoingAudio.values())
             if (!queue.isEmpty())
                 return false;
 
@@ -102,7 +104,7 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
     }
 
     @Override
-    public boolean canReceiveCombined() {
+    public boolean canReceiveEncoded() {
         return true;
     }
 }
