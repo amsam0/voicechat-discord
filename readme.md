@@ -1,6 +1,12 @@
-# Simple Voice Chat Discord
+# Simple Voice Chat Discord Bridge
 
-Simple Voice Chat Discord is a Paper/Purpur/Spigot/Bukkit plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means that
+<!-- prettier-ignore-start -->
+> **Warning**
+> This is not an official addon. **<span style="text-decoration: underline">Please don't go to the Simple Voice Chat discord server for support!</span> Instead, please use
+> [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues) for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
+<!-- prettier-ignore-end -->
+
+Simple Voice Chat Discord Bridge is a Paper/Purpur/Spigot/Bukkit plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means that
 Bedrock edition players connected through Geyser can use voice chat!**
 
 ## Installation and Usage
@@ -8,11 +14,12 @@ Bedrock edition players connected through Geyser can use voice chat!**
 First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) installed and correctly configured. Please refer to
 [the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
 
-Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord/versions) the latest version of Simple Voice Chat Discord that is compatible with your Minecraft version.
+Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
+version.
 
 ### Setting up a bot
 
-Before you do this, make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord installed to generate Simple Voice Chat Discord's configuration file.
+Before you do this, make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord Bridge installed to generate Simple Voice Chat Discord Bridge's configuration file.
 
 <sub>This guide is based off of and uses images from [DiscordSRV's Basic Setup guide](https://docs.discordsrv.com/installation/basic-setup/#setting-up-the-bot).</sub>
 
