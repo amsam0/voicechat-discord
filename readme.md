@@ -63,7 +63,7 @@ bots:
 You can redo this process for however many bots you want. There is some info in `plugins/voicechat-discord/config.yml` about having multiple bots.
 
 <!-- prettier-ignore-start -->
-> **Info**
+> **Note**
 > The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the plugin at
 > the same time.
 <!-- prettier-ignore-end -->
