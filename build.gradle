@@ -64,6 +64,7 @@ repositories {
 }
 
 modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
     projectId = "S1jG5YV5"
     uploadFile = shadowJar
     gameVersions = ["1.19.2"]
