@@ -75,12 +75,18 @@ public final class BukkitPlugin extends JavaPlugin {
                 "- token: MySecondBotsToken",
                 "  vc_id: 9876543210987654321",
                 "",
-                "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID."
+                "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID.",
+                "",
+                "For more information on getting everything setup: https://modrinth.com/mod/simple-voice-chat-discord"
         ));
         saveConfig();
 
         for (LinkedHashMap<String, Object> bot : (ArrayList<LinkedHashMap<String, Object>>) getConfig().getList("bots")) {
-            bots.add(new Bot((String) bot.get("token"), (Long) bot.get("vc_id")));
+            try {
+                bots.add(new Bot((String) bot.get("token"), (Long) bot.get("vc_id")));
+            } catch (ClassCastException e) {
+                LOGGER.fatal("Failed to load a bot. Please make sure that the vc_id property is a valid channel ID.");
+            }
         }
 
         LOGGER.info("Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));

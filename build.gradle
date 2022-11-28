@@ -72,7 +72,7 @@ modrinth {
         required.project "simple-voice-chat"
     }
     detectLoaders = false
-    syncBodyFrom = rootProject.file("README.md").text
+    syncBodyFrom = rootProject.file("readme.md").text
 }
 
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
