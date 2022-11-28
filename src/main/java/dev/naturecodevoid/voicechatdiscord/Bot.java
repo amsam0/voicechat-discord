@@ -29,10 +29,10 @@ public class Bot {
     protected OpusEncoder discordEncoder;
     protected HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
     protected Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
+    protected JDA jda;
     private boolean hasLoggedIn = false;
     private EntityAudioChannel audioChannel;
     private AudioPlayer audioPlayer;
-    private JDA jda;
     private AudioManager manager;
     private DiscordAudioHandler handler;
     private HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();

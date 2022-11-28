@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public final class BukkitPlugin extends JavaPlugin {
     public static final String PLUGIN_ID = "voicechat-discord";
@@ -97,6 +98,16 @@ public final class BukkitPlugin extends JavaPlugin {
         if (voicechatPlugin != null) {
             getServer().getServicesManager().unregister(voicechatPlugin);
             LOGGER.info("Successfully unregistered voicechat discord plugin");
+        }
+
+        for (Bot bot : bots) {
+            bot.stop();
+            bot.jda.getGatewayPool().shutdown();
+            try {
+                bot.jda.getGatewayPool().awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

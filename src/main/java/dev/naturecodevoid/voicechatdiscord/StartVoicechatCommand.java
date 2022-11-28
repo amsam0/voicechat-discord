@@ -32,8 +32,10 @@ public class StartVoicechatCommand implements CommandExecutor {
 
         sender.sendMessage("§eStarting a voice chat...");
 
-        bot.login();
-        bot.start(player, sender);
+        new Thread(() -> {
+            bot.login();
+            bot.start(player, sender);
+        }).start();
 
         return true;
     }

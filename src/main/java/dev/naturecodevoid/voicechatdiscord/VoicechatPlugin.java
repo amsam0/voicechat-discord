@@ -9,6 +9,7 @@ import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.*;
@@ -36,35 +37,34 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
         if (!(e.getSenderConnection().getPlayer().getPlayer() instanceof Player sender))
             return;
 
+        Position senderPosition = e.getSenderConnection().getPlayer().getPosition();
+        double voiceChatDistance = api.getVoiceChatDistance();
+
         for (ServerPlayer player : api.getPlayersInRange(
                 api.fromServerLevel(sender.getWorld()),
-                api.createPosition(
-                        sender.getLocation().getX(),
-                        sender.getLocation().getY(),
-                        sender.getLocation().getZ()
-                ),
-                api.getVoiceChatDistance()
+                senderPosition,
+                voiceChatDistance
         )) {
             Bot bot = getBotForPlayer(player.getUuid());
+            if (bot != null) {
+                UUID senderUuid = e.getSenderConnection().getPlayer().getUuid();
 
-            if (player.getUuid().compareTo(sender.getUniqueId()) == 0 || bot == null)
-                continue;
+                if (!bot.outgoingAudio.containsKey(senderUuid))
+                    bot.outgoingAudio.put(senderUuid, new ConcurrentLinkedQueue<>());
 
-            if (!bot.outgoingAudio.containsKey(player.getUuid()))
-                bot.outgoingAudio.put(player.getUuid(), new ConcurrentLinkedQueue<>());
+                // I don't know if this is the correct volume formula but it's close enough
+                double volume = Math.cos((distance(
+                        senderPosition,
+                        bot.player.getPosition()
+                ) / voiceChatDistance) * (Math.PI / 2));
 
-            // I don't know if this is the correct volume formula but it's close enough
-            double volume = Math.cos((distance(
-                    player.getPosition(),
-                    e.getSenderConnection().getPlayer().getPosition()
-            ) / api.getVoiceChatDistance()) * (Math.PI / 2));
+                byte[] opusEncodedData = e.getPacket().getOpusEncodedData();
+                OpusDecoder decoder = bot.getPlayerDecoder(senderUuid);
 
-            byte[] opusEncodedData = e.getPacket().getOpusEncodedData();
-            OpusDecoder decoder = bot.getPlayerDecoder(player.getUuid());
-
-            bot.outgoingAudio
-                    .get(player.getUuid())
-                    .add(adjustVolumeOfOpusEncodedAudio(opusEncodedData, clamp(volume, 0, 1), decoder));
+                bot.outgoingAudio
+                        .get(senderUuid)
+                        .add(adjustVolumeOfOpusEncodedAudio(opusEncodedData, clamp(volume, 0, 1), decoder));
+            }
         }
     }
 
