@@ -78,7 +78,7 @@ public final class BukkitPlugin extends JavaPlugin {
                 "",
                 "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID.",
                 "",
-                "For more information on getting everything setup: https://modrinth.com/mod/simple-voice-chat-discord"
+                "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
         ));
         saveConfig();
 

@@ -1,5 +1,79 @@
-# Simple Voice Chat API Bukkit Plugin Template
+# Simple Voice Chat Discord
 
-This is an example template plugin for the [Simple Voice Chat Plugin API](https://github.com/henkelmax/simple-voice-chat/blob/1.18.2/api/readme.md) for Bukkit based servers.
+Simple Voice Chat Discord is a Paper/Purpur/Spigot/Bukkit plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means that
+Bedrock edition players connected through Geyser can use voice chat!**
 
-Feel free to use this for your projects.
+## Installation and Usage
+
+First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) installed and correctly configured. Please refer to
+[the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
+
+Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord/versions) the latest version of Simple Voice Chat Discord that is compatible with your Minecraft version.
+
+### Setting up a bot
+
+Before you do this, make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord installed to generate Simple Voice Chat Discord's configuration file.
+
+<sub>This guide is based off of and uses images from [DiscordSRV's Basic Setup guide](https://docs.discordsrv.com/installation/basic-setup/#setting-up-the-bot).</sub>
+
+First, create an application at [discord.com/developers/applications](https://discord.com/developers/applications) by clicking `New Application`. Choose the name that you want your bot to be called.
+
+![](https://docs.discordsrv.com/images/create_application.png)
+
+On the left, click `Bot` and click `Add Bot` and confirm with `Yes, do it!`.
+
+![](https://docs.discordsrv.com/images/create_bot.png)
+
+Copy the token and disable `Public Bot`.
+
+![](https://docs.discordsrv.com/images/copy_token.png)
+
+Now, open `plugins/voicechat-discord/config.yml` with a text editor. Replace `DISCORD_BOT_TOKEN_HERE` with the token you copied. It should look something like this:
+
+```yaml
+bots:
+    - token: TheTokenYouPasted
+      vc_id: VOICE_CHANNEL_ID_HERE
+```
+
+To invite the bot to a server, go to `General Information` and copy the Application ID.
+
+![](https://docs.discordsrv.com/images/copy_application_id.png)
+
+Go to
+[discord.com/api/oauth2/authorize?client_id=YOUR_APPLICATION_ID_HERE&permissions=36700160&scope=bot](https://discord.com/api/oauth2/authorize?client_id=YOUR_APPLICATION_ID_HERE&permissions=36700160&scope=bot)
+but replace `YOUR_APPLICATION_ID_HERE` with the application ID you just copied. Choose the server you want to invite your bot to. **Make sure not to disable any of its permissions.**
+
+Now, follow the steps at [support.discord.com/articles/Where-can-I-find-my-User-Server-Message-ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
+to enable Developer Mode in Discord. Then, right click the voice channel you want the bot to use as a bridge between Simple Voice Chat and Discord and click `Copy ID`.
+
+<!-- prettier-ignore-start -->
+> **Warning**
+> There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
+<!-- prettier-ignore-end -->
+
+Now, reopen `plugins/voicechat-discord/config.yml` with a text editor. Replace `VOICE_CHANNEL_ID_HERE` with the channel ID you copied. It should look something like this:
+
+```yaml
+bots:
+    - token: TheTokenYouPasted
+      vc_id: TheChannelIDYouPasted
+```
+
+You can redo this process for however many bots you want. There is some info in `plugins/voicechat-discord/config.yml` about having multiple bots.
+
+<!-- prettier-ignore-start -->
+> **Info**
+> The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the plugin at
+> the same time.
+<!-- prettier-ignore-end -->
+
+### Using it in-game
+
+<!-- prettier-ignore-start -->
+> **Warning**
+> There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
+<!-- prettier-ignore-end -->
+
+To use it in-game, use the `/startdiscordvoicechat` command. (It may take a few seconds to start.) Then, join the voice channel as instructed. Other players should be able to hear you speak when you
+speak in the Discord channel, and you should be able to hear other players speak when they speak through the Simple Voice Chat mod.
