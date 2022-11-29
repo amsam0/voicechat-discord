@@ -2,8 +2,8 @@
 
 <!-- prettier-ignore-start -->
 > **Warning**
-> This is not an official addon. **<span style="text-decoration: underline">Please don't go to the Simple Voice Chat discord server for support!</span> Instead, please use
-> [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues) for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
+> This is not an official addon. **Please don't go to the Simple Voice Chat discord server for support! Instead, please use [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues)
+> for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
 <!-- prettier-ignore-end -->
 
 Simple Voice Chat Discord Bridge is a Paper/Purpur/Spigot/Bukkit plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means that
