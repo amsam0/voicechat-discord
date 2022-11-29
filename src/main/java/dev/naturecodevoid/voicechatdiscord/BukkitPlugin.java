@@ -3,6 +3,7 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import dev.naturecodevoid.voicechatdiscord.listeners.PlayerLeave;
+import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -102,12 +103,10 @@ public final class BukkitPlugin extends JavaPlugin {
 
         for (Bot bot : bots) {
             bot.stop();
-            bot.jda.getGatewayPool().shutdown();
-            try {
-                bot.jda.getGatewayPool().awaitTermination(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            bot.jda.shutdownNow();
+            OkHttpClient client = bot.jda.getHttpClient();
+            client.connectionPool().evictAll();
+            client.dispatcher().executorService().shutdownNow();
         }
     }
 }
