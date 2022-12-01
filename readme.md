@@ -18,6 +18,12 @@ First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-
 Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
 version.
 
+<!-- prettier-ignore-start -->
+> **Note**
+>
+> If you are using the Fabric mod, it requires the [Fabric API](https://modrinth.com/mod/fabric-api).
+<!-- prettier-ignore-end -->
+
 ### Finding the configuration file
 
 Make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord Bridge installed to generate Simple Voice Chat Discord Bridge's configuration file.
