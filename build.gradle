@@ -1,79 +1,22 @@
 plugins {
-    id "java"
-    id "xyz.jpenilla.run-paper" version "2.0.0"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "com.modrinth.minotaur" version "2.+"
+    id "com.modrinth.minotaur" version "2.+" apply false
+    id "com.github.johnrengelman.shadow" version "7.1.2" apply false
+    id "fabric-loom" version "1.0-SNAPSHOT" apply false
 }
 
-sourceCompatibility = JavaLanguageVersion.of(java_version as int)
-targetCompatibility = JavaLanguageVersion.of(java_version as int)
-
-archivesBaseName = archives_base_name
-version = plugin_version
-group = maven_group
-
-processResources {
-    filesMatching("plugin.yml") {
-        expand "version": plugin_version,
-                "bukkit_api_version": bukkit_api_version
-    }
+task build(type: GradleBuild) {
+    group = "voicechat-discord"
+    tasks = [
+            ":bukkit:build",
+            ":fabric:build"
+    ]
 }
 
-tasks {
-    runServer {
-        if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
-        minecraftVersion("1.19.2")
-    }
+task publish(type: GradleBuild) {
+    group = "voicechat-discord"
+    tasks = [
+            ":common:modrinthSyncBody",
+            ":bukkit:modrinth",
+            ":fabric:modrinth"
+    ]
 }
-
-shadowJar {
-    configurations = [project.configurations.shadow]
-    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
-    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
-
-    archiveBaseName.set(project.archivesBaseName)
-    archiveClassifier.set("")
-    archiveVersion.set(project.version)
-}
-
-tasks.build.dependsOn tasks.shadowJar
-
-dependencies {
-    implementation "com.google.code.findbugs:jsr305:3.0.2"
-
-    implementation "io.papermc.paper:paper-api:${bukkit_version}"
-    implementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
-
-    // for maven local
-    //shadow "net.dv8tion:JDA:5.0.0-alpha.22_DEV"
-
-    shadow "com.github.naturecodevoid:JDA-concentus:da162b8997"
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        name = "henkelmax.public"
-        url = "https://maven.maxhenkel.de/repository/public"
-    }
-    maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
-    maven { url "https://jitpack.io" }
-    mavenLocal()
-}
-
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = "S1jG5YV5"
-    uploadFile = shadowJar
-    gameVersions = ["1.19.2"]
-    loaders = ["paper", "purpur", "spigot", "bukkit"]
-    dependencies {
-        required.project "simple-voice-chat"
-    }
-    detectLoaders = false
-    syncBodyFrom = rootProject.file("readme.md").text
-}
-
-tasks.modrinth.dependsOn(tasks.modrinthSyncBody)

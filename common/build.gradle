@@ -1,0 +1,34 @@
+plugins {
+    id "java"
+}
+
+apply plugin: "com.modrinth.minotaur"
+
+sourceCompatibility = JavaLanguageVersion.of(java_version as int)
+targetCompatibility = JavaLanguageVersion.of(java_version as int)
+
+archivesBaseName = archives_base_name + "-common"
+version = plugin_version
+group = maven_group
+
+dependencies {
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+
+    compileOnly "org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"
+    compileOnly "com.github.naturecodevoid:JDA-concentus:${jda_concentus_version}"
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "https://maven.maxhenkel.de/repository/public" }
+    maven { url "https://jitpack.io" }
+    mavenLocal()
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "S1jG5YV5"
+    syncBodyFrom = rootProject.file("readme.md").text
+    debugMode = System.getenv("MODRINTH_DEBUG") != null
+}

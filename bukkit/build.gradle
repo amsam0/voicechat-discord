@@ -1,0 +1,74 @@
+plugins {
+    id "java"
+    id "xyz.jpenilla.run-paper" version "2.0.0"
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.modrinth.minotaur"
+
+sourceCompatibility = JavaLanguageVersion.of(java_version as int)
+targetCompatibility = JavaLanguageVersion.of(java_version as int)
+
+archivesBaseName = archives_base_name + "-bukkit"
+version = plugin_version
+group = maven_group
+
+processResources {
+    filesMatching("plugin.yml") {
+        expand "version": plugin_version,
+                "bukkit_api_version": bukkit_api_version
+    }
+}
+
+tasks {
+    runServer {
+        if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
+        minecraftVersion("1.19.2")
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
+    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
+    relocate "org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration"
+
+    archiveBaseName.set(project.archivesBaseName)
+    archiveClassifier.set("")
+    archiveVersion.set(project.version)
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:${bukkit_version}"
+
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
+
+    shadow "org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"
+    shadow "com.github.naturecodevoid:JDA-concentus:${jda_concentus_version}"
+    shadow project(":common")
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
+    maven { url "https://maven.maxhenkel.de/repository/public" }
+    maven { url "https://jitpack.io" }
+    mavenLocal()
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "S1jG5YV5"
+    versionName = "[PAPER] " + project.version
+    uploadFile = shadowJar
+    gameVersions = ["1.19.2"]
+    loaders = ["paper", "purpur", "spigot", "bukkit"]
+    detectLoaders = false
+    debugMode = System.getenv("MODRINTH_DEBUG") != null
+    dependencies {
+        required.project "simple-voice-chat"
+    }
+}

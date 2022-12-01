@@ -1,5 +1,12 @@
 pluginManagement {
     repositories {
+        maven {
+            name = "Fabric"
+            url = "https://maven.fabricmc.net/"
+        }
         gradlePluginPortal()
     }
 }
+
+rootProject.name = "voicechat-discord"
+include("common", "bukkit", "fabric")

@@ -1,0 +1,34 @@
+{
+    "schemaVersion": 1,
+    "id": "voicechat-discord",
+    "version": "${version}",
+    "name": "Simple Voice Chat Discord Bridge",
+    "description": "A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.",
+    "authors": [
+        "naturecodevoid"
+    ],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/simple-voice-chat-discord-bridge",
+        "sources": "https://github.com/naturecodevoid/voicechat-discord"
+    },
+    "license": "MIT",
+    "icon": "assets/voicechat-discord/icon.png",
+    "environment": "server",
+    "entrypoints": {
+        "server": [
+            "dev.naturecodevoid.voicechatdiscord.FabricMod"
+        ],
+        "voicechat": [
+            "dev.naturecodevoid.voicechatdiscord.FabricPlugin"
+        ]
+    },
+    "mixins": [
+    ],
+    "depends": {
+        "fabricloader": ">=0.14.10",
+        "fabric-api": "*",
+        "minecraft": "~1.19",
+        "java": ">=17",
+        "voicechat": "*"
+    }
+}

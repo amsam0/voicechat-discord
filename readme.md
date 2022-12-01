@@ -2,12 +2,13 @@
 
 <!-- prettier-ignore-start -->
 > **Warning**
+>
 > This is not an official addon. **Please don't go to the Simple Voice Chat discord server for support! Instead, please use [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues)
 > for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
 <!-- prettier-ignore-end -->
 
-Simple Voice Chat Discord Bridge is a Paper/Purpur/Spigot/Bukkit plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means that
-Bedrock edition players connected through Geyser can use voice chat!**
+Simple Voice Chat Discord Bridge is a Fabric mod and Paper (and Purpur, Spigot, Bukkit) plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and
+speak. **This means that Bedrock edition players connected through Geyser can use voice chat!**
 
 ## Installation and Usage
 
@@ -17,9 +18,15 @@ First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-
 Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
 version.
 
-### Setting up a bot
+### Finding the configuration file
 
-Before you do this, make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord Bridge installed to generate Simple Voice Chat Discord Bridge's configuration file.
+Make sure to run your server once with Simple Voice Chat and Simple Voice Chat Discord Bridge installed to generate Simple Voice Chat Discord Bridge's configuration file.
+
+**Fabric:** Simple Voice Chat Discord Bridge's configuration file should be located at `config/voicechat-discord.yml`.
+
+**Paper/Purpur/Spigot/Bukkit:** Simple Voice Chat Discord Bridge's configuration file should be located at `plugins/voicechat-discord/config.yml`.
+
+### Setting up a bot
 
 <sub>This guide is based off of and uses images from [DiscordSRV's Basic Setup guide](https://docs.discordsrv.com/installation/basic-setup/#setting-up-the-bot).</sub>
 
@@ -35,7 +42,7 @@ Copy the token and disable `Public Bot`.
 
 ![](https://docs.discordsrv.com/images/copy_token.png)
 
-Now, open `plugins/voicechat-discord/config.yml` with a text editor. Replace `DISCORD_BOT_TOKEN_HERE` with the token you copied. It should look something like this:
+Now, open [the configuration file](#finding-the-configuration-file) with a text editor. Replace `DISCORD_BOT_TOKEN_HERE` with the token you copied. It should look something like this:
 
 ```yaml
 bots:
@@ -56,10 +63,11 @@ to enable Developer Mode in Discord. Then, right click the voice channel you wan
 
 <!-- prettier-ignore-start -->
 > **Warning**
+>
 > There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
 <!-- prettier-ignore-end -->
 
-Now, reopen `plugins/voicechat-discord/config.yml` with a text editor. Replace `VOICE_CHANNEL_ID_HERE` with the channel ID you copied. It should look something like this:
+Now, reopen [the configuration file](#finding-the-configuration-file) with a text editor. Replace `VOICE_CHANNEL_ID_HERE` with the channel ID you copied. It should look something like this:
 
 ```yaml
 bots:
@@ -67,10 +75,11 @@ bots:
       vc_id: TheChannelIDYouPasted
 ```
 
-You can redo this process for however many bots you want. There is some info in `plugins/voicechat-discord/config.yml` about having multiple bots.
+You can redo this process for however many bots you want. There is some info in [the configuration file](#finding-the-configuration-file) about having multiple bots.
 
 <!-- prettier-ignore-start -->
 > **Note**
+>
 > The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the plugin at
 > the same time.
 <!-- prettier-ignore-end -->
@@ -79,6 +88,7 @@ You can redo this process for however many bots you want. There is some info in 
 
 <!-- prettier-ignore-start -->
 > **Warning**
+>
 > There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
 <!-- prettier-ignore-end -->
 

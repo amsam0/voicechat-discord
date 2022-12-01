@@ -1,6 +1,7 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
@@ -11,15 +12,14 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.LOGGER;
-import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.api;
+import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
+import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.platform;
 
 public class Bot {
     private final String token;
@@ -31,10 +31,8 @@ public class Bot {
     protected Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
     protected JDA jda;
     private boolean hasLoggedIn = false;
-    private EntityAudioChannel audioChannel;
     private AudioPlayer audioPlayer;
     private AudioManager manager;
-    private DiscordAudioHandler handler;
     private HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
     public Bot(String token, long vcId) {
@@ -59,24 +57,27 @@ public class Bot {
             jda = JDABuilder.createDefault(token).enableCache(CacheFlag.VOICE_STATE).build().awaitReady();
             hasLoggedIn = true;
         } catch (InterruptedException e) {
+            platform.error("Failed to login to the bot using vc_id " + vcId);
             throw new RuntimeException(e);
         }
     }
 
-    public void start(Player player, CommandSender sender) {
+    public void start(ServerPlayer player) {
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
-            LOGGER.fatal(
+            platform.error(
                     "Please ensure that all voice channel IDs are valid, available to the bot and that they are actual voice channels.");
-            sender.sendMessage(
-                    "§cThe provided voice channel ID seems to be invalid. Please make sure that it is available to the bot and that it is an actual voice channel.");
+            platform.sendMessage(
+                    player,
+                    "§cThe provided voice channel ID seems to be invalid. Please make sure that it is available to the bot and that it is an actual voice channel."
+            );
             return;
         }
 
         Guild guild = channel.getGuild();
         manager = guild.getAudioManager();
 
-        handler = new DiscordAudioHandler(this);
+        DiscordAudioHandler handler = new DiscordAudioHandler(this);
 
         manager.setSendingHandler(handler);
         manager.setReceivingHandler(handler);
@@ -85,7 +86,7 @@ public class Bot {
         discordEncoder = api.createEncoder();
         discordDecoder = api.createDecoder();
 
-        audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
+        EntityAudioChannel audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
                 api.createEncoder(),
@@ -95,8 +96,11 @@ public class Bot {
 
         this.player = player;
 
-        LOGGER.info("Starting voice chat for " + sender.getName());
-        sender.sendMessage("§aStarted a voice chat! Please join the following voice channel in discord:§r " + channel.getName());
+        platform.info("Starting voice chat for " + platform.getName(player));
+        platform.sendMessage(
+                player,
+                "§aStarted a voice chat! Please join the following voice channel in discord:§r§f " + channel.getName()
+        );
     }
 
     public void stop() {
@@ -112,8 +116,6 @@ public class Bot {
             audioPlayer = null;
         }
 
-        handler = null;
-        audioChannel = null;
         player = null;
 
         if (discordDecoder != null) {
