@@ -1,5 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 
@@ -23,11 +24,11 @@ public abstract class Platform {
      */
     public abstract boolean isValidPlayer(ServerPlayer player);
 
-    public abstract void sendMessage(ServerPlayer player, String message);
+    public abstract void sendMessage(Player player, String message);
 
     public abstract ServerLevel getServerLevel(ServerPlayer player);
 
-    public abstract String getName(ServerPlayer player);
+    public abstract String getName(Player player);
 
     public abstract String getConfigPath();
 

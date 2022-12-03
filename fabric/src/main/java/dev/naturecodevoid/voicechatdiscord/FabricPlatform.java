@@ -1,5 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +27,7 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public String getName(ServerPlayer player) {
+    public String getName(Player player) {
         return ((PlayerEntity) player.getPlayer()).getName().getString();
     }
 
@@ -36,7 +37,7 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public void sendMessage(ServerPlayer player, String message) {
+    public void sendMessage(Player player, String message) {
         ((PlayerEntity) player.getPlayer()).sendMessage(Text.of(message));
     }
 

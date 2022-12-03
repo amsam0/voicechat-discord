@@ -1,7 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
-import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
@@ -33,20 +32,10 @@ public class Bot {
     private boolean hasLoggedIn = false;
     private AudioPlayer audioPlayer;
     private AudioManager manager;
-    private HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
     public Bot(String token, long vcId) {
         this.token = token;
         this.vcId = vcId;
-    }
-
-    public OpusDecoder getPlayerDecoder(UUID playerUuid) {
-        OpusDecoder decoder = playerDecoders.get(playerUuid);
-        if (decoder == null) {
-            decoder = api.createDecoder();
-            playerDecoders.put(playerUuid, decoder);
-        }
-        return decoder;
     }
 
     public void login() {
@@ -58,11 +47,13 @@ public class Bot {
             hasLoggedIn = true;
         } catch (InterruptedException e) {
             platform.error("Failed to login to the bot using vc_id " + vcId);
+            if (player != null)
+                player = null;
             throw new RuntimeException(e);
         }
     }
 
-    public void start(ServerPlayer player) {
+    public void start() {
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
             platform.error(
@@ -93,8 +84,6 @@ public class Bot {
                 handler::provide20MsIncomingAudio
         );
         audioPlayer.startPlaying();
-
-        this.player = player;
 
         platform.info("Starting voice chat for " + platform.getName(player));
         platform.sendMessage(
@@ -128,10 +117,6 @@ public class Bot {
             discordEncoder = null;
         }
 
-        for (OpusDecoder decoder : playerDecoders.values())
-            decoder.close();
-
-        playerDecoders = new HashMap<>();
         outgoingAudio = new HashMap<>();
         incomingAudio = new ConcurrentLinkedQueue<>();
     }

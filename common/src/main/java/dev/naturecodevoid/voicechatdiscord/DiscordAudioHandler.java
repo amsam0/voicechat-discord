@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import static dev.naturecodevoid.voicechatdiscord.AudioUtil.addAudioToBotsInRange;
+
 public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandler {
     private final Bot bot;
 //    private boolean hasRefreshedEncoder = false;
@@ -60,7 +62,13 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
 
     @Override
     public void handleEncodedAudio(@NotNull OpusPacket packet) {
-        bot.incomingAudio.add(bot.discordDecoder.decode(packet.getOpusAudio()));
+        short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
+        bot.incomingAudio.add(audio);
+
+        addAudioToBotsInRange(
+                bot.player,
+                audio
+        );
     }
 
     public boolean outgoingIsEmpty() {

@@ -25,7 +25,7 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public String getName(ServerPlayer player) {
+    public String getName(de.maxhenkel.voicechat.api.Player player) {
         return ((Player) player.getPlayer()).getName();
     }
 
@@ -35,7 +35,7 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public void sendMessage(ServerPlayer player, String message) {
+    public void sendMessage(de.maxhenkel.voicechat.api.Player player, String message) {
         ((Player) player.getPlayer()).sendMessage(message);
     }
 

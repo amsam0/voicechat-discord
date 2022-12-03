@@ -2,16 +2,14 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class VoicechatDiscord {
     public static final String PLUGIN_ID = "voicechat-discord";
@@ -38,6 +36,7 @@ public class VoicechatDiscord {
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
+    public static HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public static void enable() {
@@ -86,6 +85,11 @@ public class VoicechatDiscord {
             client.dispatcher().executorService().shutdownNow();
         }
 
+        for (OpusDecoder decoder : playerDecoders.values())
+            decoder.close();
+
+        playerDecoders = null;
+
         platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
     }
 
@@ -117,9 +121,10 @@ public class VoicechatDiscord {
 
         platform.sendMessage(player, "§eStarting a voice chat...");
 
+        bot.player = player;
         new Thread(() -> {
             bot.login();
-            bot.start(player);
+            bot.start();
         }).start();
     }
 
@@ -144,5 +149,14 @@ public class VoicechatDiscord {
                 return bot;
         }
         return null;
+    }
+
+    public static OpusDecoder getPlayerDecoder(UUID playerUuid) {
+        OpusDecoder decoder = playerDecoders.get(playerUuid);
+        if (decoder == null) {
+            decoder = api.createDecoder();
+            playerDecoders.put(playerUuid, decoder);
+        }
+        return decoder;
     }
 }

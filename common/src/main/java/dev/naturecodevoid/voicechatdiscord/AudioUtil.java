@@ -1,11 +1,15 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import de.maxhenkel.voicechat.api.opus.OpusDecoder;
+import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.Position;
+import de.maxhenkel.voicechat.api.ServerPlayer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
+import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
 
 public class AudioUtil {
     public static short[] combineAudioParts(List<short[]> audioParts) {
@@ -33,8 +37,7 @@ public class AudioUtil {
         return mix;
     }
 
-    public static short[] adjustVolumeOfOpusEncodedAudio(byte[] opusEncodedData, double volume, OpusDecoder decoder) {
-        short[] decoded = decoder.decode(opusEncodedData);
+    public static short[] adjustVolumeOfOpusDecodedAudio(short[] decoded, double volume) {
         byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
         return api.getAudioConverter().bytesToShorts(adjustedVolume);
@@ -61,5 +64,48 @@ public class AudioUtil {
 
         }
         return array;
+    }
+
+    public static void addAudioToBotsInRange(Player sender, short[] opusDecodedData) {
+        Position senderPosition = sender.getPosition();
+        UUID senderUuid = sender.getUuid();
+        double voiceChatDistance = api.getVoiceChatDistance();
+
+        for (ServerPlayer player : api.getPlayersInRange(
+                platform.getServerLevel((ServerPlayer) sender),
+                senderPosition,
+                voiceChatDistance
+        )) {
+            if (player.getUuid().compareTo(senderUuid) == 0)
+                continue;
+
+            Bot bot = getBotForPlayer(player.getUuid());
+            if (bot != null) {
+                if (!bot.outgoingAudio.containsKey(senderUuid))
+                    bot.outgoingAudio.put(senderUuid, new ConcurrentLinkedQueue<>());
+
+                // I don't know if this is the correct volume formula but it's close enough
+                double volume = Math.cos((distance(
+                        senderPosition,
+                        bot.player.getPosition()
+                ) / voiceChatDistance) * (Math.PI / 2));
+
+                bot.outgoingAudio
+                        .get(senderUuid)
+                        .add(AudioUtil.adjustVolumeOfOpusDecodedAudio(opusDecodedData, clamp(volume, 0, 1)));
+            }
+        }
+    }
+
+    private static double clamp(double val, double min, double max) {
+        return Math.min(max, Math.max(min, val));
+    }
+
+    private static double distance(Position pos1, Position pos2) {
+        return Math.sqrt(
+                Math.pow(pos1.getX() - pos2.getX(), 2) +
+                        Math.pow(pos1.getY() - pos2.getY(), 2) +
+                        Math.pow(pos1.getZ() - pos2.getZ(), 2)
+        );
     }
 }
