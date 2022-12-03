@@ -55,12 +55,9 @@ dependencies {
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.19.2-2.3.16"
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
-    implementation "org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"
-    shadow "org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"
-    implementation "com.github.naturecodevoid:JDA-concentus:${jda_concentus_version}"
-    shadow "com.github.naturecodevoid:JDA-concentus:${jda_concentus_version}"
-    implementation project(":common")
-    shadow project(":common")
+    shadow(implementation("org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"))
+    shadow(implementation("com.github.naturecodevoid:JDA-concentus:${jda_concentus_version}"))
+    shadow(implementation(project(":common")))
 }
 
 repositories {
