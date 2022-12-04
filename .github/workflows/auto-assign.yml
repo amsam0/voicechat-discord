@@ -1,0 +1,16 @@
+name: Auto assign
+
+on:
+    issues:
+        types: [opened]
+    pull_request:
+        types: [opened, edited, synchronize, reopened]
+
+jobs:
+    auto-assign:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Auto-assign issue/PR"
+              uses: pozil/auto-assign-issue@v1
+              with:
+                  assignees: naturecodevoid
