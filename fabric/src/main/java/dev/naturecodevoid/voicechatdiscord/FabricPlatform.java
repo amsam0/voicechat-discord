@@ -27,13 +27,8 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public String getName(Player player) {
-        return ((PlayerEntity) player.getPlayer()).getName().getString();
-    }
-
-    @Override
-    public ServerLevel getServerLevel(ServerPlayer player) {
-        return api.fromServerLevel(((PlayerEntity) player.getPlayer()).getWorld());
+    public boolean isValidPlayer(ServerPlayer player) {
+        return player.getPlayer() instanceof PlayerEntity;
     }
 
     @Override
@@ -42,8 +37,13 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public boolean isValidPlayer(ServerPlayer player) {
-        return player.getPlayer() instanceof PlayerEntity;
+    public ServerLevel getServerLevel(ServerPlayer player) {
+        return api.fromServerLevel(((PlayerEntity) player.getPlayer()).getWorld());
+    }
+
+    @Override
+    public String getName(Player player) {
+        return ((PlayerEntity) player.getPlayer()).getName().getString();
     }
 
     @Override

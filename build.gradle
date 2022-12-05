@@ -7,7 +7,7 @@ plugins {
 task build(type: GradleBuild) {
     group = "voicechat-discord"
     tasks = [
-            ":bukkit:build",
+            ":paper:build",
             ":fabric:build"
     ]
 }
@@ -16,7 +16,7 @@ task publish(type: GradleBuild) {
     group = "voicechat-discord"
     tasks = [
             ":common:modrinthSyncBody",
-            ":bukkit:modrinth",
+            ":paper:modrinth",
             ":fabric:modrinth"
     ]
 }

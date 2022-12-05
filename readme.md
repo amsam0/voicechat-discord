@@ -7,8 +7,8 @@
 > for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
 <!-- prettier-ignore-end -->
 
-Simple Voice Chat Discord Bridge is a Fabric mod and Paper (and Purpur, Spigot, Bukkit) plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and
-speak. **This means that Bedrock edition players connected through Geyser can use voice chat!**
+Simple Voice Chat Discord Bridge is a Fabric mod and Paper/Purpur plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means
+that Bedrock edition players connected through Geyser can use voice chat!**
 
 ## Installation and Usage
 
@@ -30,7 +30,7 @@ Make sure to run your server once with Simple Voice Chat and Simple Voice Chat D
 
 **Fabric:** Simple Voice Chat Discord Bridge's configuration file should be located at `config/voicechat-discord.yml`.
 
-**Paper/Purpur/Spigot/Bukkit:** Simple Voice Chat Discord Bridge's configuration file should be located at `plugins/voicechat-discord/config.yml`.
+**Paper/Purpur:** Simple Voice Chat Discord Bridge's configuration file should be located at `plugins/voicechat-discord/config.yml`.
 
 ### Setting up a bot
 

@@ -2,6 +2,7 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.command.CommandManager;
@@ -25,12 +26,16 @@ public class FabricMod implements DedicatedServerModInitializer {
             }));
         }));
 
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            afterPlayerRespawn(api.fromServerPlayer(newPlayer));
+        });
+
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             onPlayerLeave(handler.player.getUuid());
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register((server -> {
-            new Thread(VoicechatDiscord::disable).start();
+            disable();
         }));
 
         enable();

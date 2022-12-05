@@ -1,5 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,17 +12,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
 
-public final class BukkitPlugin extends JavaPlugin {
+public final class PaperPlugin extends JavaPlugin implements Listener, CommandExecutor {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     private Plugin voicechatPlugin;
 
     @SuppressWarnings({"DataFlowIssue"})
     @Override
     public void onEnable() {
-        platform = new BukkitPlatform();
+        platform = new PaperPlatform();
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
@@ -32,8 +34,8 @@ public final class BukkitPlugin extends JavaPlugin {
             LOGGER.error("Failed to register voicechat discord plugin");
         }
 
-        getCommand("startdiscordvoicechat").setExecutor(new StartVoicechatCommand());
-        Bukkit.getPluginManager().registerEvents(new PlayerLeave(), this);
+        getCommand("startdiscordvoicechat").setExecutor(this);
+        Bukkit.getPluginManager().registerEvents(this, this);
 
         enable();
     }
@@ -48,19 +50,20 @@ public final class BukkitPlugin extends JavaPlugin {
         }
     }
 
-    public static class StartVoicechatCommand implements CommandExecutor {
-        @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            runStartCommand(sender);
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        runStartCommand(sender);
 
-            return true;
-        }
+        return true;
     }
 
-    public static class PlayerLeave implements Listener {
-        @EventHandler
-        public void playerLeave(PlayerQuitEvent e) {
-            onPlayerLeave(e.getPlayer().getUniqueId());
-        }
+    @EventHandler
+    public void playerLeave(PlayerQuitEvent e) {
+        onPlayerLeave(e.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void playerRespawn(PlayerPostRespawnEvent e) {
+        afterPlayerRespawn(api.fromServerPlayer(e.getPlayer()));
     }
 }

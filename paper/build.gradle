@@ -9,14 +9,14 @@ apply plugin: "com.modrinth.minotaur"
 sourceCompatibility = JavaLanguageVersion.of(java_version as int)
 targetCompatibility = JavaLanguageVersion.of(java_version as int)
 
-archivesBaseName = archives_base_name + "-bukkit"
+archivesBaseName = archives_base_name + "-paper"
 version = plugin_version
 group = maven_group
 
 processResources {
     filesMatching("plugin.yml") {
         expand "version": plugin_version,
-                "bukkit_api_version": bukkit_api_version
+                "paper_api_version": paper_api_version
     }
 }
 
@@ -41,7 +41,7 @@ shadowJar {
 tasks.build.dependsOn tasks.shadowJar
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:${bukkit_version}"
+    compileOnly "io.papermc.paper:paper-api:${paper_version}"
 
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
@@ -65,7 +65,7 @@ modrinth {
     versionName = "[PAPER] " + project.version
     uploadFile = shadowJar
     gameVersions = ["1.19.2"]
-    loaders = ["paper", "purpur", "spigot", "bukkit"]
+    loaders = ["paper", "purpur"]
     detectLoaders = false
     debugMode = System.getenv("MODRINTH_DEBUG") != null
     dependencies {

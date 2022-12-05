@@ -29,6 +29,7 @@ public class Bot {
     protected HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
     protected Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
     protected JDA jda;
+    protected EntityAudioChannel audioChannel;
     private boolean hasLoggedIn = false;
     private AudioPlayer audioPlayer;
     private AudioManager manager;
@@ -77,7 +78,7 @@ public class Bot {
         discordEncoder = api.createEncoder();
         discordDecoder = api.createDecoder();
 
-        EntityAudioChannel audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
+        audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
                 api.createEncoder(),
@@ -102,10 +103,11 @@ public class Bot {
 
         if (audioPlayer != null && audioPlayer.isPlaying()) {
             audioPlayer.stopPlaying();
-            audioPlayer = null;
         }
 
         player = null;
+        audioPlayer = null;
+        audioChannel = null;
 
         if (discordDecoder != null) {
             discordDecoder.close();

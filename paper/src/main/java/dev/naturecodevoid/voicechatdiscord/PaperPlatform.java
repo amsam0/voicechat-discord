@@ -5,10 +5,10 @@ import de.maxhenkel.voicechat.api.ServerPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static dev.naturecodevoid.voicechatdiscord.BukkitPlugin.LOGGER;
+import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
 
-public class BukkitPlatform extends Platform {
+public class PaperPlatform extends Platform {
     @Override
     public boolean isValidPlayer(Object sender) {
         return sender instanceof Player;
@@ -25,13 +25,8 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public String getName(de.maxhenkel.voicechat.api.Player player) {
-        return ((Player) player.getPlayer()).getName();
-    }
-
-    @Override
-    public ServerLevel getServerLevel(ServerPlayer player) {
-        return api.fromServerLevel(((Player) player.getPlayer()).getWorld());
+    public boolean isValidPlayer(ServerPlayer player) {
+        return player.getPlayer() instanceof Player;
     }
 
     @Override
@@ -40,8 +35,13 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public boolean isValidPlayer(ServerPlayer player) {
-        return player.getPlayer() instanceof Player;
+    public ServerLevel getServerLevel(ServerPlayer player) {
+        return api.fromServerLevel(((Player) player.getPlayer()).getWorld());
+    }
+
+    @Override
+    public String getName(de.maxhenkel.voicechat.api.Player player) {
+        return ((Player) player.getPlayer()).getName();
     }
 
     @Override

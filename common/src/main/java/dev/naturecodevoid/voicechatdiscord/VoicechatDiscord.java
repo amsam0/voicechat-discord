@@ -79,6 +79,8 @@ public class VoicechatDiscord {
 
         for (Bot bot : bots) {
             bot.stop();
+            if (bot.jda == null)
+                continue;
             bot.jda.shutdownNow();
             OkHttpClient client = bot.jda.getHttpClient();
             client.connectionPool().evictAll();
@@ -132,6 +134,12 @@ public class VoicechatDiscord {
         Bot bot = getBotForPlayer(playerUuid);
         if (bot != null)
             bot.stop();
+    }
+
+    public static void afterPlayerRespawn(ServerPlayer newPlayer) {
+        Bot bot = getBotForPlayer(newPlayer.getUuid());
+        if (bot != null)
+            bot.audioChannel.updateEntity(newPlayer);
     }
 
     public static Bot getBotForPlayer(UUID playerUuid) {
