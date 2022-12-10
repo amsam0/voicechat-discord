@@ -41,6 +41,10 @@ public class VoicechatDiscord {
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public static void enable() {
         File configFile = new File(platform.getConfigPath());
+
+        if (!configFile.getParentFile().exists())
+            configFile.getParentFile().mkdirs();
+
         config = new YamlConfiguration();
         try {
             config.load(configFile);
