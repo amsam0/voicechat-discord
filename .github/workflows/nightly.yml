@@ -1,0 +1,48 @@
+name: nightly
+on:
+  push:
+    tags-ignore:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [17]
+        os: [ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      - name: validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: setup jdk ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: build
+        run: ./gradlew build
+
+      - name: install rename
+        run: sudo apt-get install rename
+
+      - name: rename jars
+        run: rename -v 's/[0-9]\.[0-9]\.[0-9]\.jar/${{ github.sha }}.jar/' **/build/libs/*.jar
+
+      - name: upload fabric artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: voicechat-discord-fabric-nightly.jar
+          path: fabric/build/libs/voicechat-discord-fabric-${{ github.sha }}.jar
+
+      - name: upload paper artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: voicechat-discord-paper-nightly.jar
+          path: paper/build/libs/voicechat-discord-paper-${{ github.sha }}.jar
