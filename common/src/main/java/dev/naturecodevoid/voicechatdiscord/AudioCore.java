@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-public class AudioUtil {
+public class AudioCore {
     public static short[] combineAudioParts(List<short[]> audioParts) {
         // https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
         int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
@@ -85,27 +85,15 @@ public class AudioUtil {
                     bot.outgoingAudio.put(senderUuid, new ConcurrentLinkedQueue<>());
 
                 // I don't know if this is the correct volume formula but it's close enough
-                double volume = Math.cos((distance(
+                double volume = Math.cos((MathUtil.distance(
                         senderPosition,
                         bot.player.getPosition()
                 ) / voiceChatDistance) * (Math.PI / 2));
 
                 bot.outgoingAudio
                         .get(senderUuid)
-                        .add(AudioUtil.adjustVolumeOfOpusDecodedAudio(opusDecodedData, clamp(volume, 0, 1)));
+                        .add(adjustVolumeOfOpusDecodedAudio(opusDecodedData, MathUtil.clamp(volume, 0, 1)));
             }
         }
-    }
-
-    private static double clamp(double val, double min, double max) {
-        return Math.min(max, Math.max(min, val));
-    }
-
-    private static double distance(Position pos1, Position pos2) {
-        return Math.sqrt(
-                Math.pow(pos1.getX() - pos2.getX(), 2) +
-                        Math.pow(pos1.getY() - pos2.getY(), 2) +
-                        Math.pow(pos1.getZ() - pos2.getZ(), 2)
-        );
     }
 }

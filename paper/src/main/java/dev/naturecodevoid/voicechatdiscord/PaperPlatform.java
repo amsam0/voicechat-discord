@@ -5,8 +5,8 @@ import de.maxhenkel.voicechat.api.ServerPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
 
 public class PaperPlatform extends Platform {
     @Override

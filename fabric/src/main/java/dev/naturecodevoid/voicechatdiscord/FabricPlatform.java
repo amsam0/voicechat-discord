@@ -7,8 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
 
 public class FabricPlatform extends Platform {
     @Override

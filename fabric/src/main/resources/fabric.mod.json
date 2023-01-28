@@ -19,7 +19,7 @@
             "dev.naturecodevoid.voicechatdiscord.FabricMod"
         ],
         "voicechat": [
-            "dev.naturecodevoid.voicechatdiscord.FabricPlugin"
+            "dev.naturecodevoid.voicechatdiscord.FabricVoicechatPlugin"
         ]
     },
     "mixins": [

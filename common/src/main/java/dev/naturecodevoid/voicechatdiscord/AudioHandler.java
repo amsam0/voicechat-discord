@@ -11,14 +11,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static dev.naturecodevoid.voicechatdiscord.AudioUtil.addAudioToBotsInRange;
+import static dev.naturecodevoid.voicechatdiscord.AudioCore.addAudioToBotsInRange;
+import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
-public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandler {
+public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
     private final Bot bot;
 //    private boolean hasRefreshedEncoder = false;
 //    private boolean hasRefreshedDecoder = false;
 
-    public DiscordAudioHandler(Bot bot) {
+    public AudioHandler(Bot bot) {
         this.bot = bot;
     }
 
@@ -42,7 +43,7 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
             if (!queue.isEmpty())
                 audioParts.add(queue.poll());
 
-        return ByteBuffer.wrap(bot.discordEncoder.encode(AudioUtil.combineAudioParts(audioParts)));
+        return ByteBuffer.wrap(bot.discordEncoder.encode(AudioCore.combineAudioParts(audioParts)));
     }
 
     public short[] provide20MsIncomingAudio() {
@@ -62,6 +63,13 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
 
     @Override
     public void handleEncodedAudio(@NotNull OpusPacket packet) {
+        // invalid discord audio may cause the audio player thread to crash, so recreate it if it does
+        // or at least, we think that's what happens... ¯\_(ツ)_/¯
+        if (bot.audioPlayer.isStopped()) {
+            platform.info("An audio player seems to have crashed, recreating it");
+            bot.recreateAudioPlayer();
+        }
+
         short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
         bot.incomingAudio.add(audio);
 
@@ -72,7 +80,7 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
     }
 
     public boolean outgoingIsEmpty() {
-        for (Queue queue : bot.outgoingAudio.values())
+        for (Queue<short[]> queue : bot.outgoingAudio.values())
             if (!queue.isEmpty())
                 return false;
 

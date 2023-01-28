@@ -1,15 +1,14 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.VoicechatApi;
-import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 
-import static dev.naturecodevoid.voicechatdiscord.AudioUtil.addAudioToBotsInRange;
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
+import static dev.naturecodevoid.voicechatdiscord.AudioCore.addAudioToBotsInRange;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-public class Plugin implements VoicechatPlugin {
+public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlugin {
     @Override
     public String getPluginId() {
         return PLUGIN_ID;

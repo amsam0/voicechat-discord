@@ -17,8 +17,8 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.api;
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.platform;
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
+import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 public class Bot {
     private final String token;
@@ -30,9 +30,10 @@ public class Bot {
     protected Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
     protected JDA jda;
     protected EntityAudioChannel audioChannel;
+    protected AudioPlayer audioPlayer;
     private boolean hasLoggedIn = false;
-    private AudioPlayer audioPlayer;
     private AudioManager manager;
+    private AudioHandler handler;
 
     public Bot(String token, long vcId) {
         this.token = token;
@@ -69,7 +70,7 @@ public class Bot {
         Guild guild = channel.getGuild();
         manager = guild.getAudioManager();
 
-        DiscordAudioHandler handler = new DiscordAudioHandler(this);
+        handler = new AudioHandler(this);
 
         manager.setSendingHandler(handler);
         manager.setReceivingHandler(handler);
@@ -79,18 +80,22 @@ public class Bot {
         discordDecoder = api.createDecoder();
 
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
-        audioPlayer = api.createAudioPlayer(
-                audioChannel,
-                api.createEncoder(),
-                handler::provide20MsIncomingAudio
-        );
-        audioPlayer.startPlaying();
+        recreateAudioPlayer();
 
         platform.info("Starting voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
                 "§aStarted a voice chat! Please join the following voice channel in discord:§r§f " + channel.getName()
         );
+    }
+
+    public void recreateAudioPlayer() {
+        audioPlayer = api.createAudioPlayer(
+                audioChannel,
+                api.createEncoder(),
+                handler::provide20MsIncomingAudio
+        );
+        audioPlayer.startPlaying();
     }
 
     public void stop() {
@@ -108,6 +113,7 @@ public class Bot {
         player = null;
         audioPlayer = null;
         audioChannel = null;
+        handler = null;
 
         if (discordDecoder != null) {
             discordDecoder.close();

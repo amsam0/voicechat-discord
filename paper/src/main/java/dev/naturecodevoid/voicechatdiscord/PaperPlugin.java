@@ -14,11 +14,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public final class PaperPlugin extends JavaPlugin implements Listener, CommandExecutor {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    private Plugin voicechatPlugin;
+    private VoicechatPlugin voicechatPlugin;
 
     @SuppressWarnings({"DataFlowIssue"})
     @Override
@@ -27,7 +27,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener, CommandEx
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
-            voicechatPlugin = new Plugin();
+            voicechatPlugin = new VoicechatPlugin();
             service.registerPlugin(voicechatPlugin);
             LOGGER.info("Successfully registered voicechat discord plugin");
         } else {

@@ -9,7 +9,7 @@ import net.minecraft.server.command.CommandManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static dev.naturecodevoid.voicechatdiscord.VoicechatDiscord.*;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public class FabricMod implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);

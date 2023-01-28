@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class VoicechatDiscord {
+public class Common {
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final ArrayList<Bot> bots = new ArrayList<>();
     public static final List<String> configHeader = List.of(
