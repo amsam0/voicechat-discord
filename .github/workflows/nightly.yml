@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       matrix:
         java: [17]
