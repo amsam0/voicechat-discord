@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: add nightly suffix to version
-        run: sed -e '/plugin_version=.*/s/$/-nightly.${{ github.sha }}/' -i '' ./gradle.properties
+        run: sed -e '/plugin_version=.*/s/$/-nightly.${{ github.sha }}/' -i gradle.properties
 
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
@@ -39,10 +39,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: voicechat-discord-fabric-nightly.jar
-          path: fabric/build/libs/voicechat-discord-fabric-${{ github.sha }}.jar
+          path: fabric/build/libs/voicechat-discord-fabric-*.${{ github.sha }}.jar
 
       - name: upload paper artifact
         uses: actions/upload-artifact@v3
         with:
           name: voicechat-discord-paper-nightly.jar
-          path: paper/build/libs/voicechat-discord-paper-${{ github.sha }}.jar
+          path: paper/build/libs/voicechat-discord-paper-*.${{ github.sha }}.jar
