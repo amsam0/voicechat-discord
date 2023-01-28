@@ -10,11 +10,12 @@ import net.minecraft.commands.CommandSourceStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.InvocationTargetException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
@@ -25,6 +26,14 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
     public static PaperPlugin get() {
         return INSTANCE;
+    }
+
+    public static Class<?> getCraftServer() throws ClassNotFoundException {
+        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".CraftServer");
+    }
+
+    public static Class<?> getVanillaCommandWrapper() throws ClassNotFoundException {
+        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".command.VanillaCommandWrapper");
     }
 
     @Override
@@ -52,7 +61,12 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
             );
             getServer().getCommandMap().register(getName(), pluginBrigadierCommand);
         }
-        ((CraftServer) getServer()).syncCommands();
+        try {
+            getCraftServer().getMethod("syncCommands").invoke(getServer());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                 ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
