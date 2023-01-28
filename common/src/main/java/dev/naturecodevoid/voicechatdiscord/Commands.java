@@ -25,9 +25,10 @@ public class Commands {
 
             ServerPlayer player = api.fromServerPlayer(sender);
 
-            if (getBotForPlayer(player.getUuid()) != null) {
-                platform.sendMessage(player, "§cYou have already started a voice chat!");
-                return 1;
+            Bot botForPlayer = getBotForPlayer(player.getUuid());
+            if (botForPlayer != null) {
+                platform.sendMessage(player, "§cYou have already started a voice chat! §eRestarting your session...");
+                botForPlayer.stop();
             }
 
             Bot bot = getAvailableBot();
@@ -40,10 +41,11 @@ public class Commands {
                 return 1;
             }
 
-            platform.sendMessage(
-                    player,
-                    "§eStarting a voice chat..." + (!bot.hasLoggedIn ? " this might take a moment since we have to login to the bot." : "")
-            );
+            if (botForPlayer == null)
+                platform.sendMessage(
+                        player,
+                        "§eStarting a voice chat..." + (!bot.hasLoggedIn ? " this might take a moment since we have to login to the bot." : "")
+                );
 
             bot.player = player;
             new Thread(() -> {
