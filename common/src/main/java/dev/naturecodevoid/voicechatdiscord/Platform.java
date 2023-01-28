@@ -14,15 +14,29 @@ public abstract class Platform {
     public abstract boolean isValidPlayer(Object sender);
 
     /**
-     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
-     */
-    public abstract void sendMessage(Object sender, String message);
-
-    /**
      * This method should return true if the player.getPlayer() is a org.bukkit.entity.Player or
      * net.minecraft.entity.player.PlayerEntity
      */
     public abstract boolean isValidPlayer(ServerPlayer player);
+
+    /**
+     * This method should return true if the sender is an operator
+     *
+     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
+     */
+    public abstract boolean isOperator(Object sender);
+
+    /**
+     * This method should return true if the sender has the given permission
+     *
+     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
+     */
+    public abstract boolean hasPermission(Object sender, String permission);
+
+    /**
+     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
+     */
+    public abstract void sendMessage(Object sender, String message);
 
     public abstract void sendMessage(Player player, String message);
 

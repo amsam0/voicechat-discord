@@ -35,9 +35,10 @@ public final class PaperPlugin extends JavaPlugin implements Listener, CommandEx
         }
 
         getCommand("startdiscordvoicechat").setExecutor(this);
+        getCommand("reloaddiscordvoicechatconfig").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        enable();
+        loadConfig();
     }
 
     @Override
@@ -52,7 +53,10 @@ public final class PaperPlugin extends JavaPlugin implements Listener, CommandEx
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        runStartCommand(sender);
+        if (command.getName().contains("startdiscordvoicechat"))
+            runStartCommand(sender);
+        else if (command.getName().contains("reloaddiscordvoicechatconfig"))
+            runReloadConfigCommand(sender);
 
         return true;
     }

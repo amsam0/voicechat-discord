@@ -15,6 +15,25 @@ public class PaperPlatform extends Platform {
     }
 
     @Override
+    public boolean isValidPlayer(ServerPlayer player) {
+        return player.getPlayer() instanceof Player;
+    }
+
+    @Override
+    public boolean isOperator(Object sender) {
+        if (!(sender instanceof Player))
+            return false;
+        return ((Player) sender).isOp();
+    }
+
+    @Override
+    public boolean hasPermission(Object sender, String permission) {
+        if (!(sender instanceof Player))
+            return false;
+        return ((Player) sender).hasPermission(permission);
+    }
+
+    @Override
     public void sendMessage(Object sender, String message) {
         if (!(sender instanceof CommandSender)) {
             warn("Seems like we are trying to send a message to a sender which is not a CommandSender. Please report this on GitHub issues!");
@@ -22,11 +41,6 @@ public class PaperPlatform extends Platform {
         }
 
         ((CommandSender) sender).sendMessage(message);
-    }
-
-    @Override
-    public boolean isValidPlayer(ServerPlayer player) {
-        return player.getPlayer() instanceof Player;
     }
 
     @Override

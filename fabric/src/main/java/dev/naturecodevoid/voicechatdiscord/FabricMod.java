@@ -24,6 +24,10 @@ public class FabricMod implements DedicatedServerModInitializer {
                 runStartCommand(context.getSource().getPlayer());
                 return 1;
             }));
+            dispatcher.register(CommandManager.literal("reloaddiscordvoicechatconfig").executes(context -> {
+                runReloadConfigCommand(context.getSource().getPlayer());
+                return 1;
+            }));
         }));
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
@@ -38,6 +42,6 @@ public class FabricMod implements DedicatedServerModInitializer {
             disable();
         }));
 
-        enable();
+        loadConfig();
     }
 }

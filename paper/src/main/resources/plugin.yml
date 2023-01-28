@@ -11,3 +11,6 @@ commands:
   startdiscordvoicechat:
     description: Starts a bridge between Simple Voice Chat and Discord.
     usage: /<command>
+  reloaddiscordvoicechatconfig:
+    description: Reloads Simple Voice Chat Discord Bridge's config.
+    usage: /<command>

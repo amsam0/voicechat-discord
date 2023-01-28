@@ -13,7 +13,7 @@ import java.util.*;
 
 public class Common {
     public static final String PLUGIN_ID = "voicechat-discord";
-    public static final ArrayList<Bot> bots = new ArrayList<>();
+    public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
     public static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
@@ -33,13 +33,14 @@ public class Common {
             "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
+    public static ArrayList<Bot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
     public static HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
-    public static void enable() {
+    public static void loadConfig() {
         File configFile = new File(platform.getConfigPath());
 
         if (!configFile.getParentFile().exists())
@@ -65,6 +66,9 @@ public class Common {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        if (bots.size() > 0)
+            bots = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> bot : (List<LinkedHashMap<String, Object>>) config.getList("bots")) {
             try {
@@ -135,6 +139,25 @@ public class Common {
             bot.login();
             bot.start();
         }).start();
+    }
+
+    /**
+     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
+     */
+    public static void runReloadConfigCommand(Object sender) {
+        if (!platform.isOperator(sender) && !platform.hasPermission(sender, RELOAD_CONFIG_PERMISSION)) {
+            platform.sendMessage(
+                    sender,
+                    "§cYou must be an operator or have the `" + RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
+            );
+            return;
+        }
+
+        platform.sendMessage(sender, "§eReloading config...");
+
+        loadConfig();
+
+        platform.sendMessage(sender, "§aSuccessfully reloaded config!");
     }
 
     public static void onPlayerLeave(UUID playerUuid) {
