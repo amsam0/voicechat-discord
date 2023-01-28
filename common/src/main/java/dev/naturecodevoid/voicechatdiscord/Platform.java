@@ -38,4 +38,6 @@ public abstract class Platform {
     public abstract void warn(String message);
 
     public abstract void error(String message);
+
+    public abstract void error(String message, Throwable throwable);
 }

@@ -63,4 +63,9 @@ public class PaperPlatform extends Platform {
     public void error(String message) {
         LOGGER.error(message);
     }
+
+    @Override
+    public void error(String message, Throwable throwable) {
+        LOGGER.error(message, throwable);
+    }
 }

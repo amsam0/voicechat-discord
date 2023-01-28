@@ -125,7 +125,10 @@ public class Common {
             return;
         }
 
-        platform.sendMessage(player, "§eStarting a voice chat...");
+        platform.sendMessage(
+                player,
+                "§eStarting a voice chat..." + (!bot.hasLoggedIn ? " this might take a moment since we have to login to the bot." : "")
+        );
 
         bot.player = player;
         new Thread(() -> {
@@ -136,8 +139,10 @@ public class Common {
 
     public static void onPlayerLeave(UUID playerUuid) {
         Bot bot = getBotForPlayer(playerUuid);
-        if (bot != null)
+        if (bot != null) {
+            platform.info("Stopping bot");
             bot.stop();
+        }
     }
 
     public static void afterPlayerRespawn(ServerPlayer newPlayer) {

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class Bot {
     protected JDA jda;
     protected EntityAudioChannel audioChannel;
     protected AudioPlayer audioPlayer;
-    private boolean hasLoggedIn = false;
+    protected boolean hasLoggedIn = false;
     private AudioManager manager;
     private AudioHandler handler;
 
@@ -45,24 +46,35 @@ public class Bot {
             return;
 
         try {
-            jda = JDABuilder.createDefault(token).enableCache(CacheFlag.VOICE_STATE).build().awaitReady();
+            jda = JDABuilder.createDefault(token)
+                    .enableIntents(GatewayIntent.GUILD_VOICE_STATES)
+                    .enableCache(CacheFlag.VOICE_STATE)
+                    .build().awaitReady();
             hasLoggedIn = true;
-        } catch (InterruptedException e) {
-            platform.error("Failed to login to the bot using vc_id " + vcId);
-            if (player != null)
+        } catch (Exception e) {
+            platform.error("Failed to login to the bot using vc_id " + vcId, e);
+            if (player != null) {
+                platform.sendMessage(
+                        player,
+                        // The error message might contain the token, so let's be safe and only show it to console
+                        "§cFailed to login to the bot. Please contact your server owner since they will be able to see the error message."
+                );
                 player = null;
-            throw new RuntimeException(e);
+            }
         }
     }
 
     public void start() {
+        if (!hasLoggedIn)
+            return;
+
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
             platform.error(
                     "Please ensure that all voice channel IDs are valid, available to the bot and that they are actual voice channels.");
             platform.sendMessage(
                     player,
-                    "§cThe provided voice channel ID seems to be invalid. Please make sure that it is available to the bot and that it is an actual voice channel."
+                    "§cThe provided voice channel ID seems to be invalid or inaccessible to the bot. Please make sure that it is available to the bot and that it is an actual voice channel."
             );
             return;
         }
@@ -82,7 +94,7 @@ public class Bot {
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         recreateAudioPlayer();
 
-        platform.info("Starting voice chat for " + platform.getName(player));
+        platform.info("Started voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
                 "§aStarted a voice chat! Please join the following voice channel in discord:§r§f " + channel.getName()
