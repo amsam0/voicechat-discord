@@ -1,4 +1,5 @@
 name: nightly
+
 on:
   push:
     branches:
@@ -20,9 +21,6 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v3
 
-      - name: add nightly suffix to version
-        run: sed -e '/plugin_version=.*/s/$/-nightly.${{ github.sha }}/' -i gradle.properties
-
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
@@ -35,21 +33,29 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: build
-        run: ./gradlew build
+      - name: add nightly suffix to version
+        run: sed -e '/plugin_version=.*/s/$/-nightly.${{ github.sha }}/' -i gradle.properties
 
       - name: get version
         id: version
         run: echo "version=$(grep plugin_version gradle.properties | sed -e "s/    plugin_version=//g")" >> $GITHUB_OUTPUT
 
-      - name: upload fabric artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: voicechat-discord-fabric-nightly.jar
-          path: fabric/build/libs/voicechat-discord-fabric-${{ steps.version.outputs.version }}.jar
+      - name: build paper
+        run: ../gradlew build
+        working-directory: ./paper
 
       - name: upload paper artifact
         uses: actions/upload-artifact@v3
         with:
           name: voicechat-discord-paper-nightly.jar
           path: paper/build/libs/voicechat-discord-paper-${{ steps.version.outputs.version }}.jar
+
+      - name: build fabric
+        run: ../gradlew build
+        working-directory: ./fabric
+
+      - name: upload fabric artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: voicechat-discord-fabric-nightly.jar
+          path: fabric/build/libs/voicechat-discord-fabric-${{ steps.version.outputs.version }}.jar
