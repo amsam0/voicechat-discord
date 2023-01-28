@@ -1,5 +1,6 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.naturecodevoid.voicechatdiscord.audio;
 
+import dev.naturecodevoid.voicechatdiscord.Bot;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.OpusPacket;
@@ -11,8 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static dev.naturecodevoid.voicechatdiscord.AudioCore.addAudioToBotsInRange;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
+import static dev.naturecodevoid.voicechatdiscord.audio.AudioCore.addAudioToBotsInRange;
 
 public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
     private final Bot bot;
@@ -67,7 +68,7 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
         // or at least, we think that's what happens... ¯\_(ツ)_/¯
         if (bot.audioPlayer.isStopped()) {
             platform.info("An audio player seems to have crashed, recreating it");
-            bot.recreateAudioPlayer();
+            bot.createAudioPlayer();
         }
 
         short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());

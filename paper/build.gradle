@@ -5,6 +5,7 @@ plugins {
 
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "com.modrinth.minotaur"
+apply plugin: "io.papermc.paperweight.userdev"
 
 sourceCompatibility = JavaLanguageVersion.of(java_version as int)
 targetCompatibility = JavaLanguageVersion.of(java_version as int)
@@ -38,10 +39,12 @@ shadowJar {
     archiveVersion.set(project.version)
 }
 
+tasks.assemble.dependsOn tasks.reobfJar
 tasks.build.dependsOn tasks.shadowJar
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:${paper_version}"
+//    compileOnly "io.papermc.paper:paper-api:${paper_version}"
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:${paper_version}")
 
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
@@ -53,7 +56,7 @@ dependencies {
 repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    maven { url "https://papermc.io/repo/repository/maven-public/" }
+    maven { url "https://repo.papermc.io/repository/maven-public/" }
     maven { url "https://maven.maxhenkel.de/repository/public" }
     maven { url "https://jitpack.io" }
     mavenLocal()

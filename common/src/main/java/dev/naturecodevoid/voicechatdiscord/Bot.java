@@ -5,6 +5,7 @@ import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
+import dev.naturecodevoid.voicechatdiscord.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -24,15 +25,15 @@ import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 public class Bot {
     private final String token;
     private final long vcId;
-    protected Player player;
-    protected OpusDecoder discordDecoder;
-    protected OpusEncoder discordEncoder;
-    protected HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
-    protected Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
-    protected JDA jda;
-    protected EntityAudioChannel audioChannel;
-    protected AudioPlayer audioPlayer;
-    protected boolean hasLoggedIn = false;
+    public Player player;
+    public OpusDecoder discordDecoder;
+    public OpusEncoder discordEncoder;
+    public HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
+    public Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
+    public JDA jda;
+    public EntityAudioChannel audioChannel;
+    public AudioPlayer audioPlayer;
+    public boolean hasLoggedIn = false;
     private AudioManager manager;
     private AudioHandler handler;
 
@@ -92,16 +93,16 @@ public class Bot {
         discordDecoder = api.createDecoder();
 
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
-        recreateAudioPlayer();
+        createAudioPlayer();
 
         platform.info("Started voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! Please join the following voice channel in discord:§r§f " + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/stopdiscordvoicechat§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
         );
     }
 
-    public void recreateAudioPlayer() {
+    public void createAudioPlayer() {
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
                 api.createEncoder(),

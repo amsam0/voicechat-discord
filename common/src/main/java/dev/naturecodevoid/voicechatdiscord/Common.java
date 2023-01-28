@@ -33,14 +33,20 @@ public class Common {
             "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
+    public static final ArrayList<Commands.Command> commands = new ArrayList<>();
     public static ArrayList<Bot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
     public static HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
-    @SuppressWarnings({"DataFlowIssue", "unchecked"})
-    public static void loadConfig() {
+    public static void enable() {
+        loadConfig();
+        Commands.registerCommands();
+    }
+
+    @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
+    protected static void loadConfig() {
         File configFile = new File(platform.getConfigPath());
 
         if (!configFile.getParentFile().exists())
@@ -85,15 +91,7 @@ public class Common {
     public static void disable() {
         platform.info("Shutting down " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
 
-        for (Bot bot : bots) {
-            bot.stop();
-            if (bot.jda == null)
-                continue;
-            bot.jda.shutdownNow();
-            OkHttpClient client = bot.jda.getHttpClient();
-            client.connectionPool().evictAll();
-            client.dispatcher().executorService().shutdownNow();
-        }
+        stopBots();
 
         for (OpusDecoder decoder : playerDecoders.values())
             decoder.close();
@@ -103,61 +101,16 @@ public class Common {
         platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
     }
 
-    /**
-     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
-     */
-    public static void runStartCommand(Object sender) {
-        if (!platform.isValidPlayer(sender)) {
-            platform.sendMessage(sender, "§cYou must be a player to use this command!");
-            return;
+    protected static void stopBots() {
+        for (Bot bot : bots) {
+            bot.stop();
+            if (bot.jda == null)
+                continue;
+            bot.jda.shutdownNow();
+            OkHttpClient client = bot.jda.getHttpClient();
+            client.connectionPool().evictAll();
+            client.dispatcher().executorService().shutdownNow();
         }
-
-        ServerPlayer player = api.fromServerPlayer(sender);
-
-        if (getBotForPlayer(player.getUuid()) != null) {
-            platform.sendMessage(player, "§cYou have already started a voice chat!");
-            return;
-        }
-
-        Bot bot = getAvailableBot();
-
-        if (bot == null) {
-            platform.sendMessage(
-                    player,
-                    "§cThere are currently no bots available. You might want to contact your server owner to add more."
-            );
-            return;
-        }
-
-        platform.sendMessage(
-                player,
-                "§eStarting a voice chat..." + (!bot.hasLoggedIn ? " this might take a moment since we have to login to the bot." : "")
-        );
-
-        bot.player = player;
-        new Thread(() -> {
-            bot.login();
-            bot.start();
-        }).start();
-    }
-
-    /**
-     * @param sender Should be a CommandSender or net.minecraft.server.network.ServerPlayerEntity
-     */
-    public static void runReloadConfigCommand(Object sender) {
-        if (!platform.isOperator(sender) && !platform.hasPermission(sender, RELOAD_CONFIG_PERMISSION)) {
-            platform.sendMessage(
-                    sender,
-                    "§cYou must be an operator or have the `" + RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
-            );
-            return;
-        }
-
-        platform.sendMessage(sender, "§eReloading config...");
-
-        loadConfig();
-
-        platform.sendMessage(sender, "§aSuccessfully reloaded config!");
     }
 
     public static void onPlayerLeave(UUID playerUuid) {

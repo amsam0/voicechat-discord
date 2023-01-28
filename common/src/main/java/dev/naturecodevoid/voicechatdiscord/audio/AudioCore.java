@@ -1,8 +1,10 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.naturecodevoid.voicechatdiscord.audio;
 
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerPlayer;
+import dev.naturecodevoid.voicechatdiscord.Bot;
+import dev.naturecodevoid.voicechatdiscord.MathUtil;
 
 import java.util.Iterator;
 import java.util.List;

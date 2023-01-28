@@ -2,7 +2,7 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import org.bukkit.command.CommandSender;
+import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.entity.Player;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
@@ -35,12 +35,12 @@ public class PaperPlatform extends Platform {
 
     @Override
     public void sendMessage(Object sender, String message) {
-        if (!(sender instanceof CommandSender)) {
-            warn("Seems like we are trying to send a message to a sender which is not a CommandSender. Please report this on GitHub issues!");
+        if (!(sender instanceof Player)) {
+            warn("Seems like we are trying to send a message to a sender which is not a Player. Please report this on GitHub issues!");
             return;
         }
 
-        ((CommandSender) sender).sendMessage(message);
+        ((Player) sender).sendMessage(message);
     }
 
     @Override
@@ -51,6 +51,14 @@ public class PaperPlatform extends Platform {
     @Override
     public ServerLevel getServerLevel(ServerPlayer player) {
         return api.fromServerLevel(((Player) player.getPlayer()).getWorld());
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Override
+    public Object commandSourceToPlayerObject(Object source) {
+        if (!(source instanceof CommandSourceStack))
+            return null;
+        return ((CommandSourceStack) source).getPlayer().getBukkitEntity();
     }
 
     @Override

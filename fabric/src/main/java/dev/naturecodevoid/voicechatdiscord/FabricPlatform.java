@@ -4,6 +4,7 @@ import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -54,6 +55,13 @@ public class FabricPlatform extends Platform {
     @Override
     public ServerLevel getServerLevel(ServerPlayer player) {
         return api.fromServerLevel(((PlayerEntity) player.getPlayer()).getWorld());
+    }
+
+    @Override
+    public Object commandSourceToPlayerObject(Object source) {
+        if (!(source instanceof ServerCommandSource))
+            return null;
+        return ((ServerCommandSource) source).getPlayer();
     }
 
     @Override
