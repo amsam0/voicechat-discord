@@ -7,7 +7,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 -   **Running `/startdiscordvoicechat` while in a voice chat session restarts the session**
 -   **New command: `/stopdiscordvoicechat`**
     -   Only usable while currently in a discord voice chat session
-    -   Disconnects the bot and stops the session.
+    -   Disconnects the bot and stops the session
 -   **New command: `/reloaddiscordvoicechatconfig`**
     -   Only usable by operators or players with the `voicechat-discord.reload-config` permission
     -   Stops all sessions and reloads the config
