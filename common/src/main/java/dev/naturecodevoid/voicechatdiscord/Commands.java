@@ -112,7 +112,10 @@ public class Commands {
 
                 loadConfig();
 
-                platform.sendMessage(sender, "§aSuccessfully reloaded config!");
+                platform.sendMessage(
+                        sender,
+                        "§aSuccessfully reloaded config! Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : "") + "."
+                );
             }).start();
 
             return 1;
