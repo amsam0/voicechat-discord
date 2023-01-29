@@ -128,11 +128,17 @@ public class Common {
     }
 
     public static Bot getBotForPlayer(UUID playerUuid) {
+        return getBotForPlayer(playerUuid, false);
+    }
+
+    public static Bot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
         for (Bot bot : bots) {
             if (bot.player != null)
                 if (bot.player.getUuid().compareTo(playerUuid) == 0)
                     return bot;
         }
+        if (fallbackToAvailableBot)
+            return getAvailableBot();
         return null;
     }
 

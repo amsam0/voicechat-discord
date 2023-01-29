@@ -31,7 +31,7 @@ public class Commands {
                 botForPlayer.stop();
             }
 
-            Bot bot = getAvailableBot();
+            Bot bot = getBotForPlayer(player.getUuid(), true);
 
             if (bot == null) {
                 platform.sendMessage(
