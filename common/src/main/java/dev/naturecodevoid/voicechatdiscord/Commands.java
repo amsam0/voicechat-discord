@@ -25,13 +25,13 @@ public class Commands {
 
             ServerPlayer player = api.fromServerPlayer(sender);
 
+            Bot bot = getBotForPlayer(player.getUuid(), true);
+
             Bot botForPlayer = getBotForPlayer(player.getUuid());
             if (botForPlayer != null) {
                 platform.sendMessage(player, "§cYou have already started a voice chat! §eRestarting your session...");
                 botForPlayer.stop();
             }
-
-            Bot bot = getBotForPlayer(player.getUuid(), true);
 
             if (bot == null) {
                 platform.sendMessage(
