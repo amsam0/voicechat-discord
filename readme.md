@@ -70,7 +70,8 @@ to enable Developer Mode in Discord. Then, right click the voice channel you wan
 
 > **Warning**
 >
-> There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
+> There cannot be more than one person speaking in the voice channel at a time, or there will be weird audio glitches. **We recommend limiting bot voice channels to 2 users to ensure that this does
+> not cause an issue.**
 
 Now, reopen [the configuration file](#finding-the-configuration-file) with a text editor. Replace `VOICE_CHANNEL_ID_HERE` with the channel ID you copied. It should look something like this:
 
@@ -91,7 +92,8 @@ You can redo this process for however many bots you want. There is some info in 
 
 > **Warning**
 >
-> There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
+> There cannot be more than one person speaking in the voice channel at a time, or there will be weird audio glitches. **We recommend limiting bot voice channels to 2 users to ensure that this does
+> not cause an issue.**
 
 ### `/startdiscordvoicechat`
 
