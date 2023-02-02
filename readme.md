@@ -1,7 +1,7 @@
 # Simple Voice Chat Discord Bridge
 
-[<img src="https://github.com/modrinth/art/raw/main/Branding/Badge/badge-dark.svg" height="75" />](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
-[<img src="https://i.imgur.com/Ol1Tcf8.png" height="75" />](https://modrinth.com/mod/fabric-api)
+[<img alt="modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
+[<img alt="fabric-api" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg">](https://modrinth.com/mod/fabric-api)
 
 > **Warning**
 >
