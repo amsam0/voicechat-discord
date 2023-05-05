@@ -24,7 +24,7 @@ processResources {
 tasks {
     runServer {
         if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
-        minecraftVersion("1.19.2")
+        minecraftVersion(minecraft_version)
     }
 }
 
@@ -67,7 +67,7 @@ modrinth {
     projectId = "S1jG5YV5"
     versionName = "[PAPER] " + project.version
     uploadFile = shadowJar
-    gameVersions = ["1.19.2"]
+    gameVersions = [minecraft_version]
     loaders = ["paper", "purpur"]
     detectLoaders = false
     debugMode = System.getenv("MODRINTH_DEBUG") != null
