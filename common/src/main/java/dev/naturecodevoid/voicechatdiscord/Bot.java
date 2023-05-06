@@ -3,8 +3,10 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
+import de.maxhenkel.voicechat.api.audiolistener.AudioListener;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
+import dev.naturecodevoid.voicechatdiscord.audio.AudioBridge;
 import dev.naturecodevoid.voicechatdiscord.audio.AudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -14,13 +16,9 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
+
 
 public class Bot {
     private final String token;
@@ -28,14 +26,14 @@ public class Bot {
     public Player player;
     public OpusDecoder discordDecoder;
     public OpusEncoder discordEncoder;
-    public HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
-    public Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
+    public final AudioBridge audioBridge = new AudioBridge();
     public JDA jda;
     public EntityAudioChannel audioChannel;
     public AudioPlayer audioPlayer;
     public boolean hasLoggedIn = false;
     private AudioManager manager;
     private AudioHandler handler;
+    private AudioListener listener;
 
     public Bot(String token, long vcId) {
         this.token = token;
@@ -89,6 +87,12 @@ public class Bot {
         manager.setReceivingHandler(handler);
         manager.openAudioConnection(channel);
 
+        listener = api.playerAudioListenerBuilder()
+                .setPacketListener(handler::handleOutgoingSoundPacket)
+                .setPlayer(player.getUuid())
+                .build();
+        api.registerAudioListener(listener);
+
         discordEncoder = api.createEncoder();
         discordDecoder = api.createDecoder();
 
@@ -128,6 +132,11 @@ public class Bot {
         audioChannel = null;
         handler = null;
 
+        if (listener != null) {
+            api.unregisterAudioListener(listener);
+            listener = null;
+        }
+
         if (discordDecoder != null) {
             discordDecoder.close();
             discordDecoder = null;
@@ -138,7 +147,7 @@ public class Bot {
             discordEncoder = null;
         }
 
-        outgoingAudio = new HashMap<>();
-        incomingAudio = new ConcurrentLinkedQueue<>();
+        audioBridge.clear();
     }
+
 }

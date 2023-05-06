@@ -14,17 +14,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public class AudioCore {
-    public static short[] combineAudioParts(List<short[]> audioParts) {
-        // https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
-        int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
-        short[] mix = new short[1920]; // 960 PCM samples for each channel
+
+    // Number of shorts that are needed in an array to represent 20ms.
+    public static final short COUNT20MS = 960;
+
+    public static short[] combineAudioParts(List<List<Short>> audioParts) {
+        // Based on https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
+        // Slightly modified to take lists instead of arrays, and returns the proper array length, instead of 1920.
+        int audioLength = audioParts.stream().mapToInt(List::size).max().getAsInt();
+        short[] mix = new short[audioLength]; // 960 PCM samples for each channel
         int sample;
         for (int i = 0; i < audioLength; i++) {
             sample = 0;
-            for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); ) {
-                short[] audio = iterator.next();
-                if (i < audio.length)
-                    sample += audio[i];
+            for (Iterator<List<Short>> iterator = audioParts.iterator(); iterator.hasNext(); ) {
+                List<Short> audio = iterator.next();
+                if (i < audio.size())
+                    sample += audio.get(i);
                 else
                     iterator.remove();
             }
@@ -69,7 +74,7 @@ public class AudioCore {
     }
 
     public static void addAudioToBotsInRange(Player sender, short[] opusDecodedData) {
-        Position senderPosition = sender.getPosition();
+        /*Position senderPosition = sender.getPosition();
         UUID senderUuid = sender.getUuid();
         double voiceChatDistance = api.getVoiceChatDistance();
 
@@ -96,6 +101,6 @@ public class AudioCore {
                         .get(senderUuid)
                         .add(adjustVolumeOfOpusDecodedAudio(opusDecodedData, MathUtil.clamp(volume, 0, 1)));
             }
-        }
+        }*/
     }
 }

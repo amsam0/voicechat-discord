@@ -35,9 +35,9 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
         if (!platform.isValidPlayer(e.getSenderConnection().getPlayer()))
             return;
 
-        addAudioToBotsInRange(
+        /*addAudioToBotsInRange(
                 e.getSenderConnection().getPlayer(),
                 getPlayerDecoder(e.getSenderConnection().getPlayer().getUuid()).decode(e.getPacket().getOpusEncodedData())
-        );
+        );*/
     }
 }

@@ -3,10 +3,15 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
@@ -20,6 +25,16 @@ public class FabricPlatform extends Platform {
     @Override
     public boolean isValidPlayer(ServerPlayer player) {
         return player.getPlayer() instanceof PlayerEntity;
+    }
+
+    @Override
+    public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
+        ServerWorld world  = (ServerWorld) level.getServerLevel();
+        Entity      entity = world.getEntity(uuid);
+        if (entity != null) {
+            return new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ()), entity.isPlayer());
+        }
+        return null;
     }
 
     @Override

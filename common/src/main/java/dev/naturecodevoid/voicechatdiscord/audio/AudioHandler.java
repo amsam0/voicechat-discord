@@ -1,5 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord.audio;
 
+import de.maxhenkel.voicechat.api.packets.*;
 import dev.naturecodevoid.voicechatdiscord.Bot;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
@@ -8,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.UUID;
 
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 import static dev.naturecodevoid.voicechatdiscord.audio.AudioCore.addAudioToBotsInRange;
 
 public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
+
     private final Bot bot;
 //    private boolean hasRefreshedEncoder = false;
 //    private boolean hasRefreshedDecoder = false;
@@ -27,7 +28,7 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
     @Nullable
     @Override
     public ByteBuffer provide20MsAudio() {
-        if (outgoingIsEmpty()) {
+        if (! bot.audioBridge.hasOutgoingAudio()) {
 //            if (!hasRefreshedEncoder) {
 //                bot.discordEncoder.close();
 //                bot.discordEncoder = api.createEncoder();
@@ -38,28 +39,11 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
 
 //        hasRefreshedEncoder = false;
 
-        List<short[]> audioParts = new LinkedList<>();
-
-        for (Queue<short[]> queue : bot.outgoingAudio.values())
-            if (!queue.isEmpty())
-                audioParts.add(queue.poll());
-
-        return ByteBuffer.wrap(bot.discordEncoder.encode(AudioCore.combineAudioParts(audioParts)));
+        return ByteBuffer.wrap(bot.discordEncoder.encode(bot.audioBridge.pollOutgoingAudio()));
     }
 
     public short[] provide20MsIncomingAudio() {
-        if (bot.incomingAudio.isEmpty()) {
-//            if (!hasRefreshedDecoder) {
-//                bot.discordDecoder.close();
-//                bot.discordDecoder = api.createDecoder();
-//                hasRefreshedDecoder = true;
-//            }
-            return new short[960];
-        }
-
-//        hasRefreshedDecoder = false;
-
-        return bot.incomingAudio.poll();
+        return bot.audioBridge.pollIncomingAudio();
     }
 
     @Override
@@ -72,7 +56,7 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
         }
 
         short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
-        bot.incomingAudio.add(audio);
+        bot.audioBridge.addIncomingMicrophoneAudio(audio);
 
         addAudioToBotsInRange(
                 bot.player,
@@ -80,17 +64,30 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
         );
     }
 
-    public boolean outgoingIsEmpty() {
-        for (Queue<short[]> queue : bot.outgoingAudio.values())
-            if (!queue.isEmpty())
-                return false;
+    public void handleOutgoingSoundPacket(SoundPacket packet) {
 
-        return true;
+        /*platform.warn(packet instanceof SoundPacket ? "true" : "false");
+        platform.warn(packet instanceof StaticSoundPacket ? "true" : "false");
+        platform.warn(packet instanceof LocationalSoundPacket ? "true" : "false");
+        platform.warn(packet instanceof EntitySoundPacket ? "true" : "false");
+        platform.warn(packet instanceof MicrophonePacket ? "true" : "false");
+        platform.warn(packet.getClass().getSimpleName());*/
+        // Printing true, false, false, false, false, de.maxhenkel.voicechat.plugins.impl.packets.SoundPacketImpl.
+        // This is an issue with the SVC API. Should be fixed soon.
+
+        byte[] audio = packet.getOpusEncodedData();
+        // TODO : If it's locational, entity, or microphone, calculate volume here.
+        short[] decodedAudio = bot.discordDecoder.decode(audio);
+        if (false) { // TODO : // If the audio is from the microphone of a client who has SVC installed, run this. Otherwise, run the else block.
+            bot.audioBridge.addOutgoingMicrophoneAudio(packet.getSender(), decodedAudio);
+        } else {
+            bot.audioBridge.addOutgoingGenericAudio(decodedAudio);
+        }
     }
 
     @Override
     public boolean canProvide() {
-        return !outgoingIsEmpty();
+        return bot.audioBridge.hasOutgoingAudio();
     }
 
     @Override

@@ -1,14 +1,23 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public abstract class Platform {
+
+    public record EntityData(UUID uuid, Position position, boolean isPlayer) {}
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isValidPlayer(Object sender);
 
     public abstract boolean isValidPlayer(ServerPlayer player);
+
+    public abstract @Nullable EntityData getEntityData(ServerLevel level, UUID uuid);
 
     public abstract boolean isOperator(Object sender);
 
