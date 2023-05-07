@@ -2,7 +2,9 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Position;
 
+
 public class MathUtil {
+
     public static double clamp(double val, double min, double max) {
         return Math.min(max, Math.max(min, val));
     }
@@ -14,4 +16,5 @@ public class MathUtil {
                         Math.pow(pos1.getZ() - pos2.getZ(), 2)
         );
     }
+
 }

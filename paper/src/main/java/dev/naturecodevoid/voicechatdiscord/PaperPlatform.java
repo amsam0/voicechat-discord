@@ -3,7 +3,6 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.bukkit.entity.Player;

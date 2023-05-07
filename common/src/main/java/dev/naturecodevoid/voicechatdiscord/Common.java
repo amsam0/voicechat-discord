@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+
 public class Common {
+
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
     public static final List<String> configHeader = List.of(
@@ -144,12 +146,4 @@ public class Common {
         return null;
     }
 
-    public static OpusDecoder getPlayerDecoder(UUID playerUuid) {
-        OpusDecoder decoder = playerDecoders.get(playerUuid);
-        if (decoder == null) {
-            decoder = api.createDecoder();
-            playerDecoders.put(playerUuid, decoder);
-        }
-        return decoder;
-    }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+
 public abstract class Platform {
 
     public record EntityData(UUID uuid, Position position, boolean isPlayer) {}
@@ -43,4 +44,5 @@ public abstract class Platform {
     public abstract void error(String message);
 
     public abstract void error(String message, Throwable throwable);
+
 }

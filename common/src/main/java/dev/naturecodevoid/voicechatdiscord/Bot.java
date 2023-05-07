@@ -1,6 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.audiolistener.AudioListener;
@@ -20,19 +20,34 @@ import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 
+// The Discord bot handler.
 public class Bot {
+
+    // The Discord bot token.
     private final String token;
+    // The Discord guild voice channel id to play to and listen from.
     private final long vcId;
-    public Player player;
+    // The player that this Discord bot it linked to.
+    public ServerPlayer player;
+    // The SVC opus audio decoder.
     public OpusDecoder discordDecoder;
+    // The SVC opus audio encoder.
     public OpusEncoder discordEncoder;
+    // Helper for Discord bots to queue and poll audio streams.
     public final AudioBridge audioBridge = new AudioBridge();
+    // The Discord bot.
     public JDA jda;
+    // The SVC audio channel to play to.
     public EntityAudioChannel audioChannel;
+    // The SVC audio player.
     public AudioPlayer audioPlayer;
+    // Whether the Discord bot has logged in yet.
     public boolean hasLoggedIn = false;
+    // The Discord voice manager.
     private AudioManager manager;
+    // Handler for transferring data between Discord and SVC.
     private AudioHandler handler;
+    // The SVC audio listener to listen from
     private AudioListener listener;
 
     public Bot(String token, long vcId) {
@@ -40,6 +55,8 @@ public class Bot {
         this.vcId = vcId;
     }
 
+
+    // Logs into the Discord bot.
     public void login() {
         if (hasLoggedIn)
             return;
@@ -63,6 +80,7 @@ public class Bot {
         }
     }
 
+    // Starts the Discord <-> SVC audio transfer system.
     public void start() {
         if (!hasLoggedIn)
             return;
@@ -106,6 +124,7 @@ public class Bot {
         );
     }
 
+    // Creates an SVC audio player and starts it.
     public void createAudioPlayer() {
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
@@ -115,6 +134,7 @@ public class Bot {
         audioPlayer.startPlaying();
     }
 
+    // Stops the Discord <-> SVC audio transfer system and clears all queued audio.
     public void stop() {
         if (manager != null) {
             manager.setSendingHandler(null);
@@ -141,7 +161,6 @@ public class Bot {
             discordDecoder.close();
             discordDecoder = null;
         }
-
         if (discordEncoder != null) {
             discordEncoder.close();
             discordEncoder = null;
