@@ -30,9 +30,9 @@ public class Bot {
     // The player that this Discord bot it linked to.
     public ServerPlayer player;
     // The SVC opus audio decoder.
-    public OpusDecoder discordDecoder;
+    public OpusDecoder opusDecoder;
     // The SVC opus audio encoder.
-    public OpusEncoder discordEncoder;
+    public OpusEncoder opusEncoder;
     // Helper for Discord bots to queue and poll audio streams.
     public final AudioBridge audioBridge = new AudioBridge();
     // The Discord bot.
@@ -111,8 +111,8 @@ public class Bot {
                 .build();
         api.registerAudioListener(listener);
 
-        discordEncoder = api.createEncoder();
-        discordDecoder = api.createDecoder();
+        opusEncoder = api.createEncoder();
+        opusDecoder = api.createDecoder();
 
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         createAudioPlayer();
@@ -157,13 +157,13 @@ public class Bot {
             listener = null;
         }
 
-        if (discordDecoder != null) {
-            discordDecoder.close();
-            discordDecoder = null;
+        if (opusDecoder != null) {
+            opusDecoder.close();
+            opusDecoder = null;
         }
-        if (discordEncoder != null) {
-            discordEncoder.close();
-            discordEncoder = null;
+        if (opusEncoder != null) {
+            opusEncoder.close();
+            opusEncoder = null;
         }
 
         audioBridge.clear();

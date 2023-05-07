@@ -1,6 +1,5 @@
 package dev.naturecodevoid.voicechatdiscord.audio;
 
-import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.Position;
 import dev.naturecodevoid.voicechatdiscord.MathUtil;
 
@@ -83,31 +82,4 @@ public final class AudioCore {
         return array;
     }
 
-    // Adds an audio stream to the outgoing microphone queue of Discord-connected players, with the correct volume.
-    public static void addAudioToBotsInRange(Player sender, short[] opusDecodedData) {
-        /*Position senderPosition = sender.getPosition();
-        UUID senderUuid = sender.getUuid();
-        double voiceChatDistance = api.getVoiceChatDistance();
-
-        for (ServerPlayer player : api.getPlayersInRange(
-                platform.getServerLevel((ServerPlayer) sender),
-                senderPosition,
-                voiceChatDistance
-        )) {
-            if (player.getUuid().compareTo(senderUuid) == 0)
-                continue;
-
-            Bot bot = getBotForPlayer(player.getUuid());
-            if (bot != null) {
-
-                // I don't know if this is the correct volume formula, but it's close enough
-                double volume = Math.cos((MathUtil.distance(
-                        senderPosition,
-                        bot.player.getPosition()
-                ) / voiceChatDistance) * (Math.PI / 2));
-
-                bot.audioBridge.addOutgoingMicrophoneAudio(senderUuid, adjustVolumeOfOpusDecodedAudio(opusDecodedData, MathUtil.clamp(volume, 0, 1)));
-            }
-        }*/
-    }
 }

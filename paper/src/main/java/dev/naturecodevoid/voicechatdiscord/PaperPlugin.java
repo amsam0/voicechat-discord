@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
+
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     private static PaperPlugin INSTANCE;

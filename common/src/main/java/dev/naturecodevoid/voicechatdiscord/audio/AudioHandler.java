@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
-import static dev.naturecodevoid.voicechatdiscord.audio.AudioCore.addAudioToBotsInRange;
 
 
 // Handler for transferring data between Discord and SVC.
@@ -83,7 +82,7 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
         }
         //hasRefreshedEncoder = false;
 
-        return ByteBuffer.wrap(bot.discordEncoder.encode(bot.audioBridge.pollOutgoingAudio()));
+        return ByteBuffer.wrap(bot.opusEncoder.encode(bot.audioBridge.pollOutgoingAudio()));
     }
 
 
@@ -99,16 +98,11 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
             bot.createAudioPlayer();
         }
 
-        short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
+        short[] audio = bot.opusDecoder.decode(packet.getOpusAudio());
         bot.audioBridge.addIncomingMicrophoneAudio(audio);
-
-        addAudioToBotsInRange(
-                bot.player,
-                audio
-        );
     }
 
-    // Returns whether #provide20MsIncomingAudio will return anything.
+    // Returns whether this can transfer audio from Discord to SVC.
     @Override
     public boolean canReceiveEncoded() {
         return true;

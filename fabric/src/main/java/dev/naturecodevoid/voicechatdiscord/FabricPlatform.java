@@ -16,15 +16,11 @@ import java.util.UUID;
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
+
 public class FabricPlatform extends Platform {
     @Override
     public boolean isValidPlayer(Object sender) {
         return sender != null;
-    }
-
-    @Override
-    public boolean isValidPlayer(ServerPlayer player) {
-        return player.getPlayer() instanceof PlayerEntity;
     }
 
     @Override
@@ -65,11 +61,6 @@ public class FabricPlatform extends Platform {
     @Override
     public void sendMessage(Player player, String message) {
         ((PlayerEntity) player.getPlayer()).sendMessage(Text.of(message));
-    }
-
-    @Override
-    public ServerLevel getServerLevel(ServerPlayer player) {
-        return api.fromServerLevel(((PlayerEntity) player.getPlayer()).getWorld());
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.maxhenkel.voicechat.api.VoicechatApi;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
+
 public class FabricVoicechatPlugin extends VoicechatPlugin {
     @Override
     public void initialize(VoicechatApi serverApi) {

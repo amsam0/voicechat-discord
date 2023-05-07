@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
 
+
 @SuppressWarnings("rawtypes")
 @DefaultQualifier(NonNull.class)
 final class PluginBrigadierCommand extends Command implements PluginIdentifiableCommand {

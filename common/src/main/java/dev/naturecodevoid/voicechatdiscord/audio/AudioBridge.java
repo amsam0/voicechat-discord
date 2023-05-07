@@ -65,7 +65,14 @@ public class AudioBridge {
                 audioParts.add(audioPart);
             }
         });
-        this.outgoingAudio.keySet().removeIf(key -> this.outgoingAudio.get(key).queue().isEmpty());
+        this.outgoingAudio.keySet().removeIf(key -> {
+            OutgoingAudioStream stream = this.outgoingAudio.get(key);
+            if (stream.queue().isEmpty()) {
+                stream.decoder().close();
+                return true;
+            }
+            return false;
+        });
 
         return AudioCore.combineAudioParts(audioParts);
     }
