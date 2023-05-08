@@ -1,10 +1,10 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerLevel;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -14,10 +14,6 @@ import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
 
 public class PaperPlatform extends Platform {
-    @Override
-    public boolean isValidPlayer(Object sender) {
-        return sender instanceof Player;
-    }
 
     @Override
     public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
@@ -31,16 +27,16 @@ public class PaperPlatform extends Platform {
 
     @Override
     public boolean isOperator(Object sender) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).isOp();
+        return ((Permissible) sender).isOp();
     }
 
     @Override
     public boolean hasPermission(Object sender, String permission) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).hasPermission(permission);
+        return ((Permissible) sender).hasPermission(permission);
     }
 
     @Override
@@ -58,12 +54,11 @@ public class PaperPlatform extends Platform {
         ((Player) player.getPlayer()).sendMessage(message);
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Override
-    public Object commandSourceToPlayerObject(Object source) {
-        if (!(source instanceof CommandSourceStack))
+    public @Nullable Object commandSourceToPlayerObject(Object source) {
+        if (!(source instanceof Permissible))
             return null;
-        return ((CommandSourceStack) source).getPlayer().getBukkitEntity();
+        return source;
     }
 
     @Override

@@ -2,7 +2,6 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.ServerLevel;
-import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,10 +17,6 @@ import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
 
 public class FabricPlatform extends Platform {
-    @Override
-    public boolean isValidPlayer(Object sender) {
-        return sender != null;
-    }
 
     @Override
     public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
@@ -64,7 +59,7 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public Object commandSourceToPlayerObject(Object source) {
+    public @Nullable Object commandSourceToPlayerObject(Object source) {
         if (!(source instanceof ServerCommandSource))
             return null;
         return ((ServerCommandSource) source).getPlayer();

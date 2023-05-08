@@ -35,7 +35,6 @@ public class Common {
             "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
-    public static final ArrayList<Commands.Command> commands = new ArrayList<>();
     public static ArrayList<Bot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
@@ -44,7 +43,6 @@ public class Common {
 
     public static void enable() {
         loadConfig();
-        Commands.registerCommands();
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})

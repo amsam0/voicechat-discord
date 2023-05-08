@@ -98,5 +98,5 @@ You can redo this process for however many bots you want. There is some info in 
 > There cannot be more than one person speaking in the voice channel at a time. **We recommend limiting bot voice channels to 2 users to ensure that this does not cause an issue.**
 <!-- prettier-ignore-end -->
 
-To use it in-game, use the `/startdiscordvoicechat` command. (It may take a few seconds to start.) Then, join the voice channel as instructed. Other players should be able to hear you speak when you
+To use it in-game, use the `/dvc` command. (It may take a few seconds to start.) Then, join the voice channel as instructed. Other players should be able to hear you speak when you
 speak in the Discord channel, and you should be able to hear other players speak when they speak through the Simple Voice Chat mod.

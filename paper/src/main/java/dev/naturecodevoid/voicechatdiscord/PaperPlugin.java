@@ -1,12 +1,7 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
-import net.minecraft.commands.CommandSourceStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -15,31 +10,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.InvocationTargetException;
-
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    private static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
 
-    public static PaperPlugin get() {
-        return INSTANCE;
-    }
-
-    public static Class<?> getCraftServer() throws ClassNotFoundException {
-        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".CraftServer");
-    }
-
-    public static Class<?> getVanillaCommandWrapper() throws ClassNotFoundException {
-        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".command.VanillaCommandWrapper");
-    }
 
     @Override
     public void onEnable() {
-        INSTANCE = this;
         platform = new PaperPlatform();
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
@@ -55,19 +35,10 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        for (Commands.Command command : commands) {
-            final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(
-                    command.name(),
-                    command.builder()
-            );
-            getServer().getCommandMap().register(getName(), pluginBrigadierCommand);
-        }
-        try {
-            getCraftServer().getMethod("syncCommands").invoke(getServer());
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-                 ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        org.bukkit.command.PluginCommand command = Bukkit.getPluginCommand(Commands.COMMAND);
+        assert command != null;
+        command.setExecutor(new PluginCommand());
+
     }
 
     @Override
@@ -78,17 +49,6 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
             getServer().getServicesManager().unregister(voicechatPlugin);
             LOGGER.info("Successfully unregistered voicechat discord plugin");
         }
-    }
-
-    @SuppressWarnings({"UnstableApiUsage", "unchecked", "rawtypes"})
-    @EventHandler
-    public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-        if (!(event.getCommand() instanceof PluginBrigadierCommand pluginBrigadierCommand))
-            return;
-
-        final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
-        pluginBrigadierCommand.builder().accept(node);
-        event.setLiteral((LiteralCommandNode) node.build());
     }
 
     @EventHandler

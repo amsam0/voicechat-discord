@@ -120,7 +120,7 @@ public class Bot {
         platform.info("Started voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/stopdiscordvoicechat§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/dvc§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
         );
     }
 

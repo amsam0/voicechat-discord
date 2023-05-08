@@ -7,3 +7,7 @@ authors: [ "naturecodevoid" ]
 description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.
 website: https://naturecodevoid.dev
 depend: [ voicechat ]
+commands:
+  dvc:
+    description: Start a voice chat connection in Discord.
+    usage: "/dvc [reload]"

@@ -12,9 +12,6 @@ public abstract class Platform {
 
     public record EntityData(UUID uuid, Position position, boolean isPlayer) {}
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public abstract boolean isValidPlayer(Object sender);
-
     public abstract @Nullable EntityData getEntityData(ServerLevel level, UUID uuid);
 
     public abstract boolean isOperator(Object sender);
@@ -25,7 +22,7 @@ public abstract class Platform {
 
     public abstract void sendMessage(Player player, String message);
 
-    public abstract Object commandSourceToPlayerObject(Object source);
+    public abstract @Nullable Object commandSourceToPlayerObject(Object source);
 
     public abstract String getName(Player player);
 
