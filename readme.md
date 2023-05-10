@@ -2,8 +2,8 @@ Project Status Update: https://github.com/naturecodevoid/voicechat-discord/issue
 
 # Simple Voice Chat Discord Bridge
 
-[<img alt="modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
-[<img alt="fabric-api" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg">](https://modrinth.com/mod/fabric-api)
+[<img alt="Modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
+[<img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg">](https://modrinth.com/mod/fabric-api)
 
 > **Warning**
 >
@@ -13,7 +13,7 @@ Project Status Update: https://github.com/naturecodevoid/voicechat-discord/issue
 Simple Voice Chat Discord Bridge is a Fabric mod and Paper/Purpur plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means
 that Bedrock edition players connected through Geyser can use voice chat!**
 
-Changelog: https://github.com/naturecodevoid/voicechat-discord/blob/master/changelog.md
+Changelog: https://github.com/naturecodevoid/voicechat-discord/blob/master/CHANGELOG.md
 
 # Installation and Usage
 

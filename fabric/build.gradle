@@ -32,6 +32,7 @@ shadowJar {
     relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
     relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
     relocate "org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration"
+    relocate "org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml"
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
@@ -52,7 +53,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.19.2-2.3.16"
+    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.19-2.4.7"
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
     shadow(implementation("org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"))
@@ -78,9 +79,9 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "S1jG5YV5"
     versionName = "[FABRIC] " + project.version
-    changelog = '<a href="https://modrinth.com/mod/fabric-api"><img src="https://i.imgur.com/Ol1Tcf8.png" width="151" height="50" /></a>'
+    changelog = '<a href="https://modrinth.com/mod/fabric-api"><img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg" /></a>'
     uploadFile = remapJar
-    gameVersions = ["1.19.2"]
+    gameVersions = ["1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4"]
     debugMode = System.getenv("MODRINTH_DEBUG") != null
     dependencies {
         required.project "simple-voice-chat"

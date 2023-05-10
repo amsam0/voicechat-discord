@@ -11,7 +11,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 -   **New command: `/reloaddiscordvoicechatconfig`**
     -   Only usable by operators or players with the `voicechat-discord.reload-config` permission
     -   Stops all sessions and reloads the config
--   Fixed [#5](https://github.com/naturecodevoid/voicechat-discord/issues/5)
+-   Hopefully fixed [#5](https://github.com/naturecodevoid/voicechat-discord/issues/5)
 -   Better login failure error handling and logging
 -   Improvements to messages sent to players to be more clear
 -   Internal refactoring and command handling improvements

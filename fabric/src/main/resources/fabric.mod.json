@@ -3,7 +3,7 @@
     "id": "voicechat-discord",
     "version": "${version}",
     "name": "Simple Voice Chat Discord Bridge",
-    "description": "A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.",
+    "description": "A mod to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.",
     "authors": [
         "naturecodevoid"
     ],
@@ -27,7 +27,7 @@
     "depends": {
         "fabricloader": ">=0.14.10",
         "fabric-api": "*",
-        "minecraft": "~1.19",
+        "minecraft": ">=1.19",
         "java": ">=17",
         "voicechat": "*"
     }
