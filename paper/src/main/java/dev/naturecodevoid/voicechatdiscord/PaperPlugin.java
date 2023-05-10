@@ -19,7 +19,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
+
 public final class PaperPlugin extends JavaPlugin implements Listener {
+
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     private static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
@@ -79,7 +81,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    @SuppressWarnings({"UnstableApiUsage", "unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @EventHandler
     public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
         if (!(event.getCommand() instanceof PluginBrigadierCommand pluginBrigadierCommand))
@@ -99,4 +101,5 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public void playerRespawn(PlayerPostRespawnEvent e) {
         afterPlayerRespawn(api.fromServerPlayer(e.getPlayer()));
     }
+
 }

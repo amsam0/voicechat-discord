@@ -7,7 +7,9 @@ import java.util.function.Consumer;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
+// The start and stop commands for the Discord <-> SVC transfer system.
 public class Commands {
+
     @SuppressWarnings("rawtypes")
     private static void register(String name, Consumer<LiteralArgumentBuilder> builder) {
         commands.add(new Command(name, builder));
@@ -15,6 +17,7 @@ public class Commands {
 
     @SuppressWarnings("unchecked")
     protected static void registerCommands() {
+
         register("startdiscordvoicechat", literal -> literal.executes(context -> {
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
@@ -120,10 +123,12 @@ public class Commands {
 
             return 1;
         }));
+
     }
 
     @SuppressWarnings("rawtypes")
     public record Command(String name, Consumer<LiteralArgumentBuilder> builder) {
+
         public String name() {
             return name;
         }
@@ -131,5 +136,7 @@ public class Commands {
         public Consumer<LiteralArgumentBuilder> builder() {
             return builder;
         }
+
     }
+
 }

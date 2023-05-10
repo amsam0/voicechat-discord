@@ -1,22 +1,32 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerLevel;
-import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
+
 public class PaperPlatform extends Platform {
+
     @Override
     public boolean isValidPlayer(Object sender) {
         return sender instanceof Player;
     }
 
     @Override
-    public boolean isValidPlayer(ServerPlayer player) {
-        return player.getPlayer() instanceof Player;
+    public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
+        net.minecraft.server.level.ServerLevel world  = (net.minecraft.server.level.ServerLevel) level.getServerLevel();
+        Entity                                 entity = world.getEntity(uuid);
+        if (entity != null) {
+            return new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ()));
+        }
+        return null;
     }
 
     @Override
@@ -46,11 +56,6 @@ public class PaperPlatform extends Platform {
     @Override
     public void sendMessage(de.maxhenkel.voicechat.api.Player player, String message) {
         ((Player) player.getPlayer()).sendMessage(message);
-    }
-
-    @Override
-    public ServerLevel getServerLevel(ServerPlayer player) {
-        return api.fromServerLevel(((Player) player.getPlayer()).getWorld());
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -90,4 +95,5 @@ public class PaperPlatform extends Platform {
     public void error(String message, Throwable throwable) {
         LOGGER.error(message, throwable);
     }
+
 }

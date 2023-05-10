@@ -2,7 +2,6 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
@@ -11,7 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+
 public class Common {
+
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
     public static final List<String> configHeader = List.of(
@@ -38,7 +39,6 @@ public class Common {
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
-    public static HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
 
     public static void enable() {
         loadConfig();
@@ -93,11 +93,6 @@ public class Common {
 
         stopBots();
 
-        for (OpusDecoder decoder : playerDecoders.values())
-            decoder.close();
-
-        playerDecoders = null;
-
         platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
     }
 
@@ -150,12 +145,4 @@ public class Common {
         return null;
     }
 
-    public static OpusDecoder getPlayerDecoder(UUID playerUuid) {
-        OpusDecoder decoder = playerDecoders.get(playerUuid);
-        if (decoder == null) {
-            decoder = api.createDecoder();
-            playerDecoders.put(playerUuid, decoder);
-        }
-        return decoder;
-    }
 }

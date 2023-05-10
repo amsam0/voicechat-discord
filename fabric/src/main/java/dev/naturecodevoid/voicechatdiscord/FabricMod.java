@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
+
 public class FabricMod implements DedicatedServerModInitializer {
+
     public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -30,16 +32,12 @@ public class FabricMod implements DedicatedServerModInitializer {
             }
         }));
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            afterPlayerRespawn(api.fromServerPlayer(newPlayer));
-        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> afterPlayerRespawn(api.fromServerPlayer(newPlayer)));
 
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            onPlayerLeave(handler.player.getUuid());
-        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 
-        ServerLifecycleEvents.SERVER_STOPPING.register((server -> {
-            disable();
-        }));
+        ServerLifecycleEvents.SERVER_STOPPING.register((server -> disable()));
+
     }
+
 }

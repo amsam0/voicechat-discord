@@ -23,9 +23,11 @@ import java.util.function.Consumer;
 
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
 
+
 @SuppressWarnings("rawtypes")
 @DefaultQualifier(NonNull.class)
 final class PluginBrigadierCommand extends Command implements PluginIdentifiableCommand {
+
     private final Consumer<LiteralArgumentBuilder> builder;
 
     PluginBrigadierCommand(final String name, final Consumer<LiteralArgumentBuilder> builder) {
@@ -107,4 +109,5 @@ final class PluginBrigadierCommand extends Command implements PluginIdentifiable
     public Consumer<LiteralArgumentBuilder> builder() {
         return this.builder;
     }
+
 }
