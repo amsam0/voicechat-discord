@@ -4,6 +4,7 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
@@ -21,16 +22,16 @@ public class PaperPlatform extends Platform {
 
     @Override
     public boolean isOperator(Object sender) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).isOp();
+        return ((Permissible) sender).isOp();
     }
 
     @Override
     public boolean hasPermission(Object sender, String permission) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).hasPermission(permission);
+        return ((Permissible) sender).hasPermission(permission);
     }
 
     @Override

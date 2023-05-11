@@ -33,8 +33,8 @@ public class Common {
             "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
-    public static final ArrayList<Commands.Command> commands = new ArrayList<>();
-    public static ArrayList<Bot> bots = new ArrayList<>();
+    public static final ArrayList<SubCommands.SubCommand> SUB_COMMANDS = new ArrayList<>();
+    public static ArrayList<DiscordBot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
@@ -42,7 +42,7 @@ public class Common {
 
     public static void enable() {
         loadConfig();
-        Commands.registerCommands();
+        SubCommands.register();
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
@@ -78,7 +78,7 @@ public class Common {
 
         for (LinkedHashMap<String, Object> bot : (List<LinkedHashMap<String, Object>>) config.getList("bots")) {
             try {
-                bots.add(new Bot((String) bot.get("token"), (Long) bot.get("vc_id")));
+                bots.add(new DiscordBot((String) bot.get("token"), (Long) bot.get("vc_id")));
             } catch (ClassCastException e) {
                 platform.error(
                         "Failed to load a bot. Please make sure that the vc_id property is a valid channel ID.");
@@ -102,7 +102,7 @@ public class Common {
     }
 
     protected static void stopBots() {
-        for (Bot bot : bots) {
+        for (DiscordBot bot : bots) {
             bot.stop();
             if (bot.jda == null)
                 continue;
@@ -114,7 +114,7 @@ public class Common {
     }
 
     public static void onPlayerLeave(UUID playerUuid) {
-        Bot bot = getBotForPlayer(playerUuid);
+        DiscordBot bot = getBotForPlayer(playerUuid);
         if (bot != null) {
             platform.info("Stopping bot");
             bot.stop();
@@ -122,17 +122,17 @@ public class Common {
     }
 
     public static void afterPlayerRespawn(ServerPlayer newPlayer) {
-        Bot bot = getBotForPlayer(newPlayer.getUuid());
+        DiscordBot bot = getBotForPlayer(newPlayer.getUuid());
         if (bot != null)
             bot.audioChannel.updateEntity(newPlayer);
     }
 
-    public static Bot getBotForPlayer(UUID playerUuid) {
+    public static DiscordBot getBotForPlayer(UUID playerUuid) {
         return getBotForPlayer(playerUuid, false);
     }
 
-    public static Bot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
-        for (Bot bot : bots) {
+    public static DiscordBot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
+        for (DiscordBot bot : bots) {
             if (bot.player != null)
                 if (bot.player.getUuid().compareTo(playerUuid) == 0)
                     return bot;
@@ -142,8 +142,8 @@ public class Common {
         return null;
     }
 
-    public static Bot getAvailableBot() {
-        for (Bot bot : bots) {
+    public static DiscordBot getAvailableBot() {
+        for (DiscordBot bot : bots) {
             if (bot.player == null)
                 return bot;
         }

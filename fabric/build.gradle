@@ -53,7 +53,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.19-2.4.7"
+    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-1.19.2-2.4.7"
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
 
     shadow(implementation("org.bspfsystems:yamlconfiguration:${yaml_configuration_version}"))
@@ -81,7 +81,7 @@ modrinth {
     versionName = "[FABRIC] " + project.version
     changelog = '<a href="https://modrinth.com/mod/fabric-api"><img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg" /></a>'
     uploadFile = remapJar
-    gameVersions = ["1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4"]
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
     debugMode = System.getenv("MODRINTH_DEBUG") != null
     dependencies {
         required.project "simple-voice-chat"

@@ -5,7 +5,7 @@ import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
-import dev.naturecodevoid.voicechatdiscord.audio.AudioHandler;
+import dev.naturecodevoid.voicechatdiscord.audio.DiscordAudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
-public class Bot {
+public class DiscordBot {
     private final String token;
     private final long vcId;
     public Player player;
@@ -35,9 +35,9 @@ public class Bot {
     public AudioPlayer audioPlayer;
     public boolean hasLoggedIn = false;
     private AudioManager manager;
-    private AudioHandler handler;
+    private DiscordAudioHandler handler;
 
-    public Bot(String token, long vcId) {
+    public DiscordBot(String token, long vcId) {
         this.token = token;
         this.vcId = vcId;
     }
@@ -83,7 +83,7 @@ public class Bot {
         Guild guild = channel.getGuild();
         manager = guild.getAudioManager();
 
-        handler = new AudioHandler(this);
+        handler = new DiscordAudioHandler(this);
 
         manager.setSendingHandler(handler);
         manager.setReceivingHandler(handler);
@@ -98,7 +98,7 @@ public class Bot {
         platform.info("Started voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/stopdiscordvoicechat§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
         );
     }
 

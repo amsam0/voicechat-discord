@@ -3,7 +3,7 @@ package dev.naturecodevoid.voicechatdiscord.audio;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import dev.naturecodevoid.voicechatdiscord.Bot;
+import dev.naturecodevoid.voicechatdiscord.DiscordBot;
 import dev.naturecodevoid.voicechatdiscord.MathUtil;
 
 import java.util.Iterator;
@@ -14,14 +14,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public class AudioCore {
-    public static short[] combineAudioParts(List<short[]> audioParts) {
+    /**
+     * Combines multiple audio streams into one.
+     */
+    public static short[] combineAudioStreams(List<short[]> audioStreams) {
         // https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
-        int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
+        int audioLength = audioStreams.stream().mapToInt(it -> it.length).max().getAsInt();
         short[] mix = new short[1920]; // 960 PCM samples for each channel
         int sample;
         for (int i = 0; i < audioLength; i++) {
             sample = 0;
-            for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); ) {
+            for (Iterator<short[]> iterator = audioStreams.iterator(); iterator.hasNext(); ) {
                 short[] audio = iterator.next();
                 if (i < audio.length)
                     sample += audio[i];
@@ -39,6 +42,9 @@ public class AudioCore {
         return mix;
     }
 
+    /**
+     * Converts the decoded audio to bytes, adjusts the volume and converts the audio back to shorts.
+     */
     public static short[] adjustVolumeOfOpusDecodedAudio(short[] decoded, double volume) {
         byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
@@ -68,6 +74,9 @@ public class AudioCore {
         return array;
     }
 
+    /**
+     * Adds the decoded audio to any bots in range of the sender.
+     */
     public static void addAudioToBotsInRange(Player sender, short[] opusDecodedData) {
         Position senderPosition = sender.getPosition();
         UUID senderUuid = sender.getUuid();
@@ -81,7 +90,7 @@ public class AudioCore {
             if (player.getUuid().compareTo(senderUuid) == 0)
                 continue;
 
-            Bot bot = getBotForPlayer(player.getUuid());
+            DiscordBot bot = getBotForPlayer(player.getUuid());
             if (bot != null) {
                 if (!bot.outgoingAudio.containsKey(senderUuid))
                     bot.outgoingAudio.put(senderUuid, new ConcurrentLinkedQueue<>());

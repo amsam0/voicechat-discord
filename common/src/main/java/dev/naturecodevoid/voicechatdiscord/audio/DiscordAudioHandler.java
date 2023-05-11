@@ -1,6 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord.audio;
 
-import dev.naturecodevoid.voicechatdiscord.Bot;
+import dev.naturecodevoid.voicechatdiscord.DiscordBot;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.OpusPacket;
@@ -15,12 +15,12 @@ import java.util.Queue;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 import static dev.naturecodevoid.voicechatdiscord.audio.AudioCore.addAudioToBotsInRange;
 
-public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
-    private final Bot bot;
+public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandler {
+    private final DiscordBot bot;
 //    private boolean hasRefreshedEncoder = false;
 //    private boolean hasRefreshedDecoder = false;
 
-    public AudioHandler(Bot bot) {
+    public DiscordAudioHandler(DiscordBot bot) {
         this.bot = bot;
     }
 
@@ -44,7 +44,7 @@ public class AudioHandler implements AudioSendHandler, AudioReceiveHandler {
             if (!queue.isEmpty())
                 audioParts.add(queue.poll());
 
-        return ByteBuffer.wrap(bot.discordEncoder.encode(AudioCore.combineAudioParts(audioParts)));
+        return ByteBuffer.wrap(bot.discordEncoder.encode(AudioCore.combineAudioStreams(audioParts)));
     }
 
     public short[] provide20MsIncomingAudio() {
