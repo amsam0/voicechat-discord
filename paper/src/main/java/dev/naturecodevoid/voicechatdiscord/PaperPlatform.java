@@ -3,10 +3,17 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.Entity;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.bukkit.permissions.Permissible;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
@@ -20,27 +27,43 @@ public class PaperPlatform extends Platform {
     }
 
     @Override
-    public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
-        net.minecraft.server.level.ServerLevel world  = (net.minecraft.server.level.ServerLevel) level.getServerLevel();
-        Entity                                 entity = world.getEntity(uuid);
-        if (entity != null) {
-            return new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ()));
+    public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
+        // Depending on the Bukkit version, this will be different.
+        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
+            Entity entity = world.getEntity(uuid);
+            return CompletableFuture.completedFuture(entity != null ? new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ())) : null);
+        } else if (level.getServerLevel() instanceof CraftWorld world) {
+            return CompletableFuture.supplyAsync(() -> {
+                try {
+                    return Bukkit.getScheduler().callSyncMethod(PaperPlugin.INSTANCE, () -> {
+                        org.bukkit.entity.Entity entity = world.getEntity(uuid);
+                        if (entity != null) {
+                            Location location = entity.getLocation();
+                            return new EntityData(uuid, api.createPosition(location.x(), location.y(), location.z()));
+                        } else {
+                            return null;
+                        }
+                    }).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    return null;
+                }
+            });
         }
-        return null;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public boolean isOperator(Object sender) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).isOp();
+        return ((Permissible) sender).isOp();
     }
 
     @Override
     public boolean hasPermission(Object sender, String permission) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Permissible))
             return false;
-        return ((Player) sender).hasPermission(permission);
+        return ((Permissible) sender).hasPermission(permission);
     }
 
     @Override

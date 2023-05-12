@@ -19,26 +19,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.function.Consumer;
 
+import static dev.naturecodevoid.voicechatdiscord.Common.SUB_COMMANDS;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
+import static net.minecraft.commands.Commands.literal;
 
 
-@SuppressWarnings("rawtypes")
 @DefaultQualifier(NonNull.class)
-final class PluginBrigadierCommand extends Command implements PluginIdentifiableCommand {
-
-    private final Consumer<LiteralArgumentBuilder> builder;
-
-    PluginBrigadierCommand(final String name, final Consumer<LiteralArgumentBuilder> builder) {
-        super(name);
-        this.builder = builder;
+final class DvcBrigadierCommand extends Command implements PluginIdentifiableCommand {
+    DvcBrigadierCommand() {
+        super("dvc");
     }
 
     @SuppressWarnings("JavaReflectionInvocation")
     private static CommandSourceStack getListener(CommandSender sender) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Object dedicatedServer = getCraftServer().getMethod("getServer").invoke(Bukkit.getServer());
-        Object commands = dedicatedServer.getClass().getMethod("getCommands").invoke(dedicatedServer);
         Class<?> vanillaCommandWrapper = getVanillaCommandWrapper();
         return (CommandSourceStack) vanillaCommandWrapper.getMethod("getListener").invoke(null, sender);
     }
@@ -106,8 +100,11 @@ final class PluginBrigadierCommand extends Command implements PluginIdentifiable
         return get();
     }
 
-    public Consumer<LiteralArgumentBuilder> builder() {
-        return this.builder;
+    @SuppressWarnings("unchecked")
+    public void build(LiteralArgumentBuilder<CommandSourceStack> builder) {
+        for (SubCommands.SubCommand subCommand : SUB_COMMANDS) {
+            builder.then(subCommand.builder().apply(literal(subCommand.name())));
+        }
     }
 
 }

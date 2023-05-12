@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
@@ -24,13 +25,10 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public @Nullable EntityData getEntityData(ServerLevel level, UUID uuid) {
+    public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
         ServerWorld world  = (ServerWorld) level.getServerLevel();
         Entity      entity = world.getEntity(uuid);
-        if (entity != null) {
-            return new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ()));
-        }
-        return null;
+        return CompletableFuture.completedFuture(entity != null ? new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ())) : null);
     }
 
     @Override

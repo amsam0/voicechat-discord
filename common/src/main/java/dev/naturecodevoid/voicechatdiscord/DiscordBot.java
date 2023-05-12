@@ -7,7 +7,7 @@ import de.maxhenkel.voicechat.api.audiolistener.AudioListener;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
 import dev.naturecodevoid.voicechatdiscord.audio.AudioBridge;
-import dev.naturecodevoid.voicechatdiscord.audio.AudioHandler;
+import dev.naturecodevoid.voicechatdiscord.audio.DiscordAudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,9 +20,8 @@ import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 
-// The Discord bot handler.
-public class Bot {
-
+public class DiscordBot {
+    
     // The Discord bot token.
     private final String token;
     // The Discord guild voice channel id to play to and listen from.
@@ -46,11 +45,11 @@ public class Bot {
     // The Discord voice manager.
     private AudioManager manager;
     // Handler for transferring data between Discord and SVC.
-    private AudioHandler handler;
+    private DiscordAudioHandler handler;
     // The SVC audio listener to listen from
     private AudioListener listener;
 
-    public Bot(String token, long vcId) {
+    public DiscordBot(String token, long vcId) {
         this.token = token;
         this.vcId = vcId;
     }
@@ -99,7 +98,7 @@ public class Bot {
         Guild guild = channel.getGuild();
         manager = guild.getAudioManager();
 
-        handler = new AudioHandler(this);
+        handler = new DiscordAudioHandler(this);
 
         manager.setSendingHandler(handler);
         manager.setReceivingHandler(handler);
@@ -120,7 +119,7 @@ public class Bot {
         platform.info("Started voice chat for " + platform.getName(player));
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/stopdiscordvoicechat§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
         );
     }
 

@@ -69,7 +69,7 @@ modrinth {
     versionName = "[PAPER] " + project.version
     changelog = ''
     uploadFile = shadowJar
-    gameVersions = ["1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4"]
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
     loaders = ["paper", "purpur"]
     detectLoaders = false
     debugMode = System.getenv("MODRINTH_DEBUG") != null

@@ -53,9 +53,11 @@ public class AudioCore {
         double volume = Math.cos((MathUtil.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
         return adjustVolumeOfOpusDecodedAudio(audio, MathUtil.clamp(volume, 0.0, 1.0));
     }
-    // Adjusts the volume of an audio stream.
-    public static short[] adjustVolumeOfOpusDecodedAudio(short[] audio, double volume) {
-        byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(audio);
+    /**
+     * Converts the decoded audio to bytes, adjusts the volume and converts the audio back to shorts.
+     */
+    public static short[] adjustVolumeOfOpusDecodedAudio(short[] decoded, double volume) {
+        byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
         return api.getAudioConverter().bytesToShorts(adjustedVolume);
     }

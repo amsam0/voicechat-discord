@@ -20,6 +20,11 @@ Changelog: https://github.com/naturecodevoid/voicechat-discord/blob/master/CHANG
 First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) installed and correctly configured. Please refer to
 [the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
 
+> **Note**
+> 
+> Simple Voice Chat Discord Bridge requires the latest version of Simple Voice Chat.
+> Please ensure you have updated!
+
 Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
 version.
 

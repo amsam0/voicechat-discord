@@ -1,24 +1,28 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-// The start and stop commands for the Discord <-> SVC transfer system.
-public class Commands {
 
+// The start, stop, and reload commands for the Discord <-> SVC transfer system.
+public class SubCommands {
+    
     @SuppressWarnings("rawtypes")
-    private static void register(String name, Consumer<LiteralArgumentBuilder> builder) {
-        commands.add(new Command(name, builder));
+    private static void add(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
+        SUB_COMMANDS.add(new SubCommand(name, builder));
     }
 
     @SuppressWarnings("unchecked")
-    protected static void registerCommands() {
+    protected static void register() {
+        // Each command is a subcommand on the /dvc command; this is handled by the platform implementation
 
-        register("startdiscordvoicechat", literal -> literal.executes(context -> {
+        add("start", literal -> literal.executes(context -> {
+
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isValidPlayer(sender)) {
@@ -28,9 +32,9 @@ public class Commands {
 
             ServerPlayer player = api.fromServerPlayer(sender);
 
-            Bot bot = getBotForPlayer(player.getUuid(), true);
+            DiscordBot bot = getBotForPlayer(player.getUuid(), true);
 
-            Bot botForPlayer = getBotForPlayer(player.getUuid());
+            DiscordBot botForPlayer = getBotForPlayer(player.getUuid());
             if (botForPlayer != null) {
                 platform.sendMessage(player, "§cYou have already started a voice chat! §eRestarting your session...");
                 botForPlayer.stop();
@@ -57,9 +61,12 @@ public class Commands {
             }).start();
 
             return 1;
+
         }));
 
-        register("stopdiscordvoicechat", literal -> literal.executes(context -> {
+
+        add("stop", literal -> literal.executes(context -> {
+
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isValidPlayer(sender)) {
@@ -69,7 +76,7 @@ public class Commands {
 
             ServerPlayer player = api.fromServerPlayer(sender);
 
-            Bot bot = getBotForPlayer(player.getUuid());
+            DiscordBot bot = getBotForPlayer(player.getUuid());
             if (bot == null) {
                 platform.sendMessage(player, "§cYou must start a voice chat before you can use this command!");
                 return 1;
@@ -84,9 +91,12 @@ public class Commands {
             }).start();
 
             return 1;
+
         }));
 
-        register("reloaddiscordvoicechatconfig", literal -> literal.executes(context -> {
+
+        add("reloadconfig", literal -> literal.executes(context -> {
+
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isOperator(sender) && !platform.hasPermission(
@@ -103,11 +113,11 @@ public class Commands {
             platform.sendMessage(sender, "§eStopping bots...");
 
             new Thread(() -> {
-                for (Bot bot : bots)
+                for (DiscordBot bot : bots)
                     if (bot.player != null)
                         platform.sendMessage(
                                 bot.player,
-                                "§cThe config is being reloaded which stops all bots. Please use §r§f/startdiscordvoicechat §r§cto restart your session."
+                                "§cThe config is being reloaded which stops all bots. Please use §r§f/dvc start §r§cto restart your session."
                         );
                 stopBots();
 
@@ -122,18 +132,20 @@ public class Commands {
             }).start();
 
             return 1;
+            
         }));
 
     }
 
+    
     @SuppressWarnings("rawtypes")
-    public record Command(String name, Consumer<LiteralArgumentBuilder> builder) {
+    public record SubCommand(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
 
         public String name() {
             return name;
         }
 
-        public Consumer<LiteralArgumentBuilder> builder() {
+        public Function<LiteralArgumentBuilder, ArgumentBuilder> builder() {
             return builder;
         }
 

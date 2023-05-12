@@ -6,6 +6,7 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 
 public abstract class Platform {
@@ -15,7 +16,7 @@ public abstract class Platform {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isValidPlayer(Object sender);
 
-    public abstract @Nullable EntityData getEntityData(ServerLevel level, UUID uuid);
+    public abstract CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid);
 
     public abstract boolean isOperator(Object sender);
 
@@ -31,7 +32,7 @@ public abstract class Platform {
 
     public abstract String getConfigPath();
 
-    // Paper uses log4j, fabric uses slf4j
+    // Paper uses log4j, Fabric uses slf4j
     public abstract void info(String message);
 
     public abstract void warn(String message);

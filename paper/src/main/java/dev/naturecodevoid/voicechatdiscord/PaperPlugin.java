@@ -23,7 +23,7 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 public final class PaperPlugin extends JavaPlugin implements Listener {
 
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    private static PaperPlugin INSTANCE;
+    public static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
 
     public static PaperPlugin get() {
@@ -56,13 +56,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        for (Commands.Command command : commands) {
-            final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(
-                    command.name(),
-                    command.builder()
-            );
-            getServer().getCommandMap().register(getName(), pluginBrigadierCommand);
-        }
+        getServer().getCommandMap().register(getName(), new DvcBrigadierCommand());
         try {
             getCraftServer().getMethod("syncCommands").invoke(getServer());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
@@ -81,14 +75,14 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "UnstableApiUsage"})
     @EventHandler
     public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-        if (!(event.getCommand() instanceof PluginBrigadierCommand pluginBrigadierCommand))
+        if (!(event.getCommand() instanceof DvcBrigadierCommand pluginBrigadierCommand))
             return;
 
         final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
-        pluginBrigadierCommand.builder().accept(node);
+        pluginBrigadierCommand.build(node);
         event.setLiteral((LiteralCommandNode) node.build());
     }
 
