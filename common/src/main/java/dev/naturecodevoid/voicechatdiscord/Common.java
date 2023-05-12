@@ -5,6 +5,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +14,9 @@ import java.util.*;
 
 public class Common {
 
-    public static final String PLUGIN_ID = "voicechat-discord";
+    public static final String PLUGIN_ID                = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
+    public static final String VOICECHAT_MIN_VERSION    = "2.4.7";
     public static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
@@ -143,6 +145,36 @@ public class Common {
                 return bot;
         }
         return null;
+    }
+
+    public static int @Nullable [] splitVersion(String version) {
+        try {
+            return Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt).toArray();
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    public static boolean isSVCVersionSufficient(String version) {
+        String[] splitVersion     = version.split("-");
+        int[]    parsedVersion    = splitVersion(splitVersion[splitVersion.length - 1]);
+        int[]    parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
+        if (parsedVersion != null) {
+            for (int i = 0; i < parsedMinVersion.length; i++) {
+                int part     = parsedMinVersion[i];
+                int testPart;
+                if (parsedVersion.length > i) {
+                    testPart = parsedVersion[i];
+                } else {
+                    testPart = 0;
+                }
+                if (testPart < part) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

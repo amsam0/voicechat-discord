@@ -24,7 +24,7 @@ processResources {
 tasks {
     runServer {
         if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
-        minecraftVersion(minecraft_version)
+        minecraftVersion("1.19.2")
     }
 }
 
@@ -37,7 +37,7 @@ shadowJar {
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
-    archiveVersion.set(plugin_version)
+    archiveVersion.set(project.version)
 }
 
 tasks.assemble.dependsOn tasks.reobfJar

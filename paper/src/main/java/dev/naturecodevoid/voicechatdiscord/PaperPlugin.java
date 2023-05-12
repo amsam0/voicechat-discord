@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +43,19 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         INSTANCE = this;
         platform = new PaperPlatform();
+
+        // Check if SVC is installed and is at least at the minimum version.
+        Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
+        boolean svcSufficient = false;
+        if (svcPlugin != null) {
+            svcSufficient = Common.isSVCVersionSufficient(svcPlugin.getDescription().getVersion());
+        }
+        if (! svcSufficient) {
+            LOGGER.error(PLUGIN_ID + "requires voicechat >=" + VOICECHAT_MIN_VERSION);
+            throw new RuntimeException();
+        }
+
+        // Set up plugin.
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {

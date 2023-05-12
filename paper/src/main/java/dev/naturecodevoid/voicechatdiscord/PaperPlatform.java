@@ -5,7 +5,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,6 @@ public class PaperPlatform extends Platform {
         return sender instanceof Player;
     }
 
-    @Override
     public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
         // Depending on the Bukkit version, this will be different.
         if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
@@ -39,7 +38,7 @@ public class PaperPlatform extends Platform {
                         org.bukkit.entity.Entity entity = world.getEntity(uuid);
                         if (entity != null) {
                             Location location = entity.getLocation();
-                            return new EntityData(uuid, api.createPosition(location.x(), location.y(), location.z()));
+                            return new EntityData(uuid, api.createPosition(location.getX(), location.getY(), location.getZ()));
                         } else {
                             return null;
                         }

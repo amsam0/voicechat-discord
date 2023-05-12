@@ -56,7 +56,8 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
             distance = sound.getDistance();
         } else if (packet instanceof EntitySoundPacket sound) {
             // Don't even ask. This is BukkitMC synchronisation for ya.
-            // Though this is still run on FabricMC, it is effectively unused due to the future already eing completed when its returned.
+            // Though this is still run on FabricMC, it is effectively unused due to the future already being completed when its returned.
+            // This whole brick of code is debugging hell. If a better way is found, feel free to send a PR.
             CompletableFuture<Platform.EntityData> future = platform.getEntityData(bot.player.getServerLevel(), sound.getEntityUuid());
             pendingOutgoingAudio.add(new Pair<>(future, new Triplet<>(sound.getDistance(), sender, audio)));
             future.thenRun(() -> {
