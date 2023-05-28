@@ -31,6 +31,6 @@ repositories {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "S1jG5YV5"
-    syncBodyFrom = rootProject.file("readme.md").text
+    syncBodyFrom = rootProject.file("README.md").text
     debugMode = System.getenv("MODRINTH_DEBUG") != null
 }

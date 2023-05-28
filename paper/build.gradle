@@ -23,8 +23,7 @@ processResources {
 
 tasks {
     runServer {
-        if (System.getProperty("os.name").startsWith("Mac")) systemProperty "jna.prefix", "darwin"
-        minecraftVersion("1.19.2")
+        minecraftVersion(project.minecraft_version)
     }
 }
 
@@ -33,6 +32,7 @@ shadowJar {
     relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
     relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
     relocate "org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration"
+    relocate "org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml"
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
@@ -66,8 +66,9 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "S1jG5YV5"
     versionName = "[PAPER] " + project.version
+    changelog = ''
     uploadFile = shadowJar
-    gameVersions = ["1.19.2"]
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
     loaders = ["paper", "purpur"]
     detectLoaders = false
     debugMode = System.getenv("MODRINTH_DEBUG") != null

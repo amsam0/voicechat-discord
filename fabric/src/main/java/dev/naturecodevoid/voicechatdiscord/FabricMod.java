@@ -6,40 +6,45 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.server.command.ServerCommandSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public class FabricMod implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public void onInitializeServer() {
+        // Check if SVC is installed and is at least at the minimum version.
+        ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
+        checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null);
+
+        // Setup the mod.
+
         if (platform == null)
             platform = new FabricPlatform();
 
         enable();
 
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
-            for (Commands.Command command : commands) {
-                LiteralArgumentBuilder literal = LiteralArgumentBuilder.literal(command.name());
-                command.builder().accept(literal);
-                dispatcher.register(literal);
+            LiteralArgumentBuilder<ServerCommandSource> builder = literal("dvc");
+            for (SubCommands.SubCommand subCommand : SUB_COMMANDS) {
+                builder.then(subCommand.builder().apply(literal(subCommand.name())));
             }
+            dispatcher.register(builder);
         }));
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            afterPlayerRespawn(api.fromServerPlayer(newPlayer));
-        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> afterPlayerRespawn(api.fromServerPlayer(
+                newPlayer)));
 
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            onPlayerLeave(handler.player.getUuid());
-        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 
-        ServerLifecycleEvents.SERVER_STOPPING.register((server -> {
-            disable();
-        }));
+        ServerLifecycleEvents.SERVER_STOPPING.register((server -> disable()));
     }
 }

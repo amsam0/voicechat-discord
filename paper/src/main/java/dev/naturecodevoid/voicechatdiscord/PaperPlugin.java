@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,7 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    private static PaperPlugin INSTANCE;
+    public static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
 
     public static PaperPlugin get() {
@@ -41,6 +42,12 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         INSTANCE = this;
         platform = new PaperPlatform();
 
+        // Check if SVC is installed and is at least at the minimum version.
+        Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
+        checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
+
+        // Setup the plugin.
+
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
             voicechatPlugin = new VoicechatPlugin();
@@ -54,13 +61,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        for (Commands.Command command : commands) {
-            final PluginBrigadierCommand pluginBrigadierCommand = new PluginBrigadierCommand(
-                    command.name(),
-                    command.builder()
-            );
-            getServer().getCommandMap().register(getName(), pluginBrigadierCommand);
-        }
+        getServer().getCommandMap().register(getName(), new DvcBrigadierCommand());
         try {
             getCraftServer().getMethod("syncCommands").invoke(getServer());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
@@ -79,14 +80,15 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    @SuppressWarnings({"UnstableApiUsage", "unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "UnstableApiUsage"})
     @EventHandler
     public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-        if (!(event.getCommand() instanceof PluginBrigadierCommand pluginBrigadierCommand))
+        if (!(event.getCommand() instanceof DvcBrigadierCommand pluginBrigadierCommand))
             return;
 
+        platform.debug("registering pluginBrigadierCommand: " + event.getCommandLabel());
         final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
-        pluginBrigadierCommand.builder().accept(node);
+        pluginBrigadierCommand.build(node);
         event.setLiteral((LiteralCommandNode) node.build());
     }
 
