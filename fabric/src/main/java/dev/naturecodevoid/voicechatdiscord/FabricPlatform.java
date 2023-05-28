@@ -1,6 +1,7 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,7 +12,6 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
@@ -25,16 +25,16 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
+    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
         ServerWorld world = (ServerWorld) level.getServerLevel();
         Entity entity = world.getEntity(uuid);
-        return CompletableFuture.completedFuture(entity != null ? new EntityData(
-                uuid,
-                api.createPosition(entity.getX(),
-                                   entity.getY(),
-                                   entity.getZ()
+        return entity != null ?
+                api.createPosition(
+                        entity.getX(),
+                        entity.getY(),
+                        entity.getZ()
                 )
-        ) : null);
+                : null;
     }
 
     @Override

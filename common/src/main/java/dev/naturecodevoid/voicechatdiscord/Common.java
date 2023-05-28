@@ -11,9 +11,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-
+/**
+ * Common code between Paper and Fabric.
+ */
 public class Common {
-
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
     public static final String VOICECHAT_MIN_VERSION = "2.4.7";
@@ -75,7 +76,7 @@ public class Common {
             throw new RuntimeException(e);
         }
 
-        if (bots.size() > 0)
+        if (!bots.isEmpty())
             bots = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> bot : (List<LinkedHashMap<String, Object>>) config.getList("bots")) {
@@ -147,7 +148,7 @@ public class Common {
         return null;
     }
 
-    public static int @Nullable [] splitVersion(String version) {
+    private static int @Nullable [] splitVersion(String version) {
         try {
             return Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt).toArray();
         } catch (NumberFormatException ignored) {
@@ -155,7 +156,7 @@ public class Common {
         }
     }
 
-    public static boolean isSVCVersionSufficient(String version) {
+    private static boolean isSVCVersionSufficient(String version) {
         String[] splitVersion = version.split("-");
         int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
         int[] parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
@@ -177,4 +178,14 @@ public class Common {
         return false;
     }
 
+    /**
+     * Returns true if the SVC version is not new enough
+     */
+    public static boolean checkSVCVersion(@Nullable String version) {
+        if (version == null || !isSVCVersionSufficient(version)) {
+            platform.error("Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later");
+            return false;
+        }
+        return true;
+    }
 }

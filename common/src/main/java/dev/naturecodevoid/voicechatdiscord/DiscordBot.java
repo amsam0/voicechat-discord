@@ -19,34 +19,61 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
-
+/**
+ * Handles starting and stopping discord bots.
+ */
 public class DiscordBot {
-
-    // Helper for Discord bots to queue and poll audio streams.
+    /**
+     * Helper for Discord bots to queue and poll audio streams.
+     */
     public final AudioBridge audioBridge = new AudioBridge();
-    // The Discord bot token.
+    /**
+     * The Discord bot token.
+     */
     private final String token;
-    // The Discord guild voice channel id to play to and listen from.
+    /**
+     * The Discord guild voice channel id to play to and listen from.
+     */
     private final long vcId;
-    // The player that this Discord bot it linked to.
+    /**
+     * The player that this Discord bot it linked to.
+     */
     public ServerPlayer player;
-    // The SVC opus audio decoder.
+    /**
+     * The opus audio decoder used for decoding audio from Discord.
+     */
     public OpusDecoder discordDecoder;
-    // The SVC opus audio encoder.
+    /**
+     * The opus audio encoder used for encoding audio going to Discord.
+     */
     public OpusEncoder discordEncoder;
-    // The Discord bot.
+    /**
+     * The JDA instance for this bot.
+     */
     public JDA jda;
-    // The SVC audio channel to play to.
+    /**
+     * The SVC audio channel to play incoming audio from Discord to.
+     */
     public EntityAudioChannel audioChannel;
-    // The SVC audio player.
+    /**
+     * The SVC audio player.
+     */
     public AudioPlayer audioPlayer;
-    // Whether the Discord bot has logged in yet.
+    /**
+     * Whether the Discord bot has logged in yet.
+     */
     public boolean hasLoggedIn = false;
-    // The Discord voice manager.
+    /**
+     * The Discord voice manager
+     */
     private AudioManager manager;
-    // Handler for transferring data between Discord and SVC.
+    /**
+     * Handler for transferring data between Discord and SVC.
+     */
     private DiscordAudioHandler handler;
-    // The SVC audio listener to listen from
+    /**
+     * The SVC audio listener to listen for outgoing (to Discord) audio.
+     */
     private AudioListener listener;
 
     public DiscordBot(String token, long vcId) {
@@ -54,8 +81,9 @@ public class DiscordBot {
         this.vcId = vcId;
     }
 
-
-    // Logs into the Discord bot.
+    /**
+     * Logs into the Discord bot.
+     */
     public void login() {
         if (hasLoggedIn)
             return;
@@ -79,10 +107,14 @@ public class DiscordBot {
         }
     }
 
-    // Starts the Discord <-> SVC audio transfer system.
+    /**
+     * Starts the Discord <-> SVC audio transfer system.
+     */
     public void start() {
-        if (!hasLoggedIn)
+        if (!hasLoggedIn) {
+            platform.error("Tried to start audio transfer system but the bot has not been logged into. Please report this on GitHub Issues!");
             return;
+        }
 
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
@@ -123,7 +155,9 @@ public class DiscordBot {
         );
     }
 
-    // Creates an SVC audio player and starts it.
+    /**
+     * Creates an SVC audio player and starts it.
+     */
     public void createAudioPlayer() {
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
@@ -133,7 +167,9 @@ public class DiscordBot {
         audioPlayer.startPlaying();
     }
 
-    // Stops the Discord <-> SVC audio transfer system and clears all queued audio.
+    /**
+     * Stops the Discord <-> SVC audio transfer system and clears all queued audio. Also tries to remove almost everything from memory
+     */
     public void stop() {
         if (manager != null) {
             manager.setSendingHandler(null);
@@ -167,5 +203,4 @@ public class DiscordBot {
 
         audioBridge.clear();
     }
-
 }

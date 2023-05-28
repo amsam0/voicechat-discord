@@ -8,10 +8,10 @@ import java.util.function.Function;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-
-// The start, stop, and reload commands for the Discord <-> SVC transfer system.
+/**
+ * Subcommands for /dvc
+ */
 public class SubCommands {
-
     @SuppressWarnings("rawtypes")
     private static void add(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
         SUB_COMMANDS.add(new SubCommand(name, builder));
@@ -19,10 +19,14 @@ public class SubCommands {
 
     @SuppressWarnings("unchecked")
     protected static void register() {
+        if (!SUB_COMMANDS.isEmpty()) {
+            platform.error("Tried to register commands but they seem to be already registered! This shouldn't be a problem but we would appreciate it if you could report it on GitHub Issues.");
+            return;
+        }
+
         // Each command is a subcommand on the /dvc command; this is handled by the platform implementation
 
         add("start", literal -> literal.executes(context -> {
-
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isValidPlayer(sender)) {
@@ -61,12 +65,9 @@ public class SubCommands {
             }).start();
 
             return 1;
-
         }));
 
-
         add("stop", literal -> literal.executes(context -> {
-
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isValidPlayer(sender)) {
@@ -91,12 +92,9 @@ public class SubCommands {
             }).start();
 
             return 1;
-
         }));
 
-
         add("reloadconfig", literal -> literal.executes(context -> {
-
             Object sender = platform.commandSourceToPlayerObject(context.getSource());
 
             if (!platform.isOperator(sender) && !platform.hasPermission(
@@ -132,15 +130,11 @@ public class SubCommands {
             }).start();
 
             return 1;
-
         }));
-
     }
-
 
     @SuppressWarnings("rawtypes")
     public record SubCommand(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
-
         public String name() {
             return name;
         }
@@ -148,7 +142,5 @@ public class SubCommands {
         public Function<LiteralArgumentBuilder, ArgumentBuilder> builder() {
             return builder;
         }
-
     }
-
 }

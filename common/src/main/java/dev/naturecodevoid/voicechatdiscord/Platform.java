@@ -6,15 +6,12 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 
 public abstract class Platform {
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isValidPlayer(Object sender);
 
-    public abstract CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid);
+    public abstract @Nullable Position getEntityPosition(ServerLevel level, UUID uuid);
 
     public abstract boolean isOperator(Object sender);
 
@@ -38,8 +35,4 @@ public abstract class Platform {
     public abstract void error(String message);
 
     public abstract void error(String message, Throwable throwable);
-
-    public record EntityData(UUID uuid, Position position) {
-    }
-
 }

@@ -23,19 +23,13 @@ public class FabricMod implements DedicatedServerModInitializer {
     @SuppressWarnings({"unchecked"})
     @Override
     public void onInitializeServer() {
-
         // Check if SVC is installed and is at least at the minimum version.
         ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
-        boolean svcSufficient = false;
-        if (svcMod != null) {
-            svcSufficient = Common.isSVCVersionSufficient(svcMod.getMetadata().getVersion().toString());
-        }
-        if (!svcSufficient) {
-            LOGGER.error(PLUGIN_ID + "requires voicechat >=" + VOICECHAT_MIN_VERSION);
+        if (checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null)) {
             throw new RuntimeException();
         }
 
-        // Set up the mod.
+        // Setup the mod.
 
         if (platform == null)
             platform = new FabricPlatform();
@@ -56,7 +50,5 @@ public class FabricMod implements DedicatedServerModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 
         ServerLifecycleEvents.SERVER_STOPPING.register((server -> disable()));
-
     }
-
 }

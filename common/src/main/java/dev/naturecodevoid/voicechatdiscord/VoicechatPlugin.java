@@ -5,9 +5,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-
 public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlugin {
-
     @Override
     public String getPluginId() {
         return PLUGIN_ID;
@@ -18,5 +16,4 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
         api = (VoicechatServerApi) serverApi;
         platform.info("Successfully initialized Simple Voice Chat plugin");
     }
-
 }

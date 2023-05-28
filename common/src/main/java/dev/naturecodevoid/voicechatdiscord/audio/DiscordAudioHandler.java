@@ -5,7 +5,6 @@ import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.LocationalSoundPacket;
 import de.maxhenkel.voicechat.api.packets.SoundPacket;
 import dev.naturecodevoid.voicechatdiscord.DiscordBot;
-import dev.naturecodevoid.voicechatdiscord.Platform;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.OpusPacket;
@@ -13,35 +12,29 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
-
-// Handler for transferring data between Discord and SVC.
+/**
+ * JDA handler for transferring data between Discord and SVC.
+ */
 public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandler {
-
-    // The Discord bot handler.
+    /**
+     * The Discord bot this handler is running for.
+     */
     private final DiscordBot bot;
-    //private boolean hasRefreshedEncoder = false;
-    //private boolean hasRefreshedDecoder = false;
-    private final List<Pair<CompletableFuture<Platform.EntityData>, Triplet<Float, UUID, short[]>>> pendingOutgoingAudio = new ArrayList<>();
-
-
-    // === OUTGOING ===
 
     public DiscordAudioHandler(DiscordBot bot) {
         this.bot = bot;
     }
 
-    // Takes in audio which was heard by the SVC listener.
-    public void handleOutgoingSoundPacket(SoundPacket packet) {
+    // === OUTGOING ===
 
+    /**
+     * Handles packets that will go to discord.
+     */
+    public void handleOutgoingSoundPacket(SoundPacket packet) {
         @Nullable Position position = null;
         float distance = 0.0f;
         UUID sender = packet.getSender();
@@ -51,65 +44,25 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
             position = sound.getPosition();
             distance = sound.getDistance();
         } else if (packet instanceof EntitySoundPacket sound) {
-            // Don't even ask. This is BukkitMC synchronisation for ya.
-            // Though this is still run on FabricMC, it is effectively unused due to the future already being completed when its returned.
-            // This whole brick of code is debugging hell. If a better way is found, feel free to send a PR.
-            CompletableFuture<Platform.EntityData> future = platform.getEntityData(
-                    bot.player.getServerLevel(),
-                    sound.getEntityUuid()
-            );
-            pendingOutgoingAudio.add(new Pair<>(future, new Triplet<>(sound.getDistance(), sender, audio)));
-            future.thenRun(() -> {
-                synchronized (pendingOutgoingAudio) {
-                    if (pendingOutgoingAudio.size() > 0) {
-                        if (pendingOutgoingAudio.get(0).a == future) {
-                            Iterator<Pair<CompletableFuture<Platform.EntityData>, Triplet<Float, UUID, short[]>>> iter = pendingOutgoingAudio.listIterator();
-                            while (iter.hasNext()) {
-                                Pair<CompletableFuture<Platform.EntityData>, Triplet<Float, UUID, short[]>> data = iter.next();
-                                if (data.a.isDone()) {
-                                    try {
-                                        Platform.EntityData entity = data.a.get();
-                                        if (entity != null) {
-                                            handleOutgoingSound(data.b.c, data.b.b, data.b.a, entity.position());
-                                        }
-                                    } catch (InterruptedException | ExecutionException ignored) {
-                                    }
-                                } else if (!data.a.isCancelled()) {
-                                    break;
-                                }
-                                iter.remove();
-                            }
-                        }
-                    }
-                }
-            });
-            return;
+            position = platform.getEntityPosition(bot.player.getServerLevel(), sound.getEntityUuid());
+            distance = sound.getDistance();
+        } else {
+            platform.error("packet is not LocationalSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         }
 
         handleOutgoingSound(audio, sender, distance, position);
-
     }
 
-    public void handleOutgoingSound(short[] audio, UUID sender, double distance, @Nullable Position position) {
+    private void handleOutgoingSound(short[] audio, UUID sender, double distance, @Nullable Position position) {
         if (position != null) {
-            audio = AudioCore.adjustVolumeOfOpusDecodedAudio(audio, position, this.bot.player.getPosition(), distance);
+            audio = AudioCore.adjustVolumeBasedOnDistance(audio, position, this.bot.player.getPosition(), distance);
         }
         bot.audioBridge.addOutgoingAudio(sender, audio);
     }
 
-    // Returns whether #provide20MsAudio will return anything.
-    @Override
-    public boolean canProvide() {
-        return bot.audioBridge.hasOutgoingAudio();
-    }
-
-    // Returns whether #provide20MsAudio will return Opus-encoded audio.
-    @Override
-    public boolean isOpus() {
-        return true;
-    }
-
-    // Returns audio which will be played by the Discord bot.
+    /**
+     * Returns audio which will be played by the Discord bot.
+     */
     @Nullable
     @Override
     public ByteBuffer provide20MsAudio() {
@@ -119,7 +72,24 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
         return ByteBuffer.wrap(bot.discordEncoder.encode(bot.audioBridge.pollOutgoingAudio()));
     }
 
-    // Takes in audio which was heard by the Discord bot.
+    /**
+     * Returns if the bot can provide audio to Discord.
+     */
+    @Override
+    public boolean canProvide() {
+        return bot.audioBridge.hasOutgoingAudio();
+    }
+
+    @Override
+    public boolean isOpus() {
+        return true;
+    }
+
+    // === INCOMING ===
+
+    /**
+     * Takes in audio which was heard by the Discord bot.
+     */
     @Override
     public void handleEncodedAudio(@NotNull OpusPacket packet) {
         // invalid discord audio may cause the audio player thread to crash, so recreate it if it does
@@ -130,27 +100,17 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
         }
         short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
         bot.audioBridge.addIncomingMicrophoneAudio(audio);
-
     }
 
-    // Returns whether #provide20MsIncomingAudio will return anything.
     @Override
     public boolean canReceiveEncoded() {
         return true;
     }
 
-
-    // === INCOMING ===
-
-    // Returns audio which will be played by the SVC player.
+    /**
+     * Returns audio which will be played by the SVC player.
+     */
     public short[] provide20MsIncomingAudio() {
         return bot.audioBridge.pollIncomingAudio();
     }
-
-    public record Pair<A, B>(A a, B b) {
-    }
-
-    public record Triplet<A, B, C>(A a, B b, C c) {
-    }
-
 }

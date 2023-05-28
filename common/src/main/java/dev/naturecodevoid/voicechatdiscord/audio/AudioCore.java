@@ -8,29 +8,33 @@ import java.util.List;
 import java.util.OptionalInt;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
+import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
-
-// Utilities and algorithms for operating on audio streams.
+/**
+ * Utilities and algorithms for operating on audio streams.
+ */
 public class AudioCore {
+    /**
+     * The number of shorts needed for a 20ms packet.
+     */
+    public static final short SHORTS_IN_20MS = 960;
 
-    // Number of shorts that are needed in an array to represent 20ms.
-    public static final short COUNT20MS = 960;
-
-    private AudioCore() {
-        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " should not be instantiated.");
-    }
-
-    // Combines multiple audio streams into one stream.
+    /**
+     * Combines multiple audio streams into one stream.
+     */
     public static short[] combineAudioParts(List<List<Short>> audioParts) {
         // Based on https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529
         // Slightly modified to take lists instead of arrays, and returns the proper array length instead of 1920.
         OptionalInt audioLengthOpt = audioParts.stream().mapToInt(List::size).max();
         if (audioLengthOpt.isPresent()) {
             int audioLength = audioLengthOpt.getAsInt();
-            short[] mix = new short[audioLength];
-            int sample;
+            short[] mix = new short[SHORTS_IN_20MS]; // this will fill the whole array with zeros
             for (int i = 0; i < audioLength; i++) {
-                sample = 0;
+                if (i > (SHORTS_IN_20MS - 1)) {
+                    platform.error("Audio parts are bigger than 20ms! Some audio may be lost. Please report to GitHub Issues!");
+                    break;
+                }
+                int sample = 0;
                 for (Iterator<List<Short>> iterator = audioParts.iterator(); iterator.hasNext(); ) {
                     List<Short> audio = iterator.next();
                     if (i < audio.size())
@@ -47,19 +51,23 @@ public class AudioCore {
             }
             return mix;
         }
-        return new short[0];
+        // Should never be triggered since we don't actually call this function if there is no outgoing aduio
+        return new short[SHORTS_IN_20MS];
     }
 
-    // Adjusts the volume of an audio stream based on distance.
-    public static short[] adjustVolumeOfOpusDecodedAudio(short[] audio, Position sourcePosition, Position targetPosition, double maxDistance) {
+    /**
+     * Adjusts the volume of an audio stream based on distance.
+     */
+    public static short[] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance) {
+        // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
         double volume = Math.cos((MathUtil.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
-        return adjustVolumeOfOpusDecodedAudio(audio, MathUtil.clamp(volume, 0.0, 1.0));
+        return adjustVolume(decoded, MathUtil.clamp(volume, 0.0, 1.0));
     }
 
     /**
      * Converts the decoded audio to bytes, adjusts the volume and converts the audio back to shorts.
      */
-    public static short[] adjustVolumeOfOpusDecodedAudio(short[] decoded, double volume) {
+    private static short[] adjustVolume(short[] decoded, double volume) {
         byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
         return api.getAudioConverter().bytesToShorts(adjustedVolume);
@@ -87,5 +95,4 @@ public class AudioCore {
         }
         return array;
     }
-
 }

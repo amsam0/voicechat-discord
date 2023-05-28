@@ -1,18 +1,15 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.world.entity.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
@@ -25,38 +22,29 @@ public class PaperPlatform extends Platform {
         return sender instanceof Player;
     }
 
-    public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
-        // Depending on the Bukkit version, this will be different.
-        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
+    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
+        if (level.getServerLevel() instanceof World world) {
             Entity entity = world.getEntity(uuid);
-            return CompletableFuture.completedFuture(entity != null ? new EntityData(
-                    uuid,
-                    api.createPosition(entity.getX(),
-                                       entity.getY(),
-                                       entity.getZ()
+            return entity != null ?
+                    api.createPosition(
+                            entity.getLocation().getX(),
+                            entity.getLocation().getY(),
+                            entity.getLocation().getZ()
                     )
-            ) : null);
-        } else if (level.getServerLevel() instanceof CraftWorld world) {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    return Bukkit.getScheduler().callSyncMethod(PaperPlugin.INSTANCE, () -> {
-                        org.bukkit.entity.Entity entity = world.getEntity(uuid);
-                        if (entity != null) {
-                            Location location = entity.getLocation();
-                            return new EntityData(
-                                    uuid,
-                                    api.createPosition(location.getX(), location.getY(), location.getZ())
-                            );
-                        } else {
-                            return null;
-                        }
-                    }).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    return null;
-                }
-            });
+                    : null;
         }
-        return CompletableFuture.completedFuture(null);
+        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
+            net.minecraft.world.entity.Entity entity = world.getEntity(uuid);
+            return entity != null ?
+                    api.createPosition(
+                            entity.getX(),
+                            entity.getY(),
+                            entity.getZ()
+                    )
+                    : null;
+        }
+        error("level is not World or ServerLevel, it is " + level.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
+        return null;
     }
 
     @Override
