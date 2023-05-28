@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-
 public class FabricMod implements DedicatedServerModInitializer {
-
     public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
     @SuppressWarnings({"unchecked"})
@@ -25,9 +23,7 @@ public class FabricMod implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         // Check if SVC is installed and is at least at the minimum version.
         ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
-        if (checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null)) {
-            throw new RuntimeException();
-        }
+        checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null);
 
         // Setup the mod.
 

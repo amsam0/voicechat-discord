@@ -40,6 +40,7 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
         UUID sender = packet.getSender();
         short[] audio = bot.audioBridge.getOutgoingDecoder(sender).decode(packet.getOpusEncodedData());
 
+        platform.debugExtremelyVerbose("outgoing packet is a " + packet.getClass().getSimpleName());
         if (packet instanceof LocationalSoundPacket sound) {
             position = sound.getPosition();
             distance = sound.getDistance();

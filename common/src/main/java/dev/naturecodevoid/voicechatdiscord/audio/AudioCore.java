@@ -1,7 +1,7 @@
 package dev.naturecodevoid.voicechatdiscord.audio;
 
 import de.maxhenkel.voicechat.api.Position;
-import dev.naturecodevoid.voicechatdiscord.MathUtil;
+import dev.naturecodevoid.voicechatdiscord.Util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -51,7 +51,8 @@ public class AudioCore {
             }
             return mix;
         }
-        // Should never be triggered since we don't actually call this function if there is no outgoing aduio
+        // Should never be triggered since we don't actually call this function if there is no outgoing audio
+        platform.debug("no outgoing audio? got " + audioParts.size() + " audio parts");
         return new short[SHORTS_IN_20MS];
     }
 
@@ -60,8 +61,9 @@ public class AudioCore {
      */
     public static short[] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance) {
         // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
-        double volume = Math.cos((MathUtil.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
-        return adjustVolume(decoded, MathUtil.clamp(volume, 0.0, 1.0));
+        double volume = Math.cos((Util.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
+        platform.debugExtremelyVerbose("adjusting volume to be " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + ")");
+        return adjustVolume(decoded, Util.clamp(volume, 0.0, 1.0));
     }
 
     /**

@@ -94,6 +94,7 @@ public class DiscordBot {
                     .enableCache(CacheFlag.VOICE_STATE)
                     .build().awaitReady();
             hasLoggedIn = true;
+            platform.debug("logged into the bot with vc_id " + vcId);
         } catch (Exception e) {
             platform.error("Failed to login to the bot using vc_id " + vcId, e);
             if (player != null) {
@@ -115,6 +116,7 @@ public class DiscordBot {
             platform.error("Tried to start audio transfer system but the bot has not been logged into. Please report this on GitHub Issues!");
             return;
         }
+        platform.debug("starting bot with vc_id " + vcId);
 
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
@@ -148,10 +150,11 @@ public class DiscordBot {
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         createAudioPlayer();
 
-        platform.info("Started voice chat for " + platform.getName(player));
+        String channelName = channel.getName();
+        platform.info("Started voice chat for " + platform.getName(player) + " in channel " + channelName);
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channelName
         );
     }
 
@@ -159,6 +162,7 @@ public class DiscordBot {
      * Creates an SVC audio player and starts it.
      */
     public void createAudioPlayer() {
+        platform.debug("created an audio player for bot with vc_id " + vcId);
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
                 api.createEncoder(),
@@ -171,6 +175,8 @@ public class DiscordBot {
      * Stops the Discord <-> SVC audio transfer system and clears all queued audio. Also tries to remove almost everything from memory
      */
     public void stop() {
+        platform.debug("stopping bot with vc_id " + vcId);
+
         if (manager != null) {
             manager.setSendingHandler(null);
             manager.setReceivingHandler(null);

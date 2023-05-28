@@ -17,7 +17,7 @@ import java.util.*;
 public class Common {
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
-    public static final String VOICECHAT_MIN_VERSION = "2.4.7";
+    public static final String VOICECHAT_MIN_VERSION = "2.4.8";
     public static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
@@ -35,6 +35,13 @@ public class Common {
             "",
             "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID.",
             "",
+            "If you are reporting an issue or trying to figure out what's causing an issue, you may find the `debug_level` option helpful.",
+            "It will enable debug logging according to the level:",
+            "- 0 (or lower): No debug logging",
+            "- 1: Some debug logging (mainly logging that won't spam the console but can be helpful)",
+            "- 2: Most debug logging (will spam the console but excludes logging that is extremely verbose and usually not helpful)",
+            "- 3 (or higher): All debug logging (will spam the console)",
+            "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
     public static final ArrayList<SubCommands.SubCommand> SUB_COMMANDS = new ArrayList<>();
@@ -42,6 +49,7 @@ public class Common {
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
+    public static int debugLevel = 0;
 
     public static void enable() {
         loadConfig();
@@ -58,7 +66,8 @@ public class Common {
         config = new YamlConfiguration();
         try {
             config.load(configFile);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            platform.debug("IOException when loading config: " + e);
         } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -67,6 +76,8 @@ public class Common {
         defaultBot.put("token", "DISCORD_BOT_TOKEN_HERE");
         defaultBot.put("vc_id", "VOICE_CHANNEL_ID_HERE");
         config.addDefault("bots", List.of(defaultBot));
+
+        config.addDefault("debug_level", 0);
 
         config.getOptions().setCopyDefaults(true);
         config.getOptions().setHeader(configHeader);
@@ -89,6 +100,13 @@ public class Common {
         }
 
         platform.info("Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+
+        try {
+            debugLevel = (int) config.get("debug_level");
+            if (debugLevel > 0) platform.info("Debug mode has been set to level " + debugLevel);
+        } catch (ClassCastException e) {
+            platform.error("Please make sure the debug option is a valid integer");
+        }
     }
 
     public static void disable() {
@@ -121,8 +139,10 @@ public class Common {
 
     public static void afterPlayerRespawn(ServerPlayer newPlayer) {
         DiscordBot bot = getBotForPlayer(newPlayer.getUuid());
-        if (bot != null)
+        if (bot != null) {
+            platform.debug("updating bot for player with UUID " + newPlayer.getUuid());
             bot.audioChannel.updateEntity(newPlayer);
+        }
     }
 
     public static DiscordBot getBotForPlayer(UUID playerUuid) {
@@ -150,7 +170,12 @@ public class Common {
 
     private static int @Nullable [] splitVersion(String version) {
         try {
-            return Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt).toArray();
+            return Arrays.stream(version.split("\\."))
+                    // if there is a -pre we need to remove it
+                    .limit(3)
+                    .map(str -> str.split("-")[0])
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
         } catch (NumberFormatException ignored) {
             return null;
         }
@@ -159,7 +184,9 @@ public class Common {
     private static boolean isSVCVersionSufficient(String version) {
         String[] splitVersion = version.split("-");
         int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
+        platform.debug("parsed version: " + Arrays.toString(parsedVersion));
         int[] parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
+        platform.debug("parsed min version: " + Arrays.toString(parsedMinVersion));
         if (parsedVersion != null) {
             for (int i = 0; i < parsedMinVersion.length; i++) {
                 int part = parsedMinVersion[i];
@@ -181,11 +208,11 @@ public class Common {
     /**
      * Returns true if the SVC version is not new enough
      */
-    public static boolean checkSVCVersion(@Nullable String version) {
+    public static void checkSVCVersion(@Nullable String version) {
         if (version == null || !isSVCVersionSufficient(version)) {
-            platform.error("Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later");
-            return false;
+            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
+            platform.error(message);
+            throw new RuntimeException(message);
         }
-        return true;
     }
 }

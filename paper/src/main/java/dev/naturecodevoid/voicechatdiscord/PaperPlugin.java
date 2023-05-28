@@ -20,9 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
-
 public final class PaperPlugin extends JavaPlugin implements Listener {
-
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     public static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
@@ -46,9 +44,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
         // Check if SVC is installed and is at least at the minimum version.
         Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
-        if (checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null)) {
-            throw new RuntimeException();
-        }
+        checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
 
         // Setup the plugin.
 
@@ -90,6 +86,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         if (!(event.getCommand() instanceof DvcBrigadierCommand pluginBrigadierCommand))
             return;
 
+        platform.debug("registering pluginBrigadierCommand: " + event.getCommandLabel());
         final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
         pluginBrigadierCommand.build(node);
         event.setLiteral((LiteralCommandNode) node.build());
@@ -104,5 +101,4 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public void playerRespawn(PlayerPostRespawnEvent e) {
         afterPlayerRespawn(api.fromServerPlayer(e.getPlayer()));
     }
-
 }
