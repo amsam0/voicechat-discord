@@ -211,6 +211,9 @@ public class Common {
     public static void checkSVCVersion(@Nullable String version) {
         if (version == null || !isSVCVersionSufficient(version)) {
             String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
+            if (version != null) {
+                message += " You have version " + version + ".";
+            }
             platform.error(message);
             throw new RuntimeException(message);
         }
