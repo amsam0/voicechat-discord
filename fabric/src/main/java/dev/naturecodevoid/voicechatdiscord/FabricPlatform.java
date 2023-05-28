@@ -26,9 +26,15 @@ public class FabricPlatform extends Platform {
 
     @Override
     public CompletableFuture<@Nullable EntityData> getEntityData(ServerLevel level, UUID uuid) {
-        ServerWorld world  = (ServerWorld) level.getServerLevel();
-        Entity      entity = world.getEntity(uuid);
-        return CompletableFuture.completedFuture(entity != null ? new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ())) : null);
+        ServerWorld world = (ServerWorld) level.getServerLevel();
+        Entity entity = world.getEntity(uuid);
+        return CompletableFuture.completedFuture(entity != null ? new EntityData(
+                uuid,
+                api.createPosition(entity.getX(),
+                                   entity.getY(),
+                                   entity.getZ()
+                )
+        ) : null);
     }
 
     @Override

@@ -21,7 +21,9 @@ import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 
 public class DiscordBot {
-    
+
+    // Helper for Discord bots to queue and poll audio streams.
+    public final AudioBridge audioBridge = new AudioBridge();
     // The Discord bot token.
     private final String token;
     // The Discord guild voice channel id to play to and listen from.
@@ -32,8 +34,6 @@ public class DiscordBot {
     public OpusDecoder discordDecoder;
     // The SVC opus audio encoder.
     public OpusEncoder discordEncoder;
-    // Helper for Discord bots to queue and poll audio streams.
-    public final AudioBridge audioBridge = new AudioBridge();
     // The Discord bot.
     public JDA jda;
     // The SVC audio channel to play to.

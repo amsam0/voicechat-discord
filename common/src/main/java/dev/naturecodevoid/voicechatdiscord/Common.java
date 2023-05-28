@@ -14,9 +14,9 @@ import java.util.*;
 
 public class Common {
 
-    public static final String PLUGIN_ID                = "voicechat-discord";
+    public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
-    public static final String VOICECHAT_MIN_VERSION    = "2.4.7";
+    public static final String VOICECHAT_MIN_VERSION = "2.4.7";
     public static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
@@ -156,12 +156,12 @@ public class Common {
     }
 
     public static boolean isSVCVersionSufficient(String version) {
-        String[] splitVersion     = version.split("-");
-        int[]    parsedVersion    = splitVersion(splitVersion[splitVersion.length - 1]);
-        int[]    parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
+        String[] splitVersion = version.split("-");
+        int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
+        int[] parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
         if (parsedVersion != null) {
             for (int i = 0; i < parsedMinVersion.length; i++) {
-                int part     = parsedMinVersion[i];
+                int part = parsedMinVersion[i];
                 int testPart;
                 if (parsedVersion.length > i) {
                     testPart = parsedVersion[i];

@@ -7,13 +7,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import org.bukkit.permissions.Permissible;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
@@ -30,7 +29,13 @@ public class PaperPlatform extends Platform {
         // Depending on the Bukkit version, this will be different.
         if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
             Entity entity = world.getEntity(uuid);
-            return CompletableFuture.completedFuture(entity != null ? new EntityData(uuid, api.createPosition(entity.getX(), entity.getY(), entity.getZ())) : null);
+            return CompletableFuture.completedFuture(entity != null ? new EntityData(
+                    uuid,
+                    api.createPosition(entity.getX(),
+                                       entity.getY(),
+                                       entity.getZ()
+                    )
+            ) : null);
         } else if (level.getServerLevel() instanceof CraftWorld world) {
             return CompletableFuture.supplyAsync(() -> {
                 try {
@@ -38,7 +43,10 @@ public class PaperPlatform extends Platform {
                         org.bukkit.entity.Entity entity = world.getEntity(uuid);
                         if (entity != null) {
                             Location location = entity.getLocation();
-                            return new EntityData(uuid, api.createPosition(location.getX(), location.getY(), location.getZ()));
+                            return new EntityData(
+                                    uuid,
+                                    api.createPosition(location.getX(), location.getY(), location.getZ())
+                            );
                         } else {
                             return null;
                         }

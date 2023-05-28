@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
 
 
 // Utilities and algorithms for operating on audio streams.
@@ -16,7 +16,9 @@ public class AudioCore {
     // Number of shorts that are needed in an array to represent 20ms.
     public static final short COUNT20MS = 960;
 
-    private AudioCore() {throw new UnsupportedOperationException(this.getClass().getSimpleName() + " should not be instantiated.");}
+    private AudioCore() {
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " should not be instantiated.");
+    }
 
     // Combines multiple audio streams into one stream.
     public static short[] combineAudioParts(List<List<Short>> audioParts) {
@@ -53,6 +55,7 @@ public class AudioCore {
         double volume = Math.cos((MathUtil.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
         return adjustVolumeOfOpusDecodedAudio(audio, MathUtil.clamp(volume, 0.0, 1.0));
     }
+
     /**
      * Converts the decoded audio to bytes, adjusts the volume and converts the audio back to shorts.
      */
@@ -61,6 +64,7 @@ public class AudioCore {
         byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
         return api.getAudioConverter().bytesToShorts(adjustedVolume);
     }
+
     private static byte[] adjustVolume(byte[] audioSamples, float volume) {
         // this is probably a lot more complicated than it needs to be so feel free to make a PR fixing it
         // https://stackoverflow.com/a/26037576

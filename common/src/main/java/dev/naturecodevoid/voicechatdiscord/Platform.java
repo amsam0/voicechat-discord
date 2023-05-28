@@ -11,8 +11,6 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class Platform {
 
-    public record EntityData(UUID uuid, Position position) {}
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isValidPlayer(Object sender);
 
@@ -40,5 +38,8 @@ public abstract class Platform {
     public abstract void error(String message);
 
     public abstract void error(String message, Throwable throwable);
+
+    public record EntityData(UUID uuid, Position position) {
+    }
 
 }

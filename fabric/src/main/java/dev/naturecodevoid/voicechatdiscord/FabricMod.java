@@ -6,8 +6,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.DependencyException;
-import net.fabricmc.loader.api.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.command.ServerCommandSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class FabricMod implements DedicatedServerModInitializer {
         if (svcMod != null) {
             svcSufficient = Common.isSVCVersionSufficient(svcMod.getMetadata().getVersion().toString());
         }
-        if (! svcSufficient) {
+        if (!svcSufficient) {
             LOGGER.error(PLUGIN_ID + "requires voicechat >=" + VOICECHAT_MIN_VERSION);
             throw new RuntimeException();
         }
@@ -50,7 +50,8 @@ public class FabricMod implements DedicatedServerModInitializer {
             dispatcher.register(builder);
         }));
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> afterPlayerRespawn(api.fromServerPlayer(newPlayer)));
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> afterPlayerRespawn(api.fromServerPlayer(
+                newPlayer)));
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 

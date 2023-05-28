@@ -11,7 +11,7 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 // The start, stop, and reload commands for the Discord <-> SVC transfer system.
 public class SubCommands {
-    
+
     @SuppressWarnings("rawtypes")
     private static void add(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
         SUB_COMMANDS.add(new SubCommand(name, builder));
@@ -132,12 +132,12 @@ public class SubCommands {
             }).start();
 
             return 1;
-            
+
         }));
 
     }
 
-    
+
     @SuppressWarnings("rawtypes")
     public record SubCommand(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
 

@@ -50,7 +50,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         if (svcPlugin != null) {
             svcSufficient = Common.isSVCVersionSufficient(svcPlugin.getDescription().getVersion());
         }
-        if (! svcSufficient) {
+        if (!svcSufficient) {
             LOGGER.error(PLUGIN_ID + "requires voicechat >=" + VOICECHAT_MIN_VERSION);
             throw new RuntimeException();
         }
