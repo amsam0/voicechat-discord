@@ -23,7 +23,7 @@ processResources {
 
 tasks {
     runServer {
-        minecraftVersion(minecraft_version)
+        minecraftVersion(project.minecraft_version)
     }
 }
 

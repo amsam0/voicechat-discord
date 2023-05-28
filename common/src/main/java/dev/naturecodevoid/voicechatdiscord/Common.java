@@ -2,18 +2,22 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Common code between Paper and Fabric.
+ */
 public class Common {
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
+    public static final String VOICECHAT_MIN_VERSION = "2.4.8";
     public static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
@@ -31,6 +35,13 @@ public class Common {
             "",
             "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID.",
             "",
+            "If you are reporting an issue or trying to figure out what's causing an issue, you may find the `debug_level` option helpful.",
+            "It will enable debug logging according to the level:",
+            "- 0 (or lower): No debug logging",
+            "- 1: Some debug logging (mainly logging that won't spam the console but can be helpful)",
+            "- 2: Most debug logging (will spam the console but excludes logging that is extremely verbose and usually not helpful)",
+            "- 3 (or higher): All debug logging (will spam the console)",
+            "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
     public static final ArrayList<SubCommands.SubCommand> SUB_COMMANDS = new ArrayList<>();
@@ -38,7 +49,7 @@ public class Common {
     public static VoicechatServerApi api;
     public static Platform platform;
     public static YamlConfiguration config;
-    public static HashMap<UUID, OpusDecoder> playerDecoders = new HashMap<>();
+    public static int debugLevel = 0;
 
     public static void enable() {
         loadConfig();
@@ -55,7 +66,8 @@ public class Common {
         config = new YamlConfiguration();
         try {
             config.load(configFile);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            platform.debug("IOException when loading config: " + e);
         } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -65,6 +77,8 @@ public class Common {
         defaultBot.put("vc_id", "VOICE_CHANNEL_ID_HERE");
         config.addDefault("bots", List.of(defaultBot));
 
+        config.addDefault("debug_level", 0);
+
         config.getOptions().setCopyDefaults(true);
         config.getOptions().setHeader(configHeader);
         try {
@@ -73,7 +87,7 @@ public class Common {
             throw new RuntimeException(e);
         }
 
-        if (bots.size() > 0)
+        if (!bots.isEmpty())
             bots = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> bot : (List<LinkedHashMap<String, Object>>) config.getList("bots")) {
@@ -86,17 +100,19 @@ public class Common {
         }
 
         platform.info("Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+
+        try {
+            debugLevel = (int) config.get("debug_level");
+            if (debugLevel > 0) platform.info("Debug mode has been set to level " + debugLevel);
+        } catch (ClassCastException e) {
+            platform.error("Please make sure the debug option is a valid integer");
+        }
     }
 
     public static void disable() {
         platform.info("Shutting down " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
 
         stopBots();
-
-        for (OpusDecoder decoder : playerDecoders.values())
-            decoder.close();
-
-        playerDecoders = null;
 
         platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
     }
@@ -123,8 +139,10 @@ public class Common {
 
     public static void afterPlayerRespawn(ServerPlayer newPlayer) {
         DiscordBot bot = getBotForPlayer(newPlayer.getUuid());
-        if (bot != null)
+        if (bot != null) {
+            platform.debug("updating bot for player with UUID " + newPlayer.getUuid());
             bot.audioChannel.updateEntity(newPlayer);
+        }
     }
 
     public static DiscordBot getBotForPlayer(UUID playerUuid) {
@@ -150,12 +168,54 @@ public class Common {
         return null;
     }
 
-    public static OpusDecoder getPlayerDecoder(UUID playerUuid) {
-        OpusDecoder decoder = playerDecoders.get(playerUuid);
-        if (decoder == null) {
-            decoder = api.createDecoder();
-            playerDecoders.put(playerUuid, decoder);
+    private static int @Nullable [] splitVersion(String version) {
+        try {
+            return Arrays.stream(version.split("\\."))
+                    // if there is a -pre we need to remove it
+                    .limit(3)
+                    .map(str -> str.split("-")[0])
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+        } catch (NumberFormatException ignored) {
+            return null;
         }
-        return decoder;
+    }
+
+    private static boolean isSVCVersionSufficient(String version) {
+        String[] splitVersion = version.split("-");
+        int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
+        platform.debug("parsed version: " + Arrays.toString(parsedVersion));
+        int[] parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
+        platform.debug("parsed min version: " + Arrays.toString(parsedMinVersion));
+        if (parsedVersion != null) {
+            for (int i = 0; i < parsedMinVersion.length; i++) {
+                int part = parsedMinVersion[i];
+                int testPart;
+                if (parsedVersion.length > i) {
+                    testPart = parsedVersion[i];
+                } else {
+                    testPart = 0;
+                }
+                if (testPart < part) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the SVC version is not new enough
+     */
+    public static void checkSVCVersion(@Nullable String version) {
+        if (version == null || !isSVCVersionSufficient(version)) {
+            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
+            if (version != null) {
+                message += " You have version " + version + ".";
+            }
+            platform.error(message);
+            throw new RuntimeException(message);
+        }
     }
 }

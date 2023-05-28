@@ -1,10 +1,12 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import de.maxhenkel.voicechat.api.Player;
+import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
 import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
+import de.maxhenkel.voicechat.api.audiolistener.AudioListener;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
+import dev.naturecodevoid.voicechatdiscord.audio.AudioBridge;
 import dev.naturecodevoid.voicechatdiscord.audio.DiscordAudioHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -14,34 +16,74 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import static dev.naturecodevoid.voicechatdiscord.Common.api;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
+/**
+ * Handles starting and stopping discord bots.
+ */
 public class DiscordBot {
+    /**
+     * Helper for Discord bots to queue and poll audio streams.
+     */
+    public final AudioBridge audioBridge = new AudioBridge();
+    /**
+     * The Discord bot token.
+     */
     private final String token;
+    /**
+     * The Discord guild voice channel id to play to and listen from.
+     */
     private final long vcId;
-    public Player player;
+    /**
+     * The player that this Discord bot it linked to.
+     */
+    public ServerPlayer player;
+    /**
+     * The opus audio decoder used for decoding audio from Discord.
+     */
     public OpusDecoder discordDecoder;
+    /**
+     * The opus audio encoder used for encoding audio going to Discord.
+     */
     public OpusEncoder discordEncoder;
-    public HashMap<UUID, Queue<short[]>> outgoingAudio = new HashMap<>();
-    public Queue<short[]> incomingAudio = new ConcurrentLinkedQueue<>();
+    /**
+     * The JDA instance for this bot.
+     */
     public JDA jda;
+    /**
+     * The SVC audio channel to play incoming audio from Discord to.
+     */
     public EntityAudioChannel audioChannel;
+    /**
+     * The SVC audio player.
+     */
     public AudioPlayer audioPlayer;
+    /**
+     * Whether the Discord bot has logged in yet.
+     */
     public boolean hasLoggedIn = false;
+    /**
+     * The Discord voice manager
+     */
     private AudioManager manager;
+    /**
+     * Handler for transferring data between Discord and SVC.
+     */
     private DiscordAudioHandler handler;
+    /**
+     * The SVC audio listener to listen for outgoing (to Discord) audio.
+     */
+    private AudioListener listener;
 
     public DiscordBot(String token, long vcId) {
         this.token = token;
         this.vcId = vcId;
     }
 
+    /**
+     * Logs into the Discord bot.
+     */
     public void login() {
         if (hasLoggedIn)
             return;
@@ -52,6 +94,7 @@ public class DiscordBot {
                     .enableCache(CacheFlag.VOICE_STATE)
                     .build().awaitReady();
             hasLoggedIn = true;
+            platform.debug("logged into the bot with vc_id " + vcId);
         } catch (Exception e) {
             platform.error("Failed to login to the bot using vc_id " + vcId, e);
             if (player != null) {
@@ -65,9 +108,15 @@ public class DiscordBot {
         }
     }
 
+    /**
+     * Starts the Discord <-> SVC audio transfer system.
+     */
     public void start() {
-        if (!hasLoggedIn)
+        if (!hasLoggedIn) {
+            platform.error("Tried to start audio transfer system but the bot has not been logged into. Please report this on GitHub Issues!");
             return;
+        }
+        platform.debug("starting bot with vc_id " + vcId);
 
         VoiceChannel channel = jda.getChannelById(VoiceChannel.class, vcId);
         if (channel == null) {
@@ -89,20 +138,31 @@ public class DiscordBot {
         manager.setReceivingHandler(handler);
         manager.openAudioConnection(channel);
 
+        listener = api.playerAudioListenerBuilder()
+                .setPacketListener(handler::handleOutgoingSoundPacket)
+                .setPlayer(player.getUuid())
+                .build();
+        api.registerAudioListener(listener);
+
         discordEncoder = api.createEncoder();
         discordDecoder = api.createDecoder();
 
         audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
         createAudioPlayer();
 
-        platform.info("Started voice chat for " + platform.getName(player));
+        String channelName = channel.getName();
+        platform.info("Started voice chat for " + platform.getName(player) + " in channel " + channelName);
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channel.getName()
+                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channelName
         );
     }
 
+    /**
+     * Creates an SVC audio player and starts it.
+     */
     public void createAudioPlayer() {
+        platform.debug("created an audio player for bot with vc_id " + vcId);
         audioPlayer = api.createAudioPlayer(
                 audioChannel,
                 api.createEncoder(),
@@ -111,7 +171,12 @@ public class DiscordBot {
         audioPlayer.startPlaying();
     }
 
+    /**
+     * Stops the Discord <-> SVC audio transfer system and clears all queued audio. Also tries to remove almost everything from memory
+     */
     public void stop() {
+        platform.debug("stopping bot with vc_id " + vcId);
+
         if (manager != null) {
             manager.setSendingHandler(null);
             manager.setReceivingHandler(null);
@@ -128,17 +193,20 @@ public class DiscordBot {
         audioChannel = null;
         handler = null;
 
+        if (listener != null) {
+            api.unregisterAudioListener(listener);
+            listener = null;
+        }
+
         if (discordDecoder != null) {
             discordDecoder.close();
             discordDecoder = null;
         }
-
         if (discordEncoder != null) {
             discordEncoder.close();
             discordEncoder = null;
         }
 
-        outgoingAudio = new HashMap<>();
-        incomingAudio = new ConcurrentLinkedQueue<>();
+        audioBridge.clear();
     }
 }

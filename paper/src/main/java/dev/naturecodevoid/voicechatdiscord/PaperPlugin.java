@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,7 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
-    private static PaperPlugin INSTANCE;
+    public static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
 
     public static PaperPlugin get() {
@@ -40,6 +41,12 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         INSTANCE = this;
         platform = new PaperPlatform();
+
+        // Check if SVC is installed and is at least at the minimum version.
+        Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
+        checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
+
+        // Setup the plugin.
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
@@ -79,6 +86,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         if (!(event.getCommand() instanceof DvcBrigadierCommand pluginBrigadierCommand))
             return;
 
+        platform.debug("registering pluginBrigadierCommand: " + event.getCommandLabel());
         final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
         pluginBrigadierCommand.build(node);
         event.setLiteral((LiteralCommandNode) node.build());
