@@ -93,25 +93,13 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
      */
     @Override
     public void handleEncodedAudio(@NotNull OpusPacket packet) {
-        // invalid discord audio may cause the audio player thread to crash, so recreate it if it does
-        // or at least, we think that's what happens... ¯\_(ツ)_/¯
-        if (bot.audioPlayer.isStopped()) {
-            platform.info("An audio player seems to have crashed, recreating it");
-            bot.createAudioPlayer();
-        }
-        short[] audio = bot.discordDecoder.decode(packet.getOpusAudio());
-        bot.audioBridge.addIncomingMicrophoneAudio(audio);
+        platform.debugExtremelyVerbose("sending audio to SVC from player with UUID " + bot.player.getUuid());
+        bot.sender.send(packet.getOpusAudio());
+        bot.lastTimeAudioSent = System.currentTimeMillis();
     }
 
     @Override
     public boolean canReceiveEncoded() {
         return true;
-    }
-
-    /**
-     * Returns audio which will be played by the SVC player.
-     */
-    public short[] provide20MsIncomingAudio() {
-        return bot.audioBridge.pollIncomingAudio();
     }
 }

@@ -16,18 +16,13 @@ public class AudioBridge {
      * Outgoing audio from player microphone sound sources.
      */
     private final HashMap<UUID, OutgoingAudioStream> outgoingAudio = new HashMap<>();
-    /**
-     * Incoming audio from the Discord user's microphone.
-     */
-    private final Queue<Short> incomingAudio = new ConcurrentLinkedQueue<>();
 
     /**
-     * Removes all queued outgoing and incoming audio.
+     * Removes all queued outgoing audio.
      */
     public void clear() {
         platform.debug("clearing AudioBridge");
         this.outgoingAudio.clear();
-        this.incomingAudio.clear();
     }
 
     // === OUTGOING ===
@@ -91,36 +86,6 @@ public class AudioBridge {
 
         platform.debugExtremelyVerbose("combining " + audioParts.size() + " audio parts");
         return AudioCore.combineAudioParts(audioParts);
-    }
-
-
-    // === INCOMING ===
-
-    /**
-     * Add sound that will play in series to previously
-     * added incoming audio.
-     * (That was added since the last poll)
-     */
-    public void addIncomingMicrophoneAudio(short[] audio) {
-        platform.debugExtremelyVerbose("adding " + audio.length + " shorts of incoming audio");
-        for (short data : audio) {
-            this.incomingAudio.add(data);
-        }
-    }
-
-    /**
-     * Returns 20ms of microphone audio and removes what was used.
-     */
-    public short[] pollIncomingAudio() {
-        short[] audio = new short[AudioCore.SHORTS_IN_20MS];
-        for (int i = 0; i < AudioCore.SHORTS_IN_20MS; i++) {
-            if (this.incomingAudio.isEmpty()) {
-                platform.debugVerbose("incoming audio is empty, we got " + (i + 1) + " shorts of audio from it");
-                break;
-            }
-            audio[i] = this.incomingAudio.poll();
-        }
-        return audio;
     }
 
     public record OutgoingAudioStream(OpusDecoder decoder, Queue<Short> queue) {

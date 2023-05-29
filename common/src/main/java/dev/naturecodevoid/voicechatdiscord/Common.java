@@ -1,6 +1,5 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
@@ -134,14 +133,6 @@ public class Common {
         if (bot != null) {
             platform.info("Stopping bot");
             bot.stop();
-        }
-    }
-
-    public static void afterPlayerRespawn(ServerPlayer newPlayer) {
-        DiscordBot bot = getBotForPlayer(newPlayer.getUuid());
-        if (bot != null) {
-            platform.debug("updating bot for player with UUID " + newPlayer.getUuid());
-            bot.audioChannel.updateEntity(newPlayer);
         }
     }
 

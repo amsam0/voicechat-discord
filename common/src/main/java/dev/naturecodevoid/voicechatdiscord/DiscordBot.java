@@ -1,9 +1,8 @@
 package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import de.maxhenkel.voicechat.api.audiochannel.AudioPlayer;
-import de.maxhenkel.voicechat.api.audiochannel.EntityAudioChannel;
 import de.maxhenkel.voicechat.api.audiolistener.AudioListener;
+import de.maxhenkel.voicechat.api.audiosender.AudioSender;
 import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import de.maxhenkel.voicechat.api.opus.OpusEncoder;
 import dev.naturecodevoid.voicechatdiscord.audio.AudioBridge;
@@ -52,17 +51,22 @@ public class DiscordBot {
      */
     public JDA jda;
     /**
-     * The SVC audio channel to play incoming audio from Discord to.
-     */
-    public EntityAudioChannel audioChannel;
-    /**
-     * The SVC audio player.
-     */
-    public AudioPlayer audioPlayer;
-    /**
      * Whether the Discord bot has logged in yet.
      */
     public boolean hasLoggedIn = false;
+    /**
+     * The SVC audio sender used to send audio to SVC.
+     */
+    public AudioSender sender;
+    /**
+     * The last time (unix timestamp) that audio was sent to the audio sender.
+     */
+    public long lastTimeAudioSent = 0;
+    /**
+     * A thread that checks if it has been 25 ms since the last time audio was sent to the audio sender.
+     * If so, it will reset the audio sender.
+     */
+    public Thread senderResetWatcher;
     /**
      * The Discord voice manager
      */
@@ -138,37 +142,51 @@ public class DiscordBot {
         manager.setReceivingHandler(handler);
         manager.openAudioConnection(channel);
 
+        discordEncoder = api.createEncoder();
+        discordDecoder = api.createDecoder();
+
         listener = api.playerAudioListenerBuilder()
                 .setPacketListener(handler::handleOutgoingSoundPacket)
                 .setPlayer(player.getUuid())
                 .build();
         api.registerAudioListener(listener);
 
-        discordEncoder = api.createEncoder();
-        discordDecoder = api.createDecoder();
+        sender = api.createAudioSender(api.getConnectionOf(player));
+        if (!api.registerAudioSender(sender)) {
+            platform.error("Couldn't register audio sender. The player has the mod installed.");
+            platform.sendMessage(
+                    player,
+                    "§cCouldn't register an audio sender for you. This most likely means you have the mod installed and working."
+            );
+            this.stop();
+            return;
+        }
 
-        audioChannel = api.createEntityAudioChannel(player.getUuid(), player);
-        createAudioPlayer();
+        senderResetWatcher = new Thread(() -> {
+            while (true) {
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(25);
+                } catch (InterruptedException ignored) {
+                    platform.debug("exiting sender reset watcher thread");
+                    break;
+                }
+
+                if (lastTimeAudioSent != 0 && System.currentTimeMillis() - 25 > lastTimeAudioSent) {
+                    platform.debugVerbose("resetting sender for player with UUID " + player.getUuid());
+                    sender.reset();
+                    lastTimeAudioSent = 0;
+                }
+            }
+        });
+        senderResetWatcher.start();
 
         String channelName = channel.getName();
         platform.info("Started voice chat for " + platform.getName(player) + " in channel " + channelName);
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. Please join the following voice channel in discord: §r§f" + channelName
+                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. If you are having issues, try restarting the session with §r§f/dvc start§r§a. Please join the following voice channel in discord: §r§f" + channelName
         );
-    }
-
-    /**
-     * Creates an SVC audio player and starts it.
-     */
-    public void createAudioPlayer() {
-        platform.debug("created an audio player for bot with vc_id " + vcId);
-        audioPlayer = api.createAudioPlayer(
-                audioChannel,
-                api.createEncoder(),
-                handler::provide20MsIncomingAudio
-        );
-        audioPlayer.startPlaying();
     }
 
     /**
@@ -184,18 +202,23 @@ public class DiscordBot {
             manager = null;
         }
 
-        if (audioPlayer != null && audioPlayer.isPlaying()) {
-            audioPlayer.stopPlaying();
-        }
-
         player = null;
-        audioPlayer = null;
-        audioChannel = null;
         handler = null;
 
         if (listener != null) {
             api.unregisterAudioListener(listener);
             listener = null;
+        }
+
+        if (sender != null) {
+            sender.reset();
+            api.unregisterAudioSender(sender);
+            sender = null;
+        }
+
+        if (senderResetWatcher != null) {
+            senderResetWatcher.interrupt();
+            senderResetWatcher = null;
         }
 
         if (discordDecoder != null) {

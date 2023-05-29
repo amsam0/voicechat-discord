@@ -2,7 +2,6 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
-import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
@@ -95,10 +94,5 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void playerLeave(PlayerQuitEvent e) {
         onPlayerLeave(e.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
-    public void playerRespawn(PlayerPostRespawnEvent e) {
-        afterPlayerRespawn(api.fromServerPlayer(e.getPlayer()));
     }
 }
