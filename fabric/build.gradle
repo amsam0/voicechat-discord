@@ -14,7 +14,7 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
-                "voicechat_api_version": project.version
+                "voicechat_api_version": project.voicechat_api_version
     }
 }
 
