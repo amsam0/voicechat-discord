@@ -29,10 +29,10 @@ tasks {
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
-    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
     relocate "org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration"
     relocate "org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml"
+    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
+    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
@@ -43,7 +43,6 @@ tasks.assemble.dependsOn tasks.reobfJar
 tasks.build.dependsOn tasks.shadowJar
 
 dependencies {
-//    compileOnly "io.papermc.paper:paper-api:${paper_version}"
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:${paper_version}")
 
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
@@ -68,7 +67,7 @@ modrinth {
     versionName = "[PAPER] " + project.version
     changelog = ''
     uploadFile = shadowJar
-    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1"]
     loaders = ["paper", "purpur"]
     detectLoaders = false
     debugMode = System.getenv("MODRINTH_DEBUG") != null

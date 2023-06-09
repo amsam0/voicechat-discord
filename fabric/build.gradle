@@ -14,7 +14,10 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
-                "voicechat_api_version": project.voicechat_api_version
+                "fabric_loader_version": project.fabric_loader_version,
+                "minecraft_version": project.minecraft_version,
+                "voicechat_api_version": project.voicechat_api_version,
+                "java_version": project.java_version
     }
 }
 
@@ -30,10 +33,10 @@ jar {
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
-    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
     relocate "org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration"
     relocate "org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml"
+    relocate "net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda"
+    relocate "org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus"
 
     archiveBaseName.set(project.archivesBaseName)
     archiveClassifier.set("")
@@ -51,8 +54,8 @@ remapJar {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.minecraft_version}-${voicechat_api_version}"
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
@@ -82,7 +85,7 @@ modrinth {
     versionName = "[FABRIC] " + project.version
     changelog = '<a href="https://modrinth.com/mod/fabric-api"><img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg" /></a>'
     uploadFile = remapJar
-    gameVersions = ["1.19.2", "1.19.3", "1.19.4"]
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1"]
     debugMode = System.getenv("MODRINTH_DEBUG") != null
     dependencies {
         required.project "simple-voice-chat"
