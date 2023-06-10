@@ -23,7 +23,7 @@ object Properties {
     const val javaSemverVersion = "0.9.0"
     const val gsonVersion = "2.10.1"
     // NOTE: you may need to click "Get it" on jitpack.io for it to build
-    const val jdaConcentusVersion = "50128cba83"
+    const val jdaConcentusVersion = "a43689aa94"
 
     /* Project */
     const val pluginVersion = "2.0.0-beta"
