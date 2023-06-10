@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.api;
-import static dev.naturecodevoid.voicechatdiscord.Common.debugLevel;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
 public class PaperPlatform extends Platform {
@@ -84,7 +83,7 @@ public class PaperPlatform extends Platform {
         else if (sender instanceof CommandContext context) {
             CommandSourceStack source = (CommandSourceStack) context.getSource();
             if (source.getPlayer() == null)
-                source.sendSystemMessage(Component.literal(message.replaceAll("§([a-z]|[0-9]|[A-Z])", "")));
+                source.sendSystemMessage(Component.literal(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
             else
                 source.sendSystemMessage(Component.literal(message));
         } else
@@ -105,6 +104,11 @@ public class PaperPlatform extends Platform {
     @Override
     public String getConfigPath() {
         return "plugins/voicechat-discord/config.yml";
+    }
+
+    @Override
+    public String getLoader() {
+        return "paper";
     }
 
     @Override
@@ -143,6 +147,6 @@ public class PaperPlatform extends Platform {
     }
 
     private void debug(String message, int levelToLog) {
-        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG] " + message);
+        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG " + levelToLog + "] " + message);
     }
 }

@@ -5,7 +5,8 @@
     "name": "Simple Voice Chat Discord Bridge",
     "description": "A mod to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.",
     "authors": [
-        "naturecodevoid"
+        "naturecodevoid",
+        "Totobird"
     ],
     "contact": {
         "homepage": "https://modrinth.com/mod/simple-voice-chat-discord-bridge",
@@ -25,10 +26,10 @@
     "mixins": [
     ],
     "depends": {
-        "fabricloader": ">=${fabric_loader_version}",
+        "fabricloader": ">=${fabricLoaderVersion}",
         "fabric-api": "*",
-        "minecraft": ">=${minecraft_version}",
-        "java": ">=${java_version}",
-        "voicechat": ">=${voicechat_api_version}"
+        "minecraft": ">=${minecraftVersion}",
+        "java": ">=${javaVersion}",
+        "voicechat": ">=${minecraftVersion}-${voicechatApiVersion}"
     }
 }

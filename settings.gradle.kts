@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven { url = "https://maven.fabricmc.net/" }
-        maven { url = "https://repo.papermc.io/repository/maven-public/" }
+        maven { url = uri("https://maven.fabricmc.net/") }
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     }
 }
 

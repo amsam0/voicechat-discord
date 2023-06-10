@@ -30,6 +30,11 @@ public abstract class Platform {
 
     public abstract String getConfigPath();
 
+    /**
+     * Loader used for filtering versions on Modrinth
+     */
+    public abstract String getLoader();
+
     // Paper uses log4j, Fabric uses slf4j
     public abstract void info(String message);
 

@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.api;
-import static dev.naturecodevoid.voicechatdiscord.Common.debugLevel;
+import static dev.naturecodevoid.voicechatdiscord.Common.*;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
 public class FabricPlatform extends Platform {
@@ -72,7 +71,7 @@ public class FabricPlatform extends Platform {
         else if (sender instanceof CommandContext context) {
             ServerCommandSource source = (ServerCommandSource) context.getSource();
             if (source.getPlayer() == null)
-                source.sendMessage(Text.of(message.replaceAll("§([a-z]|[0-9]|[A-Z])", "")));
+                source.sendMessage(Text.of(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
             else
                 source.sendMessage(Text.of(message));
         } else
@@ -92,6 +91,11 @@ public class FabricPlatform extends Platform {
     @Override
     public String getConfigPath() {
         return "config/voicechat-discord.yml";
+    }
+
+    @Override
+    public String getLoader() {
+        return "fabric";
     }
 
     @Override
@@ -130,6 +134,6 @@ public class FabricPlatform extends Platform {
     }
 
     private void debug(String message, int levelToLog) {
-        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG] " + message);
+        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG " + levelToLog + "] " + message);
     }
 }

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public final class PaperPlugin extends JavaPlugin implements Listener {
-    public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
+    public static final Logger LOGGER = LogManager.getLogger(Constants.PLUGIN_ID);
     public static PaperPlugin INSTANCE;
     private VoicechatPlugin voicechatPlugin;
 
@@ -89,6 +90,11 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
         pluginBrigadierCommand.build(node);
         event.setLiteral((LiteralCommandNode) node.build());
+    }
+
+    @EventHandler
+    public void playerJoin(PlayerJoinEvent e) {
+        onPlayerJoin(e.getPlayer());
     }
 
     @EventHandler

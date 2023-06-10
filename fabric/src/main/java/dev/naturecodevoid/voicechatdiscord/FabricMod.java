@@ -15,7 +15,7 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
 
 public class FabricMod implements DedicatedServerModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(Constants.PLUGIN_ID);
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -38,6 +38,8 @@ public class FabricMod implements DedicatedServerModInitializer {
             }
             dispatcher.register(builder);
         }));
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onPlayerJoin(handler.player));
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 

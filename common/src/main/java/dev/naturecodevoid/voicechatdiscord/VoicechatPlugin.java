@@ -3,12 +3,13 @@ package dev.naturecodevoid.voicechatdiscord;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Common.api;
+import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlugin {
     @Override
     public String getPluginId() {
-        return PLUGIN_ID;
+        return Constants.PLUGIN_ID;
     }
 
     @Override

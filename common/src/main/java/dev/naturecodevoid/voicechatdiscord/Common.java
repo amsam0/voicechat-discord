@@ -14,10 +14,8 @@ import java.util.*;
  * Common code between Paper and Fabric.
  */
 public class Common {
-    public static final String PLUGIN_ID = "voicechat-discord";
-    public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
-    public static final String VOICECHAT_MIN_VERSION = "2.4.8";
-    public static final List<String> configHeader = List.of(
+    public static final String REPLACE_LEGACY_FORMATTING_CODES = "§([a-z]|[0-9]|[A-Z])";
+    private static final List<String> configHeader = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",
             "bots:",
@@ -41,18 +39,25 @@ public class Common {
             "- 2: Most debug logging (will spam the console but excludes logging that is extremely verbose and usually not helpful)",
             "- 3 (or higher): All debug logging (will spam the console)",
             "",
+            "By default, Simple Voice Chat Discord Bridge will check for a new update on server startup. If it finds",
+            "a new update, it will always log this to the console, but as long as `alert_ops_of_updates` is true, it",
+            "will also tell any operators that there is an update available when they join the server.",
+            "We highly recommend you keep `alert_ops_of_updates` on since it is very important that you update the mod/plugin",
+            "as soon as updates come out due to bugs popping up randomly.",
+            "",
             "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
     );
-    public static final ArrayList<SubCommands.SubCommand> SUB_COMMANDS = new ArrayList<>();
     public static ArrayList<DiscordBot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
-    public static YamlConfiguration config;
     public static int debugLevel = 0;
+    public static boolean alertOpsOfUpdates = true;
+    private static YamlConfiguration config;
+    public static final List<SubCommands.SubCommand> SUB_COMMANDS = SubCommands.getSubCommands();
 
     public static void enable() {
+        new Thread(UpdateChecker::checkForUpdate).start();
         loadConfig();
-        SubCommands.register();
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
@@ -75,6 +80,8 @@ public class Common {
         defaultBot.put("token", "DISCORD_BOT_TOKEN_HERE");
         defaultBot.put("vc_id", "VOICE_CHANNEL_ID_HERE");
         config.addDefault("bots", List.of(defaultBot));
+
+        config.addDefault("alert_ops_of_updates", true);
 
         config.addDefault("debug_level", 0);
 
@@ -101,10 +108,18 @@ public class Common {
         platform.info("Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
 
         try {
+            alertOpsOfUpdates = (boolean) config.get("alert_ops_of_updates");
+            if (!alertOpsOfUpdates)
+                platform.info("Operators will not be alerted of new updates. Please make sure you check the console for new updates!");
+        } catch (ClassCastException e) {
+            platform.error("Please make sure the alert_ops_of_updates option is a valid boolean (true or false)");
+        }
+
+        try {
             debugLevel = (int) config.get("debug_level");
             if (debugLevel > 0) platform.info("Debug mode has been set to level " + debugLevel);
         } catch (ClassCastException e) {
-            platform.error("Please make sure the debug option is a valid integer");
+            platform.error("Please make sure the debug_level option is a valid integer");
         }
     }
 
@@ -125,6 +140,19 @@ public class Common {
             OkHttpClient client = bot.jda.getHttpClient();
             client.connectionPool().evictAll();
             client.dispatcher().executorService().shutdownNow();
+        }
+    }
+
+    public static void onPlayerJoin(Object rawPlayer) {
+        if (UpdateChecker.updateMessage != null) {
+            if (platform.isOperator(rawPlayer)) {
+                if (alertOpsOfUpdates) {
+                    platform.sendMessage(api.fromServerPlayer(rawPlayer), UpdateChecker.updateMessage);
+                    platform.debug("Alerted operator of new update");
+                } else {
+                    platform.debug("Not alerting operator of new update");
+                }
+            }
         }
     }
 
@@ -176,7 +204,7 @@ public class Common {
         String[] splitVersion = version.split("-");
         int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
         platform.debug("parsed version: " + Arrays.toString(parsedVersion));
-        int[] parsedMinVersion = Objects.requireNonNull(splitVersion(VOICECHAT_MIN_VERSION));
+        int[] parsedMinVersion = Objects.requireNonNull(splitVersion(Constants.VOICECHAT_MIN_VERSION));
         platform.debug("parsed min version: " + Arrays.toString(parsedMinVersion));
         if (parsedVersion != null) {
             for (int i = 0; i < parsedMinVersion.length; i++) {
@@ -201,7 +229,7 @@ public class Common {
      */
     public static void checkSVCVersion(@Nullable String version) {
         if (version == null || !isSVCVersionSufficient(version)) {
-            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
+            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + Constants.VOICECHAT_MIN_VERSION + " or later";
             if (version != null) {
                 message += " You have version " + version + ".";
             }

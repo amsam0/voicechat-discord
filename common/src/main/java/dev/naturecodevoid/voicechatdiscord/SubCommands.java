@@ -4,6 +4,9 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static dev.naturecodevoid.voicechatdiscord.Common.*;
@@ -12,21 +15,13 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
  * Subcommands for /dvc
  */
 public class SubCommands {
-    @SuppressWarnings("rawtypes")
-    private static void add(String name, Function<LiteralArgumentBuilder, ArgumentBuilder> builder) {
-        SUB_COMMANDS.add(new SubCommand(name, builder));
-    }
-
     @SuppressWarnings({"unchecked", "CallToPrintStackTrace"})
-    protected static void register() {
-        if (!SUB_COMMANDS.isEmpty()) {
-            platform.error("Tried to register commands but they seem to be already registered! This shouldn't be a problem but we would appreciate it if you could report it on GitHub Issues.");
-            return;
-        }
+    protected static List<SubCommand> getSubCommands() {
+        List<SubCommand> subCommands = new ArrayList<>();
 
         // Each command is a subcommand on the /dvc command; this is handled by the platform implementation
 
-        add("start", literal -> literal.executes(sender -> {
+        subCommands.add(new SubCommand("start", literal -> literal.executes(sender -> {
             try {
                 if (!platform.isValidPlayer(sender)) {
                     platform.sendMessage(sender, "§cYou must be a player to use this command!");
@@ -68,9 +63,9 @@ public class SubCommands {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-        }));
+        })));
 
-        add("stop", literal -> literal.executes(sender -> {
+        subCommands.add(new SubCommand("stop", literal -> literal.executes(sender -> {
             try {
                 if (!platform.isValidPlayer(sender)) {
                     platform.sendMessage(sender, "§cYou must be a player to use this command!");
@@ -98,17 +93,17 @@ public class SubCommands {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-        }));
+        })));
 
-        add("reloadconfig", literal -> literal.executes(sender -> {
+        subCommands.add(new SubCommand("reloadconfig", literal -> literal.executes(sender -> {
             try {
                 if (!platform.isOperator(sender) && !platform.hasPermission(
                         sender,
-                        RELOAD_CONFIG_PERMISSION
+                        Constants.RELOAD_CONFIG_PERMISSION
                 )) {
                     platform.sendMessage(
                             sender,
-                            "§cYou must be an operator or have the `" + RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
+                            "§cYou must be an operator or have the `" + Constants.RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
                     );
                     return 1;
                 }
@@ -139,7 +134,34 @@ public class SubCommands {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-        }));
+        })));
+
+        subCommands.add(new SubCommand("checkforupdate", literal -> literal.executes(sender -> {
+            try {
+                if (!platform.isOperator(sender)) {
+                    platform.sendMessage(
+                            sender,
+                            "§cYou must be an operator to use this command!"
+                    );
+                    return 1;
+                }
+
+                platform.sendMessage(sender, "§eChecking for update...");
+
+                new Thread(() -> {
+                    UpdateChecker.checkForUpdate();
+
+                    platform.sendMessage(sender, Objects.requireNonNullElse(UpdateChecker.updateMessage, "§cNo update found. (or an error occurred, you might want to check the console)"));
+                }).start();
+
+                return 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        })));
+
+        return subCommands;
     }
 
     @SuppressWarnings("rawtypes")
