@@ -117,7 +117,7 @@ public class DiscordBot {
      */
     public void start() {
         if (!hasLoggedIn) {
-            platform.error("Tried to start audio transfer system but the bot has not been logged into. Please report this on GitHub Issues!");
+            platform.error("Tried to start audio transfer system but the bot has not been logged into. The bot may have failed to login.");
             return;
         }
         platform.debug("starting bot with vc_id " + vcId);
