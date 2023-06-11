@@ -161,6 +161,33 @@ public class SubCommands {
             }
         })));
 
+        subCommands.add(new SubCommand("togglewhisper", literal -> literal.executes(sender -> {
+            try {
+                if (!platform.isValidPlayer(sender)) {
+                    platform.sendMessage(sender, "§cYou must be a player to use this command!");
+                    return 1;
+                }
+
+                ServerPlayer player = platform.commandContextToPlayer(sender);
+
+                DiscordBot bot = getBotForPlayer(player.getUuid());
+                if (bot == null) {
+                    platform.sendMessage(player, "§cYou must start a voice chat before you can use this command!");
+                    return 1;
+                }
+
+                boolean whispering = !bot.sender.isWhispering();
+                bot.sender.whispering(whispering);
+
+                platform.sendMessage(sender, whispering ? "§aStarted whispering!" : "§aStopped whispering!");
+
+                return 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        })));
+
         return subCommands;
     }
 
