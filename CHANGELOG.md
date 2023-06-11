@@ -4,7 +4,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 ## 2.0.0
 
-Huge thanks to Totobird for being a huge help with this update! Their PR was the main reason I started working on it again.
+Huge thanks to [Totobird](https://github.com/Totobird-Creations) for being a huge help with this update! Their PR was the main reason I started working on it again.
 
 -   **Running `/startdiscordvoicechat` while in a voice chat session restarts the session**
 -   **New command: `/stopdiscordvoicechat`**
