@@ -214,6 +214,7 @@ public class SubCommands {
     }
 
     private static class GroupCommands {
+        @SuppressWarnings("SameReturnValue")
         private static int help(CommandContext<?> sender) {
             platform.sendMessage(
                     sender,

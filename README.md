@@ -21,9 +21,8 @@ First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-
 [the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
 
 > **Note**
-> 
-> Simple Voice Chat Discord Bridge requires the latest version of Simple Voice Chat.
-> Please ensure you have updated!
+>
+> Simple Voice Chat Discord Bridge requires version 2.4.8 or later of Simple Voice Chat. Please ensure you have updated!
 
 Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
 version.
@@ -122,11 +121,11 @@ reload the config without have to reload/restart the server. **Using this comman
 
 ### `2.1.0`
 
-- Reduce volume of whispering players in the audio that goes to discord. This will require additions to the voicechat API
-- Don't allow players to use /dvc group when groups are disabled. This will also require additions to the voicechat API
+-   Reduce volume of whispering players in the audio that goes to discord. This will require additions to the voicechat API
+-   Don't allow players to use /dvc group when groups are disabled. This will also require additions to the voicechat API
 
 ### Future
 
-- Action bar HUD for groups showing players in your group
-- Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
-- Inventory GUI for groups (this would need an abstraction between Bukkit's API and Fabric's sgui library, and would also make supporting 1.19.2+ on Fabric impossible)
+-   Action bar HUD for groups showing players in your group
+-   Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
+-   Inventory GUI for groups (this would need an abstraction between Bukkit's API and Fabric's sgui library, and would also make supporting 1.19.2+ on Fabric impossible)

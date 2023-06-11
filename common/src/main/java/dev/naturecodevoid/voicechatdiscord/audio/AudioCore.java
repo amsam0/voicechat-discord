@@ -52,7 +52,7 @@ public class AudioCore {
             return mix;
         }
         // Should never be triggered since we don't actually call this function if there is no outgoing audio
-        platform.debug("no outgoing audio? got " + audioParts.size() + " audio parts");
+        platform.debug("no outgoing audio?");
         return new short[SHORTS_IN_20MS];
     }
 

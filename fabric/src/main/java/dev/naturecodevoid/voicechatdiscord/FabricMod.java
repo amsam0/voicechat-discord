@@ -25,9 +25,7 @@ public class FabricMod implements DedicatedServerModInitializer {
         ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
         checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null);
 
-        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(SubCommands.build(literal("dvc")));
-        }));
+        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> dispatcher.register(SubCommands.build(literal("dvc")))));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onPlayerJoin(handler.player));
 

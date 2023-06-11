@@ -73,6 +73,9 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Properties.fabricApiVersion}")
 
+    modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+    include("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+
     modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${Properties.minecraftVersion}-${Properties.voicechatApiVersion}")
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
 
@@ -101,7 +104,8 @@ repositories {
         }
     }
     maven { url = uri("https://jitpack.io") }
-    maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/releases") }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
     maven { url = uri("https://maven.maxhenkel.de/repository/public") }
     mavenLocal()
 }

@@ -13,8 +13,8 @@ import java.util.UUID;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 
 public class GroupManager {
-    public static BiMap<UUID, Integer> groupFriendlyIds = new BiMap<>();
-    public static Map<UUID, List<ServerPlayer>> groupPlayers = new HashMap<>();
+    public static final BiMap<UUID, Integer> groupFriendlyIds = new BiMap<>();
+    public static final Map<UUID, List<ServerPlayer>> groupPlayers = new HashMap<>();
 
     @SuppressWarnings("CallToPrintStackTrace")
     public static @Nullable String getPassword(Group group) {

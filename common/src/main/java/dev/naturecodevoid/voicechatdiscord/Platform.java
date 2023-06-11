@@ -13,8 +13,7 @@ public abstract class Platform {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isValidPlayer(Object sender);
 
-    @SuppressWarnings("rawtypes")
-    public abstract ServerPlayer commandContextToPlayer(CommandContext context);
+    public abstract ServerPlayer commandContextToPlayer(CommandContext<?> context);
 
     public abstract @Nullable Position getEntityPosition(ServerLevel level, UUID uuid);
 
@@ -42,8 +41,6 @@ public abstract class Platform {
 
     public abstract void error(String message);
 
-    public abstract void error(String message, Throwable throwable);
-
     public abstract void debug(String message);
 
     public abstract void debugVerbose(String message);
@@ -54,7 +51,7 @@ public abstract class Platform {
         PAPER("paper"),
         FABRIC("fabric");
 
-        public String name;
+        public final String name;
 
         Loader(String name) {
             this.name = name;

@@ -29,7 +29,6 @@ final class DvcBrigadierCommand extends Command implements PluginIdentifiableCom
         super("dvc");
     }
 
-    @SuppressWarnings("JavaReflectionInvocation")
     private static CommandSourceStack getListener(CommandSender sender) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> vanillaCommandWrapper = getVanillaCommandWrapper();
         return (CommandSourceStack) vanillaCommandWrapper.getMethod("getListener", CommandSender.class).invoke(null, sender);

@@ -5,6 +5,7 @@ import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -19,16 +20,14 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
 public class FabricPlatform extends Platform {
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean isValidPlayer(Object sender) {
-        if (sender instanceof CommandContext source)
+        if (sender instanceof CommandContext<?> source)
             return ((ServerCommandSource) source.getSource()).getPlayer() != null;
         return sender != null;
     }
 
-    @SuppressWarnings("rawtypes")
-    public ServerPlayer commandContextToPlayer(CommandContext context) {
+    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
         return api.fromServerPlayer(((ServerCommandSource) context.getSource()).getPlayer());
     }
 
@@ -45,10 +44,9 @@ public class FabricPlatform extends Platform {
                 : null;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean isOperator(Object sender) {
-        if (sender instanceof CommandContext source)
+        if (sender instanceof CommandContext<?> source)
             return ((ServerCommandSource) source.getSource()).hasPermissionLevel(2);
         if (sender instanceof ServerPlayerEntity player)
             return player.hasPermissionLevel(2);
@@ -58,17 +56,19 @@ public class FabricPlatform extends Platform {
 
     @Override
     public boolean hasPermission(Object sender, String permission) {
-        // fabric doesn't have a permission system
-        // maybe use LuckPerms API or something
+        if (sender instanceof CommandContext<?> source)
+            return Permissions.check((ServerCommandSource) source.getSource(), permission);
+        if (sender instanceof ServerPlayerEntity player)
+            return Permissions.check(player, permission);
+
         return false;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void sendMessage(Object sender, String message) {
         if (sender instanceof ServerPlayerEntity player)
             player.sendMessage(Text.of(message));
-        else if (sender instanceof CommandContext context) {
+        else if (sender instanceof CommandContext<?> context) {
             ServerCommandSource source = (ServerCommandSource) context.getSource();
             if (source.getPlayer() == null)
                 source.sendMessage(Text.of(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
@@ -111,11 +111,6 @@ public class FabricPlatform extends Platform {
     @Override
     public void error(String message) {
         LOGGER.error(message);
-    }
-
-    @Override
-    public void error(String message, Throwable throwable) {
-        LOGGER.error(message, throwable);
     }
 
     @Override

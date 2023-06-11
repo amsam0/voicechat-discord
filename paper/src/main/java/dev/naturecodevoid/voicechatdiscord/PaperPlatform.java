@@ -19,16 +19,14 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
 public class PaperPlatform extends Platform {
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean isValidPlayer(Object sender) {
-        if (sender instanceof CommandContext context)
+        if (sender instanceof CommandContext<?> context)
             return ((CommandSourceStack) context.getSource()).getPlayer() != null;
         return sender instanceof Player;
     }
 
-    @SuppressWarnings("rawtypes")
-    public ServerPlayer commandContextToPlayer(CommandContext context) {
+    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
         return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getBukkitEntity());
     }
 
@@ -57,10 +55,9 @@ public class PaperPlatform extends Platform {
         return null;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean isOperator(Object sender) {
-        if (sender instanceof CommandContext context)
+        if (sender instanceof CommandContext<?> context)
             return ((CommandSourceStack) context.getSource()).hasPermission(2);
         if (sender instanceof Permissible permissible)
             return permissible.isOp();
@@ -75,12 +72,11 @@ public class PaperPlatform extends Platform {
         return ((Permissible) sender).hasPermission(permission);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void sendMessage(Object sender, String message) {
         if (sender instanceof CommandSender player)
             player.sendMessage(message);
-        else if (sender instanceof CommandContext context) {
+        else if (sender instanceof CommandContext<?> context) {
             CommandSourceStack source = (CommandSourceStack) context.getSource();
             if (source.getPlayer() == null)
                 source.sendSystemMessage(Component.literal(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
@@ -124,11 +120,6 @@ public class PaperPlatform extends Platform {
     @Override
     public void error(String message) {
         LOGGER.error(message);
-    }
-
-    @Override
-    public void error(String message, Throwable throwable) {
-        LOGGER.error(message, throwable);
     }
 
     @Override
