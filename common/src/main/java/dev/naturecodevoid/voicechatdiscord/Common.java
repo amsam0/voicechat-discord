@@ -1,5 +1,6 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
@@ -8,7 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Common code between Paper and Fabric.
@@ -53,6 +57,9 @@ public class Common {
     public static int debugLevel = 0;
     public static boolean alertOpsOfUpdates = true;
 
+    /**
+     * IMPORTANT: Nothing that runs in this function should depend on SVC's API. We don't know if the SVC is new enough yet
+     */
     public static void enable() {
         new Thread(UpdateChecker::checkForUpdate).start();
         loadConfig();
@@ -185,51 +192,33 @@ public class Common {
         return null;
     }
 
-    private static int @Nullable [] splitVersion(String version) {
-        try {
-            return Arrays.stream(version.split("\\."))
-                    // if there is a -pre we need to remove it
-                    .limit(3)
-                    .map(str -> str.split("-")[0])
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
-        } catch (NumberFormatException ignored) {
-            return null;
-        }
-    }
-
     private static boolean isSVCVersionSufficient(String version) {
-        String[] splitVersion = version.split("-");
-        int[] parsedVersion = splitVersion(splitVersion[splitVersion.length - 1]);
-        platform.debug("parsed version: " + Arrays.toString(parsedVersion));
-        int[] parsedMinVersion = Objects.requireNonNull(splitVersion(Constants.VOICECHAT_MIN_VERSION));
-        platform.debug("parsed min version: " + Arrays.toString(parsedMinVersion));
-        if (parsedVersion != null) {
-            for (int i = 0; i < parsedMinVersion.length; i++) {
-                int part = parsedMinVersion[i];
-                int testPart;
-                if (parsedVersion.length > i) {
-                    testPart = parsedVersion[i];
-                } else {
-                    testPart = 0;
-                }
-                if (testPart < part) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return Version.valueOf(version).greaterThanOrEqualTo(Version.valueOf(Constants.VOICECHAT_MIN_VERSION));
     }
 
-    /**
-     * Returns true if the SVC version is not new enough
-     */
     public static void checkSVCVersion(@Nullable String version) {
+        if (version != null) {
+            platform.debug("SVC version: " + version);
+            String[] splitVersion = version.split("-");
+            if (splitVersion.length > 1) {
+                // Beta builds are fine since they will have the new APIs we depend on.
+                // If we don't remove the ending part, it will say SVC isn't new enough
+                if (platform.getLoader() == Platform.Loader.FABRIC) {
+                    // On fabric, the version is prefixed with the minecraft version
+                    // We don't care about the minecraft version
+                    version = splitVersion[1];
+                } else {
+                    // We're on Paper, we still want to get rid of the ending part (pre1)
+                    version = splitVersion[0];
+                }
+                platform.debug("SVC version after normalizing: " + version);
+            }
+        }
+
         if (version == null || !isSVCVersionSufficient(version)) {
             String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + Constants.VOICECHAT_MIN_VERSION + " or later";
             if (version != null) {
-                message += " You have version " + version + ".";
+                message += ". You have version " + version + ".";
             }
             platform.error(message);
             throw new RuntimeException(message);

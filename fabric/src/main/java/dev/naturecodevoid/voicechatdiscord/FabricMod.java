@@ -15,19 +15,15 @@ import static dev.naturecodevoid.voicechatdiscord.Common.*;
 public class FabricMod implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(Constants.PLUGIN_ID);
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public void onInitializeServer() {
-        // Check if SVC is installed and is at least at the minimum version.
-        ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
-        checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null);
-
-        // Setup the mod.
-
         if (platform == null)
             platform = new FabricPlatform();
 
         enable();
+
+        ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
+        checkSVCVersion(svcMod != null ? svcMod.getMetadata().getVersion().toString() : null);
 
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
             dispatcher.register(SubCommands.build(literal("dvc")));

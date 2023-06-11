@@ -42,12 +42,6 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         INSTANCE = this;
         platform = new PaperPlatform();
 
-        // Check if SVC is installed and is at least at the minimum version.
-        Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
-        checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
-
-        // Setup the plugin.
-
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
             voicechatPlugin = new VoicechatPlugin();
@@ -58,6 +52,9 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         }
 
         enable();
+
+        Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
+        checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
