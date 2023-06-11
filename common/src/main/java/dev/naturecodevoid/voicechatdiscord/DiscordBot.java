@@ -63,7 +63,7 @@ public class DiscordBot {
      */
     public long lastTimeAudioSent = 0;
     /**
-     * A thread that checks if it has been 25 ms since the last time audio was sent to the audio sender.
+     * A thread that checks if it has been 100 ms since the last time audio was sent to the audio sender.
      * If so, it will reset the audio sender.
      */
     public Thread senderResetWatcher;
@@ -169,13 +169,13 @@ public class DiscordBot {
             while (true) {
                 try {
                     //noinspection BusyWait
-                    Thread.sleep(25);
+                    Thread.sleep(100);
                 } catch (InterruptedException ignored) {
                     platform.debug("exiting sender reset watcher thread");
                     break;
                 }
 
-                if (lastTimeAudioSent != 0 && System.currentTimeMillis() - 25 > lastTimeAudioSent) {
+                if (lastTimeAudioSent != 0 && System.currentTimeMillis() - 100 > lastTimeAudioSent) {
                     platform.debugVerbose("resetting sender for player with UUID " + player.getUuid());
                     sender.reset();
                     lastTimeAudioSent = 0;
