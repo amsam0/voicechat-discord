@@ -120,7 +120,12 @@ reload the config without have to reload/restart the server. **Using this comman
 
 ## Roadmap
 
-These are features that could be implemented in the future but haven't been yet.
+### `2.1.0`
+
+- Reduce volume of whispering players in the audio that goes to discord. This will require additions to the voicechat API
+- Don't allow players to use /dvc group when groups are disabled. This will also require additions to the voicechat API
+
+### Future
 
 - Action bar HUD for groups showing players in your group
 - Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
