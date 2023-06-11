@@ -83,12 +83,11 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     @SuppressWarnings({"unchecked", "rawtypes", "UnstableApiUsage"})
     @EventHandler
     public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-        if (!(event.getCommand() instanceof DvcBrigadierCommand pluginBrigadierCommand))
+        if (!(event.getCommand() instanceof DvcBrigadierCommand))
             return;
 
         platform.debug("registering pluginBrigadierCommand: " + event.getCommandLabel());
-        final LiteralArgumentBuilder<CommandSourceStack> node = LiteralArgumentBuilder.literal(event.getCommandLabel());
-        pluginBrigadierCommand.build(node);
+        final LiteralArgumentBuilder<CommandSourceStack> node = SubCommands.build(LiteralArgumentBuilder.literal(event.getCommandLabel()));
         event.setLiteral((LiteralCommandNode) node.build());
     }
 

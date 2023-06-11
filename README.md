@@ -117,3 +117,11 @@ If you want to stop the discord voice chat session you are currently in, use the
 
 If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/reloaddiscordvoicechatconfig` command to
 reload the config without have to reload/restart the server. **Using this command will stop all running bots.**
+
+## Roadmap
+
+These are features that could be implemented in the future but haven't been yet.
+
+- Action bar HUD for groups showing players in your group
+- Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
+- Inventory GUI for groups (this would need an abstraction between Bukkit's API and Fabric's sgui library, and would also make supporting 1.19.2+ on Fabric impossible)

@@ -1,13 +1,11 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.server.command.ServerCommandSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +30,7 @@ public class FabricMod implements DedicatedServerModInitializer {
         enable();
 
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> {
-            LiteralArgumentBuilder<ServerCommandSource> builder = literal("dvc");
-            for (SubCommands.SubCommand subCommand : SUB_COMMANDS) {
-                builder.then(subCommand.builder().apply(literal(subCommand.name())));
-            }
-            dispatcher.register(builder);
+            dispatcher.register(SubCommands.build(literal("dvc")));
         }));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onPlayerJoin(handler.player));

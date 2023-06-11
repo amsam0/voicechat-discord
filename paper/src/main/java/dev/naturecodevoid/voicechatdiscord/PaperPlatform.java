@@ -107,8 +107,8 @@ public class PaperPlatform extends Platform {
     }
 
     @Override
-    public String getLoader() {
-        return "paper";
+    public Loader getLoader() {
+        return Loader.PAPER;
     }
 
     @Override

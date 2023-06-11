@@ -52,8 +52,6 @@ public class Common {
     public static Platform platform;
     public static int debugLevel = 0;
     public static boolean alertOpsOfUpdates = true;
-    private static YamlConfiguration config;
-    public static final List<SubCommands.SubCommand> SUB_COMMANDS = SubCommands.getSubCommands();
 
     public static void enable() {
         new Thread(UpdateChecker::checkForUpdate).start();
@@ -67,7 +65,7 @@ public class Common {
         if (!configFile.getParentFile().exists())
             configFile.getParentFile().mkdirs();
 
-        config = new YamlConfiguration();
+        YamlConfiguration config = new YamlConfiguration();
         try {
             config.load(configFile);
         } catch (IOException e) {

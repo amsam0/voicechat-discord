@@ -33,7 +33,7 @@ public abstract class Platform {
     /**
      * Loader used for filtering versions on Modrinth
      */
-    public abstract String getLoader();
+    public abstract Loader getLoader();
 
     // Paper uses log4j, Fabric uses slf4j
     public abstract void info(String message);
@@ -49,4 +49,15 @@ public abstract class Platform {
     public abstract void debugVerbose(String message);
 
     public abstract void debugExtremelyVerbose(String message);
+
+    public enum Loader {
+        PAPER("paper"),
+        FABRIC("fabric");
+
+        public String name;
+
+        Loader(String name) {
+            this.name = name;
+        }
+    }
 }

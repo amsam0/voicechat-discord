@@ -100,7 +100,7 @@ public class DiscordBot {
                     .build().awaitReady();
             hasLoggedIn = true;
             platform.debug("logged into the bot with vc_id " + vcId);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             platform.error("Failed to login to the bot using vc_id " + vcId);
             e.printStackTrace();
             if (player != null) {

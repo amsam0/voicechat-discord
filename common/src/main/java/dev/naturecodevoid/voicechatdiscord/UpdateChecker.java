@@ -51,7 +51,7 @@ public class UpdateChecker {
                 updateMessage = message + " To disable these messages, set `alert_ops_of_updates` to false in the config.";
             }
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             platform.error("Failed to check for update:");
             e.printStackTrace();
             return false;
@@ -105,8 +105,8 @@ public class UpdateChecker {
         HttpURLConnection connection = null;
 
         try {
-            //                                                                                                 [  "                             "  ]
-            URL url = new URL("https://api.modrinth.com/v2/project/" + MODRINTH_PROJECT_ID + "/version?loaders=%5B%22" + platform.getLoader() + "%22%5D");
+            //                                                                                                 [  "                                  "  ]
+            URL url = new URL("https://api.modrinth.com/v2/project/" + MODRINTH_PROJECT_ID + "/version?loaders=%5B%22" + platform.getLoader().name + "%22%5D");
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "naturecodevoid/voicechat-discord/" + VERSION);
             connection.setUseCaches(false);

@@ -94,8 +94,8 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public String getLoader() {
-        return "fabric";
+    public Loader getLoader() {
+        return Loader.FABRIC;
     }
 
     @Override

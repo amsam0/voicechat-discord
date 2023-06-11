@@ -2,7 +2,6 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestion;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,10 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.SUB_COMMANDS;
 import static dev.naturecodevoid.voicechatdiscord.Common.platform;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
-import static net.minecraft.commands.Commands.literal;
 
 @DefaultQualifier(NonNull.class)
 final class DvcBrigadierCommand extends Command implements PluginIdentifiableCommand {
@@ -79,12 +76,5 @@ final class DvcBrigadierCommand extends Command implements PluginIdentifiableCom
     @Override
     public @NotNull Plugin getPlugin() {
         return get();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void build(LiteralArgumentBuilder<CommandSourceStack> builder) {
-        for (SubCommands.SubCommand subCommand : SUB_COMMANDS) {
-            builder.then(subCommand.builder().apply(literal(subCommand.name())));
-        }
     }
 }

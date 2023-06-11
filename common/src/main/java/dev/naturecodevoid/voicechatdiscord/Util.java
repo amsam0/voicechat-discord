@@ -1,6 +1,8 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
+import org.jetbrains.annotations.Nullable;
 
 public class Util {
     public static double clamp(double val, double min, double max) {
@@ -17,5 +19,13 @@ public class Util {
 
     public static String positionToString(Position pos) {
         return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+    }
+
+    public static @Nullable <V> V getArgumentOr(CommandContext<?> context, final String name, final Class<V> clazz, @Nullable V or) {
+        try {
+            return context.getArgument(name, clazz);
+        } catch (IllegalArgumentException ignored) {
+            return or;
+        }
     }
 }
