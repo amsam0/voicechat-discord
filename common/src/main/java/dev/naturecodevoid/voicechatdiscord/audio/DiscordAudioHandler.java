@@ -4,6 +4,7 @@ import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.LocationalSoundPacket;
 import de.maxhenkel.voicechat.api.packets.SoundPacket;
+import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
 import dev.naturecodevoid.voicechatdiscord.DiscordBot;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
@@ -47,8 +48,8 @@ public class DiscordAudioHandler implements AudioSendHandler, AudioReceiveHandle
         } else if (packet instanceof EntitySoundPacket sound) {
             position = platform.getEntityPosition(bot.player.getServerLevel(), sound.getEntityUuid());
             distance = sound.getDistance();
-        } else {
-            platform.error("packet is not LocationalSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
+        } else if (!(packet instanceof StaticSoundPacket)) {
+            platform.error("packet is not LocationalSoundPacket, StaticSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         }
 
         handleOutgoingSound(audio, sender, distance, position);
