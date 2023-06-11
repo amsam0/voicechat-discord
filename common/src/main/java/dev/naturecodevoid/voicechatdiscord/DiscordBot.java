@@ -88,6 +88,7 @@ public class DiscordBot {
     /**
      * Logs into the Discord bot.
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     public void login() {
         if (hasLoggedIn)
             return;
@@ -100,7 +101,8 @@ public class DiscordBot {
             hasLoggedIn = true;
             platform.debug("logged into the bot with vc_id " + vcId);
         } catch (Exception e) {
-            platform.error("Failed to login to the bot using vc_id " + vcId, e);
+            platform.error("Failed to login to the bot using vc_id " + vcId);
+            e.printStackTrace();
             if (player != null) {
                 platform.sendMessage(
                         player,
@@ -115,6 +117,7 @@ public class DiscordBot {
     /**
      * Starts the Discord <-> SVC audio transfer system.
      */
+    @SuppressWarnings("DataFlowIssue")
     public void start() {
         if (!hasLoggedIn) {
             platform.error("Tried to start audio transfer system but the bot has not been logged into. The bot may have failed to login.");
@@ -181,6 +184,8 @@ public class DiscordBot {
         });
         senderResetWatcher.start();
 
+        api.getConnectionOf(player).setConnected(true);
+
         String channelName = channel.getName();
         platform.info("Started voice chat for " + platform.getName(player) + " in channel " + channelName);
         platform.sendMessage(
@@ -192,6 +197,7 @@ public class DiscordBot {
     /**
      * Stops the Discord <-> SVC audio transfer system and clears all queued audio. Also tries to remove almost everything from memory
      */
+    @SuppressWarnings("DataFlowIssue")
     public void stop() {
         platform.debug("stopping bot with vc_id " + vcId);
 
@@ -202,7 +208,11 @@ public class DiscordBot {
             manager = null;
         }
 
-        player = null;
+        if (player != null) {
+            api.getConnectionOf(player).setConnected(false);
+            player = null;
+        }
+
         handler = null;
 
         if (listener != null) {
