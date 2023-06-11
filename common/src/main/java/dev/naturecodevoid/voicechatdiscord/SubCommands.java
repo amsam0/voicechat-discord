@@ -149,9 +149,10 @@ public class SubCommands {
                 platform.sendMessage(sender, "§eChecking for update...");
 
                 new Thread(() -> {
-                    UpdateChecker.checkForUpdate();
-
-                    platform.sendMessage(sender, Objects.requireNonNullElse(UpdateChecker.updateMessage, "§cNo update found. (or an error occurred, you might want to check the console)"));
+                    if (UpdateChecker.checkForUpdate())
+                        platform.sendMessage(sender, Objects.requireNonNullElse(UpdateChecker.updateMessage, "§cNo update found."));
+                    else
+                        platform.sendMessage(sender, "§cAn error occurred when checking for updates. Check the console for the error message.");
                 }).start();
 
                 return 1;

@@ -24,7 +24,10 @@ import static dev.naturecodevoid.voicechatdiscord.Constants.VERSION;
 public class UpdateChecker {
     public static @Nullable String updateMessage = null;
 
-    public static void checkForUpdate() {
+    /**
+     * Returns true if successful, false if not successful
+     */
+    public static boolean checkForUpdate() {
         try {
             List<Version> tags = getTags();
             Version latest = tags.get(0);
@@ -47,9 +50,11 @@ public class UpdateChecker {
                 platform.info(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
                 updateMessage = message + " To disable these messages, set `alert_ops_of_updates` to false in the config.";
             }
+            return true;
         } catch (Exception e) {
             platform.error("Failed to check for update:");
             e.printStackTrace();
+            return false;
         }
     }
 
