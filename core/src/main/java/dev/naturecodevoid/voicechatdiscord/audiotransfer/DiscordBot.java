@@ -39,6 +39,9 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
      * The Discord guild voice channel id to play to and listen from.
      */
     private final long vcId;
+    /**
+     * Sources of audio going to Discord
+     */
     private final HashMap<UUID, AudioSource> audioSources = new HashMap<>();
     /**
      * The player that this Discord bot is linked to.
@@ -292,6 +295,9 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         handleOutgoingSound(audio, sender, distance, position);
     }
 
+    /**
+     * Handles packets that will go to discord, after the packet being normalized into the raw audio, sender, distance and position.
+     */
     private void handleOutgoingSound(short[] audio, UUID sender, double distance, @Nullable Position position) {
         if (position != null) {
             audio = AudioCore.adjustVolumeBasedOnDistance(audio, position, this.player.getPosition(), distance);
@@ -306,7 +312,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
     }
 
     /**
-     * Returns audio which will be played by the Discord
+     * Returns audio which will be played by the Discord bot
      */
     @Nullable
     @Override
@@ -318,6 +324,9 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         return ByteBuffer.wrap(discordEncoder.encode(pollOutgoingAudio()));
     }
 
+    /**
+     * Provides 20ms of audio that will be played by the Discord bot
+     */
     private short[] pollOutgoingAudio() {
         List<short[]> audioParts = new LinkedList<>();
 

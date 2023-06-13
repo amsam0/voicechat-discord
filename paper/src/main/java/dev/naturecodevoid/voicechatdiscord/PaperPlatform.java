@@ -19,11 +19,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
-import static dev.naturecodevoid.voicechatdiscord.Core.*;
+import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
-public class PaperPlatform extends Platform {
-    @Override
+public class PaperPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {
         if (sender instanceof CommandContext<?> context)
             return ((CommandSourceStack) context.getSource()).getPlayer() != null;
@@ -69,7 +68,6 @@ public class PaperPlatform extends Platform {
         return null;
     }
 
-    @Override
     public boolean isOperator(Object sender) {
         if (sender instanceof CommandContext<?> context)
             return ((CommandSourceStack) context.getSource()).hasPermission(2);
@@ -79,14 +77,12 @@ public class PaperPlatform extends Platform {
         return false;
     }
 
-    @Override
     public boolean hasPermission(Object sender, String permission) {
         if (!(sender instanceof Permissible))
             return false;
         return ((Permissible) sender).hasPermission(permission);
     }
 
-    @Override
     public void sendMessage(Object sender, String message) {
         if (sender instanceof CommandSender player)
             player.sendMessage(message);
@@ -101,57 +97,31 @@ public class PaperPlatform extends Platform {
 
     }
 
-    @Override
     public void sendMessage(de.maxhenkel.voicechat.api.Player player, String message) {
         ((Player) player.getPlayer()).sendMessage(message);
     }
 
-    @Override
     public String getName(de.maxhenkel.voicechat.api.Player player) {
         return ((Player) player.getPlayer()).getName();
     }
 
-    @Override
     public String getConfigPath() {
         return "plugins/voicechat-discord/config.yml";
     }
 
-    @Override
     public Loader getLoader() {
         return Loader.PAPER;
     }
 
-    @Override
     public void info(String message) {
         LOGGER.info(message);
     }
 
-    @Override
     public void warn(String message) {
         LOGGER.warn(message);
     }
 
-    @Override
     public void error(String message) {
         LOGGER.error(message);
-    }
-
-    @Override
-    public void debug(String message) {
-        debug(message, 1);
-    }
-
-    @Override
-    public void debugVerbose(String message) {
-        debug(message, 2);
-    }
-
-    @Override
-    public void debugExtremelyVerbose(String message) {
-        debug(message, 3);
-    }
-
-    private void debug(String message, int levelToLog) {
-        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG " + levelToLog + "] " + message);
     }
 }

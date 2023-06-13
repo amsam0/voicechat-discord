@@ -18,11 +18,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
-import static dev.naturecodevoid.voicechatdiscord.Core.*;
+import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
-public class FabricPlatform extends Platform {
-    @Override
+public class FabricPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {
         if (sender instanceof CommandContext<?> source)
             return ((ServerCommandSource) source.getSource()).getPlayer() != null;
@@ -33,7 +32,6 @@ public class FabricPlatform extends Platform {
         return api.fromServerPlayer(((ServerCommandSource) context.getSource()).getPlayer());
     }
 
-    @Override
     public CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid) {
         ServerWorld world = (ServerWorld) level.getServerLevel();
         Entity entity = world.getEntity(uuid);
@@ -46,7 +44,6 @@ public class FabricPlatform extends Platform {
                 : null);
     }
 
-    @Override
     public boolean isOperator(Object sender) {
         if (sender instanceof CommandContext<?> source)
             return ((ServerCommandSource) source.getSource()).hasPermissionLevel(2);
@@ -56,7 +53,6 @@ public class FabricPlatform extends Platform {
         return false;
     }
 
-    @Override
     public boolean hasPermission(Object sender, String permission) {
         if (sender instanceof CommandContext<?> source)
             return Permissions.check((ServerCommandSource) source.getSource(), permission);
@@ -66,7 +62,6 @@ public class FabricPlatform extends Platform {
         return false;
     }
 
-    @Override
     public void sendMessage(Object sender, String message) {
         if (sender instanceof ServerPlayerEntity player)
             player.sendMessage(Text.of(message));
@@ -80,57 +75,31 @@ public class FabricPlatform extends Platform {
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
     }
 
-    @Override
     public void sendMessage(Player player, String message) {
         ((PlayerEntity) player.getPlayer()).sendMessage(Text.of(message));
     }
 
-    @Override
     public String getName(Player player) {
         return ((PlayerEntity) player.getPlayer()).getName().getString();
     }
 
-    @Override
     public String getConfigPath() {
         return "config/voicechat-discord.yml";
     }
 
-    @Override
     public Loader getLoader() {
         return Loader.FABRIC;
     }
 
-    @Override
     public void info(String message) {
         LOGGER.info(message);
     }
 
-    @Override
     public void warn(String message) {
         LOGGER.warn(message);
     }
 
-    @Override
     public void error(String message) {
         LOGGER.error(message);
-    }
-
-    @Override
-    public void debug(String message) {
-        debug(message, 1);
-    }
-
-    @Override
-    public void debugVerbose(String message) {
-        debug(message, 2);
-    }
-
-    @Override
-    public void debugExtremelyVerbose(String message) {
-        debug(message, 3);
-    }
-
-    private void debug(String message, int levelToLog) {
-        if (debugLevel >= levelToLog) LOGGER.info("[DEBUG " + levelToLog + "] " + message);
     }
 }

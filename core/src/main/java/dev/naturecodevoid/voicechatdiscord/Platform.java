@@ -10,42 +10,54 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class Platform {
+import static dev.naturecodevoid.voicechatdiscord.Core.debugLevel;
+
+public interface Platform {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public abstract boolean isValidPlayer(Object sender);
+    boolean isValidPlayer(Object sender);
 
-    public abstract ServerPlayer commandContextToPlayer(CommandContext<?> context);
+    ServerPlayer commandContextToPlayer(CommandContext<?> context);
 
-    public abstract CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid);
+    CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid);
 
-    public abstract boolean isOperator(Object sender);
+    boolean isOperator(Object sender);
 
-    public abstract boolean hasPermission(Object sender, String permission);
+    boolean hasPermission(Object sender, String permission);
 
-    public abstract void sendMessage(Object sender, String message);
+    void sendMessage(Object sender, String message);
 
-    public abstract void sendMessage(Player player, String message);
+    void sendMessage(Player player, String message);
 
-    public abstract String getName(Player player);
+    String getName(Player player);
 
-    public abstract String getConfigPath();
+    String getConfigPath();
 
-    public abstract Loader getLoader();
+    Loader getLoader();
 
     // Paper uses log4j, Fabric uses slf4j
-    public abstract void info(String message);
+    void info(String message);
 
-    public abstract void warn(String message);
+    void warn(String message);
 
-    public abstract void error(String message);
+    void error(String message);
 
-    public abstract void debug(String message);
+    default void debug(String message) {
+        debug(message, 1);
+    }
 
-    public abstract void debugVerbose(String message);
+    default void debugVerbose(String message) {
+        debug(message, 2);
+    }
 
-    public abstract void debugExtremelyVerbose(String message);
+    default void debugExtremelyVerbose(String message) {
+        debug(message, 3);
+    }
 
-    public enum Loader {
+    private void debug(String message, int levelToLog) {
+        if (debugLevel >= levelToLog) info("[DEBUG " + levelToLog + "] " + message);
+    }
+
+    enum Loader {
         PAPER("paper"),
         FABRIC("fabric");
 
