@@ -305,9 +305,9 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
 
         platform.debugExtremelyVerbose("adding outgoing audio for " + sender + " (length of audio is " + audio.length + ")");
         AudioSource source = getAudioSource(sender);
-        Queue<Short> outgoingAudio = source.outgoingAudio;
+        source.lastTimeAudioReceived = System.currentTimeMillis();
         for (short data : audio) {
-            outgoingAudio.add(data);
+            source.outgoingAudio.add(data);
         }
     }
 
