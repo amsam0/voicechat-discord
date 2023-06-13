@@ -1,10 +1,10 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.naturecodevoid.voicechatdiscord.util;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
 import org.jetbrains.annotations.Nullable;
 
-public class Util {
+public final class Util {
     public static double clamp(double val, double min, double max) {
         return Math.min(max, Math.max(min, val));
     }

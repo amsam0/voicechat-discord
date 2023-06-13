@@ -15,13 +15,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.REPLACE_LEGACY_FORMATTING_CODES;
-import static dev.naturecodevoid.voicechatdiscord.Common.platform;
-import static dev.naturecodevoid.voicechatdiscord.Constants.MODRINTH_PROJECT_ID;
-import static dev.naturecodevoid.voicechatdiscord.Constants.VERSION;
+import static dev.naturecodevoid.voicechatdiscord.Constants.*;
+import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 @SuppressWarnings("CallToPrintStackTrace")
-public class UpdateChecker {
+public final class UpdateChecker {
     public static @Nullable String updateMessage = null;
 
     /**
@@ -86,7 +84,7 @@ public class UpdateChecker {
                         platform.debugVerbose("Found tag: " + name);
                     } catch (IllegalArgumentException | ParseException e) {
                         platform.debug("Failed to parse tag: " + name);
-                        if (Common.debugLevel >= 1)
+                        if (Core.debugLevel >= 1)
                             e.printStackTrace();
                     }
                 } catch (IllegalStateException | AssertionError ignored) {
@@ -105,7 +103,7 @@ public class UpdateChecker {
         HttpURLConnection connection = null;
 
         try {
-            //                                                                                                 [  "                                  "  ]
+            //                                                                                                 [  "                                   "  ]
             URL url = new URL("https://api.modrinth.com/v2/project/" + MODRINTH_PROJECT_ID + "/version?loaders=%5B%22" + platform.getLoader().name + "%22%5D");
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "naturecodevoid/voicechat-discord/" + VERSION);

@@ -2,6 +2,7 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import dev.naturecodevoid.voicechatdiscord.audiotransfer.DiscordBot;
 import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
@@ -14,43 +15,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import static dev.naturecodevoid.voicechatdiscord.Constants.CONFIG_HEADER;
+import static dev.naturecodevoid.voicechatdiscord.Constants.VOICECHAT_MIN_VERSION;
+
 /**
- * Common code between Paper and Fabric.
+ * Core code between Paper and Fabric.
  */
-public class Common {
-    public static final String REPLACE_LEGACY_FORMATTING_CODES = "§([a-z]|[0-9]|[A-Z])";
-    private static final List<String> configHeader = List.of(
-            "To add a bot, just copy paste the following into bots:",
-            "",
-            "bots:",
-            "- token: DISCORD_BOT_TOKEN_HERE",
-            "  vc_id: VOICE_CHANNEL_ID_HERE",
-            "",
-            "Example for 2 bots:",
-            "",
-            "bots:",
-            "- token: MyFirstBotsToken",
-            "  vc_id: 1234567890123456789",
-            "- token: MySecondBotsToken",
-            "  vc_id: 9876543210987654321",
-            "",
-            "If you are only using 1 bot, just replace DISCORD_BOT_TOKEN_HERE with your bot's token and replace VOICE_CHANNEL_ID_HERE with the voice channel ID.",
-            "",
-            "If you are reporting an issue or trying to figure out what's causing an issue, you may find the `debug_level` option helpful.",
-            "It will enable debug logging according to the level:",
-            "- 0 (or lower): No debug logging",
-            "- 1: Some debug logging (mainly logging that won't spam the console but can be helpful)",
-            "- 2: Most debug logging (will spam the console but excludes logging that is extremely verbose and usually not helpful)",
-            "- 3 (or higher): All debug logging (will spam the console)",
-            "",
-            "By default, Simple Voice Chat Discord Bridge will check for a new update on server startup. If it finds",
-            "a new update, it will always log this to the console, but as long as `alert_ops_of_updates` is true, it",
-            "will also tell any operators that there is an update available when they join the server.",
-            "We highly recommend you keep `alert_ops_of_updates` on since it is very important that you update the mod/plugin",
-            "as soon as updates come out due to bugs popping up randomly.",
-            "",
-            "For more information on getting everything setup: https://github.com/naturecodevoid/voicechat-discord#readme"
-    );
+public final class Core {
     public static ArrayList<DiscordBot> bots = new ArrayList<>();
     public static VoicechatServerApi api;
     public static Platform platform;
@@ -65,8 +36,16 @@ public class Common {
         loadConfig();
     }
 
+    public static void disable() {
+        platform.info("Shutting down " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+
+        stopBots();
+
+        platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+    }
+
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
-    protected static void loadConfig() {
+    public static void loadConfig() {
         File configFile = new File(platform.getConfigPath());
 
         if (!configFile.getParentFile().exists())
@@ -91,7 +70,7 @@ public class Common {
         config.addDefault("debug_level", 0);
 
         config.getOptions().setCopyDefaults(true);
-        config.getOptions().setHeader(configHeader);
+        config.getOptions().setHeader(CONFIG_HEADER);
         try {
             config.save(configFile);
         } catch (IOException e) {
@@ -128,15 +107,7 @@ public class Common {
         }
     }
 
-    public static void disable() {
-        platform.info("Shutting down " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
-
-        stopBots();
-
-        platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
-    }
-
-    protected static void stopBots() {
+    public static void stopBots() {
         for (DiscordBot bot : bots) {
             bot.stop();
             if (bot.jda == null)
@@ -149,14 +120,12 @@ public class Common {
     }
 
     public static void onPlayerJoin(Object rawPlayer) {
-        if (UpdateChecker.updateMessage != null) {
-            if (platform.isOperator(rawPlayer)) {
-                if (alertOpsOfUpdates) {
-                    platform.sendMessage(api.fromServerPlayer(rawPlayer), UpdateChecker.updateMessage);
-                    platform.debug("Alerted operator of new update");
-                } else {
-                    platform.debug("Not alerting operator of new update");
-                }
+        if (UpdateChecker.updateMessage != null && platform.isOperator(rawPlayer)) {
+            if (alertOpsOfUpdates) {
+                platform.sendMessage(api.fromServerPlayer(rawPlayer), UpdateChecker.updateMessage);
+                platform.debug("Alerted operator of new update");
+            } else {
+                platform.debug("Not alerting operator of new update");
             }
         }
     }
@@ -169,11 +138,11 @@ public class Common {
         }
     }
 
-    public static DiscordBot getBotForPlayer(UUID playerUuid) {
+    public static @Nullable DiscordBot getBotForPlayer(UUID playerUuid) {
         return getBotForPlayer(playerUuid, false);
     }
 
-    public static DiscordBot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
+    public static @Nullable DiscordBot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
         for (DiscordBot bot : bots) {
             if (bot.player != null)
                 if (bot.player.getUuid().compareTo(playerUuid) == 0)
@@ -184,16 +153,12 @@ public class Common {
         return null;
     }
 
-    public static DiscordBot getAvailableBot() {
+    private static @Nullable DiscordBot getAvailableBot() {
         for (DiscordBot bot : bots) {
             if (bot.player == null)
                 return bot;
         }
         return null;
-    }
-
-    private static boolean isSVCVersionSufficient(String version) {
-        return Version.valueOf(version).greaterThanOrEqualTo(Version.valueOf(Constants.VOICECHAT_MIN_VERSION));
     }
 
     public static void checkSVCVersion(@Nullable String version) {
@@ -215,8 +180,8 @@ public class Common {
             }
         }
 
-        if (version == null || !isSVCVersionSufficient(version)) {
-            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + Constants.VOICECHAT_MIN_VERSION + " or later";
+        if (version == null || Version.valueOf(version).lessThan(Version.valueOf(VOICECHAT_MIN_VERSION))) {
+            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
             if (version != null) {
                 message += ". You have version " + version + ".";
             }

@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
+import dev.naturecodevoid.voicechatdiscord.audiotransfer.DiscordBot;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,16 +20,17 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Constants.RELOAD_CONFIG_PERMISSION;
+import static dev.naturecodevoid.voicechatdiscord.Core.*;
 import static dev.naturecodevoid.voicechatdiscord.GroupManager.*;
-import static dev.naturecodevoid.voicechatdiscord.Util.getArgumentOr;
+import static dev.naturecodevoid.voicechatdiscord.util.Util.getArgumentOr;
 
 /**
  * Subcommands for /dvc
  */
-public class SubCommands {
+public final class SubCommands {
     @SuppressWarnings("unchecked")
-    protected static <S> LiteralArgumentBuilder<S> build(LiteralArgumentBuilder<S> builder) {
+    public static <S> LiteralArgumentBuilder<S> build(LiteralArgumentBuilder<S> builder) {
         return (LiteralArgumentBuilder<S>) ((LiteralArgumentBuilder<Object>) builder)
                 .then(literal("start").executes(wrapInTry(SubCommands::start)))
                 .then(literal("stop").executes(wrapInTry(SubCommands::stop)))
@@ -143,11 +145,11 @@ public class SubCommands {
     private static void reloadConfig(CommandContext<?> sender) {
         if (!platform.isOperator(sender) && !platform.hasPermission(
                 sender,
-                Constants.RELOAD_CONFIG_PERMISSION
+                RELOAD_CONFIG_PERMISSION
         )) {
             platform.sendMessage(
                     sender,
-                    "§cYou must be an operator or have the `" + Constants.RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
+                    "§cYou must be an operator or have the `" + RELOAD_CONFIG_PERMISSION + "` permission to use this command!"
             );
             return;
         }
@@ -213,7 +215,7 @@ public class SubCommands {
         platform.sendMessage(sender, whispering ? "§aStarted whispering!" : "§aStopped whispering!");
     }
 
-    private static class GroupCommands {
+    private static final class GroupCommands {
         @SuppressWarnings("SameReturnValue")
         private static int help(CommandContext<?> sender) {
             platform.sendMessage(

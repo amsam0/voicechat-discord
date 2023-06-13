@@ -2,7 +2,7 @@ package dev.naturecodevoid.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.VoicechatApi;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.platform;
+import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 public class FabricVoicechatPlugin extends VoicechatPlugin {
     @Override

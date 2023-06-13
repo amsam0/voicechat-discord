@@ -7,4 +7,4 @@ pluginManagement {
 }
 
 rootProject.name = "voicechat-discord"
-include("common", "paper", "fabric")
+include("core", "paper", "fabric")

@@ -52,7 +52,7 @@ tasks.shadowJar {
     relocate("net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda")
     relocate("org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus")
 
-    archiveBaseName.set(Properties.archivesBaseName + "-fabric")
+    archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
     archiveVersion.set(Properties.pluginVersion)
 
@@ -60,7 +60,7 @@ tasks.shadowJar {
 }
 
 tasks.remapJar {
-    archiveBaseName.set(Properties.archivesBaseName + "-fabric")
+    archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
     archiveVersion.set(Properties.pluginVersion)
 
@@ -91,8 +91,8 @@ dependencies {
     implementation("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
     shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
 
-    implementation(project(":common"))
-    shadow(project(":common"))
+    implementation(project(":core"))
+    shadow(project(":core"))
 }
 
 repositories {

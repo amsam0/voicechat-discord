@@ -1,46 +1,50 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import de.maxhenkel.voicechat.api.*;
-import de.maxhenkel.voicechat.api.events.*;
+import de.maxhenkel.voicechat.api.Group;
+import de.maxhenkel.voicechat.api.ServerPlayer;
+import de.maxhenkel.voicechat.api.VoicechatConnection;
+import de.maxhenkel.voicechat.api.events.CreateGroupEvent;
+import de.maxhenkel.voicechat.api.events.JoinGroupEvent;
+import de.maxhenkel.voicechat.api.events.LeaveGroupEvent;
+import de.maxhenkel.voicechat.api.events.RemoveGroupEvent;
+import dev.naturecodevoid.voicechatdiscord.util.BiMap;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.*;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.api;
-import static dev.naturecodevoid.voicechatdiscord.Common.platform;
-import static dev.naturecodevoid.voicechatdiscord.GroupManager.groupFriendlyIds;
-import static dev.naturecodevoid.voicechatdiscord.GroupManager.groupPlayers;
+import static dev.naturecodevoid.voicechatdiscord.Core.api;
+import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
-public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlugin {
-    @Override
-    public String getPluginId() {
-        return Constants.PLUGIN_ID;
+public final class GroupManager {
+    public static final BiMap<UUID, Integer> groupFriendlyIds = new BiMap<>();
+    public static final Map<UUID, List<ServerPlayer>> groupPlayers = new HashMap<>();
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static @Nullable String getPassword(Group group) {
+        // https://github.com/henkelmax/enhanced-groups/blob/f5535f84fc41a2b1798b2b43adddcd6b6b28c22a/src/main/java/de/maxhenkel/enhancedgroups/events/ForceGroupTypeEvents.java#LL46C53-L57C10
+        try {
+            Field groupField = group.getClass().getDeclaredField("group"); // https://github.com/henkelmax/simple-voice-chat/blob/6bdc2901f28b8bc7fc492871b644a2d5478e54dd/common/src/main/java/de/maxhenkel/voicechat/plugins/impl/GroupImpl.java#L13
+            groupField.setAccessible(true);
+            Object groupObject = groupField.get(group);
+            Field passwordField = groupObject.getClass().getDeclaredField("password"); // https://github.com/henkelmax/simple-voice-chat/blob/6bdc2901f28b8bc7fc492871b644a2d5478e54dd/common/src/main/java/de/maxhenkel/voicechat/voice/server/Group.java#L13
+            passwordField.setAccessible(true);
+            return (String) passwordField.get(groupObject);
+        } catch (Throwable e) {
+            platform.warn("Could not get password of group \"" + group.getName() + "\" (" + group.getId() + "):");
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    @Override
-    public void initialize(VoicechatApi serverApi) {
-        api = (VoicechatServerApi) serverApi;
-        platform.info("Successfully initialized Simple Voice Chat plugin");
-    }
-
-    @Override
-    public void registerEvents(EventRegistration registration) {
-        registration.registerEvent(JoinGroupEvent.class, this::onJoinGroup);
-        registration.registerEvent(LeaveGroupEvent.class, this::onLeaveGroup);
-        registration.registerEvent(CreateGroupEvent.class, this::onGroupCreated);
-        registration.registerEvent(RemoveGroupEvent.class, this::onGroupRemoved);
-    }
-
-    private List<ServerPlayer> getPlayers(Group group) {
+    private static List<ServerPlayer> getPlayers(Group group) {
         List<ServerPlayer> players = groupPlayers.putIfAbsent(group.getId(), new ArrayList<>());
         if (players == null) players = groupPlayers.get(group.getId()); // java is bad
         return players;
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public void onJoinGroup(JoinGroupEvent event) {
+    public static void onJoinGroup(JoinGroupEvent event) {
         Group group = event.getGroup();
         ServerPlayer player = event.getConnection().getPlayer();
 
@@ -54,7 +58,7 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public void onLeaveGroup(LeaveGroupEvent event) {
+    public static void onLeaveGroup(LeaveGroupEvent event) {
         Group group = event.getGroup();
         ServerPlayer player = event.getConnection().getPlayer();
         if (group == null) {
@@ -78,7 +82,7 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public void onGroupCreated(CreateGroupEvent event) {
+    public static void onGroupCreated(CreateGroupEvent event) {
         Group group = event.getGroup();
         UUID groupId = group.getId();
 
@@ -105,7 +109,7 @@ public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlug
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public void onGroupRemoved(RemoveGroupEvent event) {
+    public static void onGroupRemoved(RemoveGroupEvent event) {
         Group group = event.getGroup();
         UUID groupId = group.getId();
 

@@ -9,8 +9,6 @@ plugins {
 project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
-val archivesBaseName = Properties.archivesBaseName + "-paper"
-
 java {
     toolchain.languageVersion.set(Properties.javaLanguageVersion)
     sourceCompatibility = Properties.javaVersion
@@ -50,20 +48,20 @@ tasks.shadowJar {
     relocate("net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda")
     relocate("org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus")
 
-    archiveBaseName.set(archivesBaseName)
+    archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
     archiveVersion.set(Properties.pluginVersion)
 }
 
 tasks.jar {
-    archiveBaseName.set(archivesBaseName)
+    archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
     archiveVersion.set(Properties.pluginVersion)
 }
 
 tasks.reobfJar {
     // No idea why we didn't need to do this when we used Groovy, but this is necessary to have the correct jar filename (otherwise it will be paper-{VERSION}.jar)
-    outputJar.set(layout.buildDirectory.file("libs/${archivesBaseName}-${Properties.pluginVersion}.jar"))
+    outputJar.set(layout.buildDirectory.file("libs/${Properties.archivesBaseName + "-" + project.name}-${Properties.pluginVersion}.jar"))
 }
 
 tasks.assemble {
@@ -83,7 +81,7 @@ dependencies {
     shadow("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
     shadow("com.google.code.gson:gson:${Properties.gsonVersion}")
     shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
-    shadow(project(":common"))
+    shadow(project(":core"))
 }
 
 repositories {

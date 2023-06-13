@@ -15,8 +15,10 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
+import static dev.naturecodevoid.voicechatdiscord.Core.*;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
 public class FabricPlatform extends Platform {
@@ -32,16 +34,16 @@ public class FabricPlatform extends Platform {
     }
 
     @Override
-    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
+    public CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid) {
         ServerWorld world = (ServerWorld) level.getServerLevel();
         Entity entity = world.getEntity(uuid);
-        return entity != null ?
+        return CompletableFuture.completedFuture(entity != null ?
                 api.createPosition(
                         entity.getX(),
                         entity.getY(),
                         entity.getZ()
                 )
-                : null;
+                : null);
     }
 
     @Override

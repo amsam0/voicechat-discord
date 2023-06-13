@@ -13,7 +13,7 @@ java {
 }
 
 tasks.jar {
-    archiveBaseName.set(Properties.archivesBaseName + "-common")
+    archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
 }
 
 tasks.register<Copy>("processSources") {

@@ -8,6 +8,7 @@ import de.maxhenkel.voicechat.api.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class Platform {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -15,7 +16,7 @@ public abstract class Platform {
 
     public abstract ServerPlayer commandContextToPlayer(CommandContext<?> context);
 
-    public abstract @Nullable Position getEntityPosition(ServerLevel level, UUID uuid);
+    public abstract CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid);
 
     public abstract boolean isOperator(Object sender);
 
@@ -29,9 +30,6 @@ public abstract class Platform {
 
     public abstract String getConfigPath();
 
-    /**
-     * Loader used for filtering versions on Modrinth
-     */
     public abstract Loader getLoader();
 
     // Paper uses log4j, Fabric uses slf4j

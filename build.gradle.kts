@@ -9,7 +9,7 @@ tasks.register<GradleBuild>("build") {
 tasks.register<GradleBuild>("publish") {
     group = "voicechat-discord"
     tasks = listOf(
-            ":common:modrinthSyncBody",
+            ":core:modrinthSyncBody",
             ":paper:modrinth",
             ":fabric:modrinth"
     )

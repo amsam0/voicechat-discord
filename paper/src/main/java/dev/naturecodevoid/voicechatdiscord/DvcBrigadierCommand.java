@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.platform;
+import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
 
 @DefaultQualifier(NonNull.class)

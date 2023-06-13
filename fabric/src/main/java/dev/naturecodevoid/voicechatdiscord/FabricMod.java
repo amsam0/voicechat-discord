@@ -10,10 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Constants.PLUGIN_ID;
+import static dev.naturecodevoid.voicechatdiscord.Core.*;
 
 public class FabricMod implements DedicatedServerModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Constants.PLUGIN_ID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
     @Override
     public void onInitializeServer() {

@@ -6,6 +6,7 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -14,8 +15,11 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import static dev.naturecodevoid.voicechatdiscord.Common.*;
+import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
+import static dev.naturecodevoid.voicechatdiscord.Core.*;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 
 public class PaperPlatform extends Platform {
@@ -30,26 +34,36 @@ public class PaperPlatform extends Platform {
         return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getBukkitEntity());
     }
 
-    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
+    public CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid) {
         if (level.getServerLevel() instanceof World world) {
-            Entity entity = world.getEntity(uuid);
-            return entity != null ?
-                    api.createPosition(
-                            entity.getLocation().getX(),
-                            entity.getLocation().getY(),
-                            entity.getLocation().getZ()
-                    )
-                    : null;
+            return CompletableFuture.supplyAsync(() -> {
+                try {
+                    debugExtremelyVerbose("getting position for " + uuid);
+                    return Bukkit.getScheduler().callSyncMethod(PaperPlugin.INSTANCE, () -> {
+                        Entity entity = world.getEntity(uuid);
+                        debugExtremelyVerbose("got position for " + uuid);
+                        return entity != null ?
+                                api.createPosition(
+                                        entity.getLocation().getX(),
+                                        entity.getLocation().getY(),
+                                        entity.getLocation().getZ()
+                                )
+                                : null;
+                    }).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    return null;
+                }
+            });
         }
         if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
             net.minecraft.world.entity.Entity entity = world.getEntity(uuid);
-            return entity != null ?
+            return CompletableFuture.completedFuture(entity != null ?
                     api.createPosition(
                             entity.getX(),
                             entity.getY(),
                             entity.getZ()
                     )
-                    : null;
+                    : null);
         }
         error("level is not World or ServerLevel, it is " + level.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         return null;
