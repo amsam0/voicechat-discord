@@ -1,0 +1,4 @@
+contact_links:
+  - name: Pinned and closed issues
+    url: https://github.com/naturecodevoid/voicechat-discord/issues?q=is%3Aissue
+    about: Please look at the pinned issues and closed issues! There's a very good chance someone has already had the problem you're having.
