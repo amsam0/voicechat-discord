@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -88,9 +89,9 @@ public class PaperPlatform implements Platform {
         else if (sender instanceof CommandContext<?> context) {
             BukkitBrigadierCommandSource source = (BukkitBrigadierCommandSource) context.getSource();
             if (source.getBukkitEntity() instanceof Player player)
-                player.sendMessage(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
+                player.sendMessage(message);
             else
-                source.getBukkitSender().sendMessage(message);
+                source.getBukkitSender().sendMessage(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
         } else
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
 
