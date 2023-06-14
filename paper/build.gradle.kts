@@ -73,7 +73,7 @@ tasks.build {
 }
 
 dependencies {
-    paperweight.paperDevBundle(Properties.paperVersion)
+    paperweight.paperDevBundle(Properties.paperDevBundleVersion)
 
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
 

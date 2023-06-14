@@ -7,15 +7,16 @@ object Properties {
     val javaVersion = JavaVersion.VERSION_17
     val javaLanguageVersion = JavaLanguageVersion.of(javaVersionInt)
 
+    const val minecraftVersion = "1.19.2"
+
     /* Paper */
     const val paperApiVersion = "1.19"
-    const val paperVersion = "1.19.2-R0.1-SNAPSHOT"
+    const val paperDevBundleVersion = "$minecraftVersion-R0.1-SNAPSHOT"
 
-    /* Fabric */
-    const val minecraftVersion = "1.19.2"
-    const val yarnMappings = "1.19.2+build.28"
+    /* Fabric (https://fabricmc.net/develop/#latest-versions) */
+    const val yarnMappings = "$minecraftVersion+build.28"
     const val fabricLoaderVersion = "0.14.10"
-    const val fabricApiVersion = "0.76.0+1.19.2"
+    const val fabricApiVersion = "0.76.0+$minecraftVersion"
 
     /* Dependencies */
     const val voicechatApiVersion = "2.4.8"
