@@ -144,7 +144,7 @@ public final class Core {
 
     public static @Nullable DiscordBot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
         for (DiscordBot bot : bots) {
-            if (bot.player != null)
+            if (bot.hasStarted && bot.player != null)
                 if (bot.player.getUuid().compareTo(playerUuid) == 0)
                     return bot;
         }

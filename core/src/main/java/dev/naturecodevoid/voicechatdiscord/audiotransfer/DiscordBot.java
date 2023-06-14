@@ -60,6 +60,10 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
      */
     public boolean hasLoggedIn = false;
     /**
+     * Whether the start process has completed.
+     */
+    public boolean hasStarted = false;
+    /**
      * The SVC audio sender used to send audio to SVC.
      */
     public AudioSender sender;
@@ -208,6 +212,8 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
                 player,
                 "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. If you are having issues, try restarting the session with §r§f/dvc start§r§a. Please join the following voice channel in discord: §r§f" + channelName
         );
+
+        hasStarted = true;
     }
 
     /**
@@ -216,6 +222,8 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
     @SuppressWarnings("DataFlowIssue")
     public void stop() {
         platform.debug("stopping bot with vc_id " + vcId);
+
+        hasStarted = false;
 
         lastTimeAudioProvidedToSVC = 0;
         lastTimeAudioProvidedToDiscord = 0;
