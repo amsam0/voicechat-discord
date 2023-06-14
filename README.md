@@ -101,25 +101,78 @@ You can redo this process for however many bots you want. There is some info in 
 > There cannot be more than one person speaking in the voice channel at a time, or there will be weird audio glitches. **We recommend limiting bot voice channels to 2 users to ensure that this does
 > not cause an issue.**
 
-### `/startdiscordvoicechat`
+Most of Simple Voice Chat Discord Bridge's functionality is exposed through the `/dvc` command. This section will go through all of its subcommands.
 
-To start a voice chat, use the `/startdiscordvoicechat` command. (It may take a few seconds to start.) Then, join the voice channel as instructed. Other players should be able to hear you speak when
-you speak in the Discord channel, and you should be able to hear other players speak when they speak through the Simple Voice Chat mod.
+For commands that take string arguments, you can wrap them in quotes to escape spaces.
 
-If you are having issues while in a discord voice chat session, you can restart it by using `/startdiscordvoicechat` again.
+### `/dvc start`
 
-### `/stopdiscordvoicechat`
+Starts a voice chat session using the first available bot. You may have to wait a few seconds for it to start. After it starts, join the voice channel as instructed. You should be able to hear players
+speak, and other players should be able to hear you speak.
 
-If you want to stop the discord voice chat session you are currently in, use the `/stopdiscordvoicechat` command.
+If you are having issues while in a voice chat session, you can try restarting it by using `/dvc start` again.
 
-### `/reloaddiscordvoicechatconfig`
+### `/dvc stop`
 
-If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/reloaddiscordvoicechatconfig` command to
-reload the config without have to reload/restart the server. **Using this command will stop all running bots.**
+Stops the current voice chat session and disconnects the bot.
+
+### `/dvc group`
+
+Allows you to list, create, join, leave and remove groups.
+
+#### `/dvc group list`
+
+Gives you a list of all groups.
+
+#### `/dvc group create <name> [password] [type] [persistent]`
+
+Allows you to create a group.
+
+Arguments:
+
+-   `name` (required): The name of the group.
+-   `password` (optional, defaults to `""` (no password)): The password of the group. If you don't want a password but want to change the group type or persistency, just pass an empty string: `""`
+-   `type` (optional, defaults to `normal`): Can be `normal`, `open` or `isolated`.
+    -   `normal`: Players in a group can hear nearby players that are not in a group, but not vice versa
+    -   `open`: Players in a group can hear nearby players and nearby players can hear players in the group
+    -   `isolated`: Players in a group can only hear other players in the group
+-   `persistent` (optional, defaults to `false`): If `true`, the group will not be removed once all players leave. Instead, it has to be removed using [`/dvc group remove <ID>`](#dvc-group-remove-id)
+
+#### `/dvc group join <ID>`
+
+Allows you to join a group using an ID from [`/dvc group list`](#dvc-group-list).
+
+#### `/dvc group info`
+
+Gives you info about your current group.
+
+#### `/dvc group leave`
+
+Allows you to leave your current group.
+
+#### `/dvc group remove <ID>`
+
+Allows you to remove a **persistent** group **with no players in it** using an ID from [`/dvc group list`](#dvc-group-list).
+
+### `/dvc togglewhisper`
+
+Allows you to whisper.
+
+### `/dvc reloadconfig`
+
+If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/dvc reloadconfig` subcommand to reload
+the config without have to reload/restart the server. **Using this subcommand will stop all running bots.**
+
+### `/dvc checkforupdate`
+
+Checks for an update to the mod/plugin by first contacting GitHub's API, and then if a new version is found, using Modrinth's API to provide a link to that version's download page.
+
+This is done automatically on server startup. By default, the update message (if there is an update) is sent to operators when they join the server. This can be disabled by disabling the
+`alert_ops_of_updates` option in [the configuration file](#finding-the-configuration-file). However, this will not disable logging update messages to the console on startup.
 
 ## Roadmap
 
-### `2.1.0`
+### 2.1.0
 
 -   Reduce volume of whispering players in the audio that goes to discord. This will require additions to the voicechat API
 -   Don't allow players to use /dvc group when groups are disabled. This will also require additions to the voicechat API

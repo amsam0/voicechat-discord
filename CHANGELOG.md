@@ -13,10 +13,10 @@ Huge thanks to [Totobird](https://github.com/Totobird-Creations) for being a hug
     -   New subcommand: `/dvc stop`
         -   Only usable while currently in a discord voice chat session
         -   Disconnects the bot and stops the session
-    -   New subcommand: `/dvc togglewhisper`
-        -   Allows mod users to whisper
     -   New subcommand: `/dvc group`
         -   See https://github.com/naturecodevoid/voicechat-discord#dvc-group for docs
+    -   New subcommand: `/dvc togglewhisper`
+        -   Allows mod users to whisper
     -   New subcommand: `/dvc reloadconfig`
         -   Only usable by operators or players with the `voicechat-discord.reload-config` permission
         -   Stops all sessions and reloads the config
