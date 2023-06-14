@@ -1,11 +1,10 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -25,12 +24,12 @@ import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 public class PaperPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {
         if (sender instanceof CommandContext<?> context)
-            return ((CommandSourceStack) context.getSource()).getPlayer() != null;
+            return ((BukkitBrigadierCommandSource) context.getSource()).getBukkitEntity() instanceof Player;
         return sender instanceof Player;
     }
 
     public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getBukkitEntity());
+        return api.fromServerPlayer(((BukkitBrigadierCommandSource) context.getSource()).getBukkitEntity());
     }
 
     public CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid) {
@@ -70,7 +69,7 @@ public class PaperPlatform implements Platform {
 
     public boolean isOperator(Object sender) {
         if (sender instanceof CommandContext<?> context)
-            return ((CommandSourceStack) context.getSource()).hasPermission(2);
+            return ((BukkitBrigadierCommandSource) context.getSource()).getBukkitSender().isOp();
         if (sender instanceof Permissible permissible)
             return permissible.isOp();
 
@@ -87,11 +86,11 @@ public class PaperPlatform implements Platform {
         if (sender instanceof CommandSender player)
             player.sendMessage(message);
         else if (sender instanceof CommandContext<?> context) {
-            CommandSourceStack source = (CommandSourceStack) context.getSource();
-            if (source.getPlayer() == null)
-                source.sendSystemMessage(Component.literal(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
+            BukkitBrigadierCommandSource source = (BukkitBrigadierCommandSource) context.getSource();
+            if (source.getBukkitEntity() instanceof Player player)
+                player.sendMessage(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
             else
-                source.sendSystemMessage(Component.literal(message));
+                source.getBukkitSender().sendMessage(message);
         } else
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
 
