@@ -101,7 +101,7 @@ public final class Core {
 
         try {
             debugLevel = (int) config.get("debug_level");
-            if (debugLevel > 0) platform.info("Debug mode has been set to level " + debugLevel);
+            if (debugLevel > 0) platform.info("Debug level has been set to " + debugLevel);
         } catch (ClassCastException e) {
             platform.error("Please make sure the debug_level option is a valid integer");
         }
