@@ -1,10 +1,9 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Feature Request
+about: Have an idea for an improvement or feature? Use this template!
 title: ''
-labels: ''
-assignees: ''
-
+labels: 'enchancement'
+assignees: 'naturecodevoid'
 ---
 
 **Is your feature request related to a problem? Please describe.**
