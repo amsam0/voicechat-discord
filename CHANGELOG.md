@@ -9,7 +9,7 @@ This update has some new features and bugfixes. The minimum Simple Voice Chat ve
 -   Reduce volume of whispering players in the audio that goes to discord
 -   Don't allow players to use `/dvc group` when groups are disabled
 -   Fixed tab complete on Paper
--   Switch to using adventure and minimessage for messages. This means that we no longer use the legacy formatting codes, and some messages will appear colored in the console!
+-   Switch to using adventure and minimessage for messages. This means that we no longer use the legacy formatting codes, and some messages will have colors in the console!
 
 Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.0.1...2.1.0
 
