@@ -76,7 +76,7 @@ final class DvcBrigadierCommand extends Command implements PluginIdentifiableCom
                     .findFirst()
                     .get()
                     .invoke(minecraftServer);
-            CommandDispatcher<CommandSourceStack> dispatcher = (CommandDispatcher<CommandSourceStack>) Arrays.stream(MinecraftServer.class.getMethods())
+            CommandDispatcher<CommandSourceStack> dispatcher = (CommandDispatcher<CommandSourceStack>) Arrays.stream(Commands.class.getMethods())
                     .filter(method -> method.getReturnType() == CommandDispatcher.class) // getDispatcher
                     .findFirst()
                     .get()
