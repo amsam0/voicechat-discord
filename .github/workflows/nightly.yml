@@ -34,11 +34,11 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: add nightly suffix to version
-        run: sed -e '/plugin_version=.*/s/$/-nightly.${{ github.sha }}/' -i gradle.properties
+        run: sed -e '/pluginVersion = .*/s/"$/-nightly.${{ github.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
 
       - name: get version
         id: version
-        run: echo "version=$(grep plugin_version gradle.properties | sed -e "s/    plugin_version=//g")" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: build paper
         run: ../gradlew build
