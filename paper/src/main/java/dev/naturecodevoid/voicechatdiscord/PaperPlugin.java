@@ -5,6 +5,7 @@ import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.minecraft.commands.CommandSourceStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ import static dev.naturecodevoid.voicechatdiscord.Core.*;
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     public static PaperPlugin INSTANCE;
+    public static BukkitAudiences adventure;
     private VoicechatPlugin voicechatPlugin;
 
     public static PaperPlugin get() {
@@ -46,6 +48,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         INSTANCE = this;
         platform = new PaperPlatform();
+        adventure = BukkitAudiences.create(this);
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
@@ -79,6 +82,11 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         if (voicechatPlugin != null) {
             getServer().getServicesManager().unregister(voicechatPlugin);
             LOGGER.info("Successfully unregistered voicechat discord plugin");
+        }
+
+        if (adventure != null) {
+            adventure.close();
+            adventure = null;
         }
     }
 

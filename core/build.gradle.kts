@@ -73,10 +73,6 @@ repositories {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set(Properties.modrinthProjectId)
-    @Suppress("RedundantLambdaOrAnonymousFunction")
-    syncBodyFrom.set({
-        val stream: java.io.InputStream = rootProject.file("README.md").inputStream()
-        stream.bufferedReader().use { it.readText() }
-    }())
+    syncBodyFrom.set(rootProject.file("README.md").inputStream().bufferedReader().use { it.readText() })
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
 }
