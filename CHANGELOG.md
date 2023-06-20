@@ -2,6 +2,18 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 2.0.1
+
+This update fixes one of the major issues with 2.0.0. If you are on Fabric, you probably didn't experience it, but you should still update because of the other fixes and improvements.
+
+-   Fixed [#22](https://github.com/naturecodevoid/voicechat-discord/issues/22)
+-   Switch to a simpler volume adjustment method. While this seems to work fine, please report any issues with the audio going to Discord!
+-   Slight improvement: packets with a volume less than or equal to 0 (which ends up being silent) won't be sent to Discord. This can happen when we receive packets out of the distance of the player
+-   Improve reset watcher to be slower, this may fix some audio related issues
+-   Make NMS usage and reflection on Paper safer and hopefully future proof it more
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.0.0...2.0.1
+
 ## 2.0.0
 
 Huge thanks to [Totobird](https://github.com/Totobird-Creations) for being a huge help with this update! Their PR was the main reason I started working on it again.
