@@ -99,7 +99,7 @@ modrinth {
     versionName.set("[PAPER] " + project.version)
     versionNumber.set(Properties.pluginVersion)
     changelog.set("")
-    uploadFile.set(tasks.shadowJar)
+    uploadFile.set(tasks.reobfJar)
     gameVersions.set(Properties.supportedMinecraftVersions)
     loaders.set(listOf("paper", "purpur"))
     detectLoaders.set(false)
