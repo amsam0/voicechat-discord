@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import org.bukkit.Bukkit;
+import io.papermc.paper.chunk.system.entity.EntityLookup;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -13,14 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
+import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.getCraftWorld;
 
 public class PaperPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {
@@ -33,36 +32,43 @@ public class PaperPlatform implements Platform {
         return api.fromServerPlayer(((BukkitBrigadierCommandSource) context.getSource()).getBukkitEntity());
     }
 
-    public CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid) {
+    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
         if (level.getServerLevel() instanceof World world) {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    debugExtremelyVerbose("getting position for " + uuid);
-                    return Bukkit.getScheduler().callSyncMethod(PaperPlugin.INSTANCE, () -> {
-                        Entity entity = world.getEntity(uuid);
-                        debugExtremelyVerbose("got position for " + uuid);
-                        return entity != null ?
-                                api.createPosition(
-                                        entity.getLocation().getX(),
-                                        entity.getLocation().getY(),
-                                        entity.getLocation().getZ()
-                                )
-                                : null;
-                    }).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    return null;
-                }
-            });
+            // Stupid Bukkit API prevents us from using world.getEntity(uuid) since we aren't on the main thread
+            // Using Bukkit.getScheduler().callSyncMethod takes too much time
+            // so we are forced to use reflection to get the inner ServerLevel
+            // from there we can get Paper's EntityLookup, which allows us to get the entity
+            // but wait - we aren't done yet!
+            // the NMS Entity getX/Y/Z methods will be obfuscated, which obviously doesn't work well across versions (this is when I wish Paper had support for Fabric's Intermediary mappings, which solves this kind of issue on Fabric)
+            // so instead we need to get the Bukkit entity
+            // but for some reason getBukkitEntity doesn't exist so instead we cast the CommandSender to an Entity
+            // the cast is safe because getBukkitEntity and getBukkitSender return the same thing
+            try {
+                net.minecraft.server.level.ServerLevel nmsLevel = (net.minecraft.server.level.ServerLevel) getCraftWorld().getMethod("getHandle").invoke(world);
+                EntityLookup entityLookup = nmsLevel.getEntityLookup();
+                net.minecraft.world.entity.Entity nmsEntity = entityLookup.get(uuid);
+                if (nmsEntity == null) return null;
+                @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
+                return api.createPosition(
+                        entity.getLocation().getX(),
+                        entity.getLocation().getY(),
+                        entity.getLocation().getZ()
+                );
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                     ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
-        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel world) {
-            net.minecraft.world.entity.Entity entity = world.getEntity(uuid);
-            return CompletableFuture.completedFuture(entity != null ?
-                    api.createPosition(
-                            entity.getX(),
-                            entity.getY(),
-                            entity.getZ()
-                    )
-                    : null);
+        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel nmsLevel) {
+            EntityLookup entityLookup = nmsLevel.getEntityLookup();
+            net.minecraft.world.entity.Entity nmsEntity = entityLookup.get(uuid);
+            if (nmsEntity == null) return null;
+            @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
+            return api.createPosition(
+                    entity.getLocation().getX(),
+                    entity.getLocation().getY(),
+                    entity.getLocation().getZ()
+            );
         }
         error("level is not World or ServerLevel, it is " + level.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         return null;

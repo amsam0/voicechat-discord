@@ -8,6 +8,29 @@ This document will not go over any of the following topics:
 -   Basics of Java
 -   Minecraft modding/plugin development
 
+## Using `net.minecraft` classes on Paper
+
+Since this is a pretty important topic, I've chosen to put this section at the top. This is only relevant for the Paper side of things, since Fabric has intermediary mappings which solves the whole
+problem this section goes over.
+
+On Paper, we cannot easily use methods on classes in the `net.minecraft` package. This is because we want to target 1.19.2+; obfuscated names **will** change between versions, and paperweight will
+only reobfuscate the jar for 1.19.2.
+
+Class names are mostly fine as those seem to be unobfuscated by Paper; methods are the main problem.
+
+Try to use Bukkit methods and reflection to use methods that won't be obfuscated. For example, instead of using `net.minecraft.world.entity.Entity.getX()`, use the `getBukkitSender` method to get the
+Bukkit `Entity` (`getBukkitEntity` also exists, but I had issues with it) and then use the Bukkit API to get the X coordinate. This avoids using the `net.minecraft` method and instead uses a method
+(`getBukkitSender`) that Bukkit will implement and therefore won't be obfuscated.
+
+For methods such as `net.minecraft.server.MinecraftServer.getCommands()` that don't have a Bukkit counterpart, you may be able to use some clever reflection to get the method name through return type
+and arguments. See `DvcBrigadierCommand` for examples of this.
+
+Brigadier classes are completely fine to use. However, instead of using `net.minecraft`'s `CommandSourceStack`, use Paper's `com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource` when
+casting as it should have all the methods you will need.
+
+Keep in mind that classes in the `org.bukkit.craftbukkit` package, such as everything in `org.bukkit.craftbukkit.<version>.command.VanillaCommandWrapper`, can be used safely with the original method
+name through reflection. See `PaperPlugin`'s `get...` methods and `DvcBrigadierCommand.getListener(sender)` for examples of this.
+
 ## `buildSrc` and `Properties`
 
 In `buildSrc`, there is a Kotlin object named `Properties`. It has constants of various properties and replaced `gradle.properties` when I migrated to using Kotlin for gradle build scripts.

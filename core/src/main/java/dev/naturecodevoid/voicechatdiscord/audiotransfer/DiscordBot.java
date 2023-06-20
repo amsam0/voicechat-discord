@@ -31,6 +31,7 @@ import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
+    private static final int MILLISECONDS_UNTIL_RESET = 1000;
     /**
      * The Discord bot token.
      */
@@ -76,7 +77,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
      */
     private long lastTimeAudioProvidedToDiscord = 0;
     /**
-     * A thread that checks every 100ms if the audio sender, discord encoder and audio source decoders should be reset.
+     * A thread that checks every 500ms if the audio sender, discord encoder and audio source decoders should be reset.
      */
     private Thread resetWatcher;
     /**
@@ -174,19 +175,19 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
             while (true) {
                 try {
                     //noinspection BusyWait
-                    Thread.sleep(100);
+                    Thread.sleep(500);
                 } catch (InterruptedException ignored) {
                     platform.debug("exiting reset watcher thread");
                     break;
                 }
 
-                if (lastTimeAudioProvidedToSVC != 0 && System.currentTimeMillis() - 100 > lastTimeAudioProvidedToSVC) {
+                if (lastTimeAudioProvidedToSVC != 0 && System.currentTimeMillis() - MILLISECONDS_UNTIL_RESET > lastTimeAudioProvidedToSVC) {
                     platform.debugVerbose("resetting sender for player with UUID " + player.getUuid());
                     sender.reset();
                     lastTimeAudioProvidedToSVC = 0;
                 }
 
-                if (lastTimeAudioProvidedToDiscord != 0 && System.currentTimeMillis() - 100 > lastTimeAudioProvidedToDiscord) {
+                if (lastTimeAudioProvidedToDiscord != 0 && System.currentTimeMillis() - MILLISECONDS_UNTIL_RESET > lastTimeAudioProvidedToDiscord) {
                     platform.debugVerbose("resetting encoder for player with UUID " + player.getUuid());
                     discordEncoder.resetState();
                     lastTimeAudioProvidedToDiscord = 0;
@@ -194,7 +195,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
 
                 for (Map.Entry<UUID, AudioSource> entry : audioSources.entrySet()) {
                     AudioSource source = entry.getValue();
-                    if (source.lastTimeAudioReceived != 0 && System.currentTimeMillis() - 100 > source.lastTimeAudioReceived) {
+                    if (source.lastTimeAudioReceived != 0 && System.currentTimeMillis() - MILLISECONDS_UNTIL_RESET > source.lastTimeAudioReceived) {
                         platform.debugVerbose("resetting decoder for source with UUID " + entry.getKey());
                         source.decoder.resetState();
                         source.lastTimeAudioReceived = 0;
@@ -269,7 +270,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
     }
 
     private AudioSource getAudioSource(UUID sourceId) {
-        platform.debugExtremelyVerbose("getting player data for " + sourceId);
+        platform.debugExtremelyVerbose("getting audio source for " + sourceId);
         AudioSource data = audioSources.get(sourceId);
         if (data == null) {
             data = new AudioSource();
@@ -289,13 +290,13 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         UUID sender = packet.getSender();
         short[] audio = getAudioSource(sender).decoder.decode(packet.getOpusEncodedData());
 
-        platform.debugExtremelyVerbose("outgoing packet is a " + packet.getClass().getSimpleName());
+        platform.debugExtremelyVerbose("outgoing packet is a " + packet.getClass().getSimpleName() + " and audio has a length of " + audio.length);
         if (packet instanceof LocationalSoundPacket sound) {
             position = sound.getPosition();
             distance = sound.getDistance();
         } else if (packet instanceof EntitySoundPacket sound) {
-            platform.getEntityPosition(player.getServerLevel(), sound.getEntityUuid()).thenAccept(position1 -> handleOutgoingSound(audio, sender, sound.getDistance(), position1));
-            return;
+            position = platform.getEntityPosition(player.getServerLevel(), sound.getEntityUuid());
+            distance = sound.getDistance();
         } else if (!(packet instanceof StaticSoundPacket)) {
             platform.error("packet is not LocationalSoundPacket, StaticSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         }
@@ -311,6 +312,9 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
             audio = AudioCore.adjustVolumeBasedOnDistance(audio, position, this.player.getPosition(), distance);
         }
 
+        if (audio == null)
+            return;
+
         platform.debugExtremelyVerbose("adding outgoing audio for " + sender + " (length of audio is " + audio.length + ")");
         AudioSource source = getAudioSource(sender);
         source.lastTimeAudioReceived = System.currentTimeMillis();
@@ -322,11 +326,10 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
     /**
      * Returns audio which will be played by the Discord bot
      */
-    @Nullable
     @Override
     public ByteBuffer provide20MsAudio() {
         if (!canProvide()) {
-            return null;
+            return ByteBuffer.wrap(discordEncoder.encode(new short[AudioCore.SHORTS_IN_20MS]));
         }
         lastTimeAudioProvidedToDiscord = System.currentTimeMillis();
         return ByteBuffer.wrap(discordEncoder.encode(pollOutgoingAudio()));
@@ -343,7 +346,8 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
             short[] audioPart = new short[AudioCore.SHORTS_IN_20MS];
             for (int i = 0; i < AudioCore.SHORTS_IN_20MS; i++) {
                 if (outgoingAudio.isEmpty()) {
-                    platform.debugVerbose("outgoingAudio is empty, we were able to get " + i + " short");
+                    platform.debugExtremelyVerbose("outgoingAudio is empty, we were able to get " + i + " short");
+                    if (i == 0) return; // We didn't get anything, let's not include the audio part
                     break;
                 }
                 audioPart[i] = outgoingAudio.poll();

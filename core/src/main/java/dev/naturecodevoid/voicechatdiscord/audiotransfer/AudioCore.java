@@ -2,12 +2,12 @@ package dev.naturecodevoid.voicechatdiscord.audiotransfer;
 
 import de.maxhenkel.voicechat.api.Position;
 import dev.naturecodevoid.voicechatdiscord.util.Util;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 /**
@@ -27,6 +27,7 @@ public final class AudioCore {
         OptionalInt audioLengthOpt = audioParts.stream().mapToInt(part -> part.length).max();
         if (audioLengthOpt.isPresent()) {
             int audioLength = audioLengthOpt.getAsInt();
+            platform.debugExtremelyVerbose("Max audio length is " + audioLength);
             short[] mix = new short[SHORTS_IN_20MS]; // this will fill the whole array with zeros
             int sample;
             for (int i = 0; i < audioLength; i++) {
@@ -59,9 +60,13 @@ public final class AudioCore {
     /**
      * Adjusts the volume of an audio stream based on distance.
      */
-    public static short[] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance) {
+    public static short @Nullable [] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance) {
         // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
         double volume = Math.cos((Util.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
+        if (volume <= 0) {
+            platform.debugExtremelyVerbose("skipping packet, volume is " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + ")");
+            return null;
+        }
         platform.debugExtremelyVerbose("adjusting volume to be " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + ")");
         return adjustVolume(decoded, Util.clamp(volume, 0.0, 1.0));
     }
@@ -70,31 +75,15 @@ public final class AudioCore {
      * Converts the decoded audio to bytes, adjusts the volume and converts the audio back to shorts.
      */
     private static short[] adjustVolume(short[] decoded, double volume) {
-        byte[] decodedAsBytes = api.getAudioConverter().shortsToBytes(decoded);
-        byte[] adjustedVolume = adjustVolume(decodedAsBytes, (float) volume);
-        return api.getAudioConverter().bytesToShorts(adjustedVolume);
-    }
-
-    private static byte[] adjustVolume(byte[] audioSamples, float volume) {
-        // this is probably a lot more complicated than it needs to be so feel free to make a PR fixing it
-        // https://stackoverflow.com/a/26037576
-        byte[] array = new byte[audioSamples.length];
-        for (int i = 0; i < array.length; i += 2) {
-            // convert byte pair to int
-            short buf1 = audioSamples[i + 1];
-            short buf2 = audioSamples[i];
-
-            buf1 = (short) ((buf1 & 0xff) << 8);
-            buf2 = (short) (buf2 & 0xff);
-
-            short res = (short) (buf1 | buf2);
-            res = (short) (res * volume);
-
-            // convert back
-            array[i] = (byte) res;
-            array[i + 1] = (byte) (res >> 8);
-
+        for (int i = 0; i < decoded.length; i++) {
+            long res = Math.round(decoded[i] * volume);
+            if (res > Short.MAX_VALUE)
+                decoded[i] = Short.MAX_VALUE;
+            else if (res < Short.MIN_VALUE)
+                decoded[i] = Short.MIN_VALUE;
+            else
+                decoded[i] = (short) res;
         }
-        return array;
+        return decoded;
     }
 }

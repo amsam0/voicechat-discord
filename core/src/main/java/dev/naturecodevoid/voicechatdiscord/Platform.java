@@ -8,7 +8,6 @@ import de.maxhenkel.voicechat.api.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static dev.naturecodevoid.voicechatdiscord.Core.debugLevel;
 
@@ -18,7 +17,7 @@ public interface Platform {
 
     ServerPlayer commandContextToPlayer(CommandContext<?> context);
 
-    CompletableFuture<@Nullable Position> getEntityPosition(ServerLevel level, UUID uuid);
+    @Nullable Position getEntityPosition(ServerLevel level, UUID uuid);
 
     boolean isOperator(Object sender);
 
