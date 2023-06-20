@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
 
+import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 /**
@@ -60,9 +61,13 @@ public final class AudioCore {
     /**
      * Adjusts the volume of an audio stream based on distance.
      */
-    public static short @Nullable [] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance) {
+    public static short @Nullable [] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance, boolean whispering) {
         // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
         double volume = Math.cos((Util.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
+        if (whispering) {
+            platform.debugExtremelyVerbose("player is whispering, original volume is " + volume);
+            volume *= api.getServerConfig().getDouble("whisper_distance_multiplier", 1);
+        }
         if (volume <= 0) {
             platform.debugExtremelyVerbose("skipping packet, volume is " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + ")");
             return null;

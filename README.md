@@ -172,13 +172,9 @@ This is done automatically on server startup. By default, the update message (if
 
 ## Roadmap
 
-### 2.1.0
-
--   Reduce volume of whispering players in the audio that goes to discord. This will require additions to the voicechat API
--   Don't allow players to use /dvc group when groups are disabled. This will also require additions to the voicechat API
-
 ### Future
 
+-   Reduce volume of crouching players in the audio that goes to discord. This is currently possible but not yet implemented
 -   Action bar HUD for groups showing players in your group
 -   Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
 -   Inventory GUI for groups (this would need an abstraction between Bukkit's API and Fabric's sgui library, and would also make supporting 1.19.2+ on Fabric impossible)

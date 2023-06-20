@@ -216,6 +216,14 @@ public final class SubCommands {
     }
 
     private static final class GroupCommands {
+        private static boolean checkIfGroupsEnabled(CommandContext<?> sender) {
+            if (!api.getServerConfig().getBoolean("enable_groups", true)) {
+                platform.sendMessage(sender, "<red>Groups are currently disabled.");
+                return true;
+            }
+            return false;
+        }
+
         @SuppressWarnings("SameReturnValue")
         private static int help(CommandContext<?> sender) {
             platform.sendMessage(
@@ -234,6 +242,8 @@ public final class SubCommands {
         }
 
         private static void list(CommandContext<?> sender) {
+            if (checkIfGroupsEnabled(sender)) return;
+
             Collection<Group> apiGroups = api.getGroups();
 
             if (apiGroups.isEmpty())
@@ -280,6 +290,8 @@ public final class SubCommands {
                     return;
                 }
 
+                if (checkIfGroupsEnabled(sender)) return;
+
                 String name = sender.getArgument("name", String.class);
                 String password = getArgumentOr(sender, "password", String.class, null);
                 if (password != null)
@@ -311,6 +323,8 @@ public final class SubCommands {
                 platform.sendMessage(sender, "<red>You must be a player to use this command!");
                 return;
             }
+
+            if (checkIfGroupsEnabled(sender)) return;
 
             Integer friendlyId = sender.getArgument("id", Integer.class);
             UUID groupId = groupFriendlyIds.getKey(friendlyId);
@@ -363,6 +377,8 @@ public final class SubCommands {
                 return;
             }
 
+            if (checkIfGroupsEnabled(sender)) return;
+
             VoicechatConnection connection = Objects.requireNonNull(api.getConnectionOf(platform.commandContextToPlayer(sender)));
             Group group = connection.getGroup();
             if (group == null) {
@@ -390,6 +406,8 @@ public final class SubCommands {
                 return;
             }
 
+            if (checkIfGroupsEnabled(sender)) return;
+
             VoicechatConnection connection = Objects.requireNonNull(api.getConnectionOf(platform.commandContextToPlayer(sender)));
             if (connection.getGroup() == null) {
                 platform.sendMessage(sender, "<red>You are not in a group!");
@@ -401,6 +419,8 @@ public final class SubCommands {
         }
 
         private static void remove(CommandContext<?> sender) {
+            if (checkIfGroupsEnabled(sender)) return;
+
             Integer friendlyId = sender.getArgument("id", Integer.class);
             UUID groupId = groupFriendlyIds.getKey(friendlyId);
             if (groupId == null) {

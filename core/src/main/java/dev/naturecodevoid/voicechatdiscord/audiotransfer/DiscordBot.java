@@ -289,6 +289,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         float distance = 0.0f;
         UUID sender = packet.getSender();
         short[] audio = getAudioSource(sender).decoder.decode(packet.getOpusEncodedData());
+        boolean whispering = false;
 
         platform.debugExtremelyVerbose("outgoing packet is a " + packet.getClass().getSimpleName() + " and audio has a length of " + audio.length);
         if (packet instanceof LocationalSoundPacket sound) {
@@ -297,20 +298,13 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         } else if (packet instanceof EntitySoundPacket sound) {
             position = platform.getEntityPosition(player.getServerLevel(), sound.getEntityUuid());
             distance = sound.getDistance();
+            whispering = sound.isWhispering();
         } else if (!(packet instanceof StaticSoundPacket)) {
             platform.error("packet is not LocationalSoundPacket, StaticSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         }
 
-        handleOutgoingSound(audio, sender, distance, position);
-    }
-
-    /**
-     * Handles packets that will go to discord, after the packet being normalized into the raw audio, sender, distance and position.
-     */
-    private void handleOutgoingSound(short[] audio, UUID sender, double distance, @Nullable Position position) {
-        if (position != null) {
-            audio = AudioCore.adjustVolumeBasedOnDistance(audio, position, this.player.getPosition(), distance);
-        }
+        if (position != null)
+            audio = AudioCore.adjustVolumeBasedOnDistance(audio, position, this.player.getPosition(), distance, whispering);
 
         if (audio == null)
             return;

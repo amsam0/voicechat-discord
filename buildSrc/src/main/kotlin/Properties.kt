@@ -19,7 +19,7 @@ object Properties {
     const val fabricApiVersion = "0.76.0+$minecraftVersion"
 
     /* Dependencies */
-    const val voicechatApiVersion = "2.4.8"
+    const val voicechatApiVersion = "2.4.11"
     const val yamlConfigurationVersion = "1.3.0"
     const val javaSemverVersion = "0.9.0"
     const val gsonVersion = "2.10.1"

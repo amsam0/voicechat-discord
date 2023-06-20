@@ -2,6 +2,17 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 2.1.0
+
+This update has some new features and bugfixes. The minimum Simple Voice Chat version has been increased to 2.4.11.
+
+-   Reduce volume of whispering players in the audio that goes to discord
+-   Don't allow players to use `/dvc group` when groups are disabled
+-   Fixed tab complete on Paper
+-   Switch to using adventure and minimessage for messages. This means that we no longer use the legacy formatting codes, and some messages will appear colored in the console!
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.0.1...2.1.0
+
 ## 2.0.1
 
 This update fixes one of the major issues with 2.0.0. If you are on Fabric, you probably didn't experience it, but you should still update because of the other fixes and improvements.
