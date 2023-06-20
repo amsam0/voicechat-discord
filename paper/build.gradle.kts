@@ -81,7 +81,7 @@ dependencies {
     shadow("org.bspfsystems:yamlconfiguration:${Properties.yamlConfigurationVersion}")
     shadow("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
     shadow("com.google.code.gson:gson:${Properties.gsonVersion}")
-    shadow("net.kyori:adventure-api:${Properties.adventureVersion}")
+    compileOnly("net.kyori:adventure-api:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
     shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
