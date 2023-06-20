@@ -6,6 +6,8 @@ import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -16,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
 
@@ -63,19 +64,16 @@ public class FabricPlatform implements Platform {
 
     public void sendMessage(Object sender, String message) {
         if (sender instanceof ServerPlayerEntity player)
-            player.sendMessage(Text.of(message));
+            player.sendMessage(toNative(mm(message)));
         else if (sender instanceof CommandContext<?> context) {
             ServerCommandSource source = (ServerCommandSource) context.getSource();
-            if (source.getPlayer() == null)
-                source.sendMessage(Text.of(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, "")));
-            else
-                source.sendMessage(Text.of(message));
+            source.sendMessage(toNative(mm(message)));
         } else
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
     }
 
     public void sendMessage(Player player, String message) {
-        ((PlayerEntity) player.getPlayer()).sendMessage(Text.of(message));
+        ((PlayerEntity) player.getPlayer()).sendMessage(toNative(mm(message)));
     }
 
     public String getName(Player player) {
@@ -91,8 +89,14 @@ public class FabricPlatform implements Platform {
     }
 
     public void info(String message) {
+        LOGGER.info(ansi(mm(message)));
+    }
+
+    public void infoRaw(String message) {
         LOGGER.info(message);
     }
+
+    // warn and error will already be colored yellow and red respectfully
 
     public void warn(String message) {
         LOGGER.warn(message);
@@ -100,5 +104,9 @@ public class FabricPlatform implements Platform {
 
     public void error(String message) {
         LOGGER.error(message);
+    }
+
+    private Text toNative(Component component) {
+        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serializeToTree(component));
     }
 }

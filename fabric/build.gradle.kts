@@ -49,6 +49,7 @@ tasks.shadowJar {
     relocate("org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml")
     relocate("com.github.zafarkhaja.semver", "dev.naturecodevoid.voicechatdiscord.shadow.semver")
     relocate("com.google.gson", "dev.naturecodevoid.voicechatdiscord.shadow.gson")
+    relocate("net.kyori", "dev.naturecodevoid.voicechatdiscord.shadow.kyori")
     relocate("net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda")
     relocate("org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus")
 
@@ -87,6 +88,15 @@ dependencies {
 
     implementation("com.google.code.gson:gson:${Properties.gsonVersion}")
     shadow("com.google.code.gson:gson:${Properties.gsonVersion}")
+
+    implementation("net.kyori:adventure-api:${Properties.adventureVersion}")
+    implementation("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
+    implementation("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
+    implementation("net.kyori:adventure-text-serializer-gson:${Properties.adventureVersion}") // Fabric only
+    shadow("net.kyori:adventure-api:${Properties.adventureVersion}")
+    shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
+    shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
+    shadow("net.kyori:adventure-text-serializer-gson:${Properties.adventureVersion}") // Fabric only
 
     implementation("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
     shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")

@@ -15,7 +15,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.*;
+import static dev.naturecodevoid.voicechatdiscord.Constants.MODRINTH_PROJECT_ID;
+import static dev.naturecodevoid.voicechatdiscord.Constants.VERSION;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
 @SuppressWarnings("CallToPrintStackTrace")
@@ -41,11 +42,11 @@ public final class UpdateChecker {
                 platform.debug("New update!");
                 String modrinthVersionPage = getModrinthVersionPage(latest);
                 platform.debugVerbose("Modrinth version page for " + latest + ": " + modrinthVersionPage);
-                String message = "§aA new version of Simple Voice Chat Discord Bridge is available! " +
-                        "You are currently on version §r" + current +
-                        "§a and the latest version is version §r" + latest +
-                        "§a. Go to §2" + modrinthVersionPage + "§a to download the update!";
-                platform.info(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
+                String message = "<green>A new version of Simple Voice Chat Discord Bridge is available! " +
+                        "You are currently on version <white>" + current +
+                        "<green> and the latest version is version <white>" + latest +
+                        "<green>. Go to <dark_green>" + modrinthVersionPage + "<green> to download the update!";
+                platform.info(message);
                 updateMessage = message + " To disable these messages, set `alert_ops_of_updates` to false in the config.";
             }
             return true;

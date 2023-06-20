@@ -116,7 +116,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
                 platform.sendMessage(
                         player,
                         // The error message might contain the token, so let's be safe and only show it to console
-                        "§cFailed to login to the bot. Please contact your server owner since they will be able to see the error message."
+                        "<red>Failed to login to the bot. Please contact your server owner since they will be able to see the error message."
                 );
                 player = null;
             }
@@ -140,7 +140,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
                     "Please ensure that all voice channel IDs are valid, available to the bot and that they are actual voice channels.");
             platform.sendMessage(
                     player,
-                    "§cThe provided voice channel ID seems to be invalid or inaccessible to the  Please make sure that it is available to the bot and that it is an actual voice channel."
+                    "<red>The provided voice channel ID seems to be invalid or inaccessible to the  Please make sure that it is available to the bot and that it is an actual voice channel."
             );
             return;
         }
@@ -165,7 +165,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
             platform.error("Couldn't register audio sender. The player has the mod installed.");
             platform.sendMessage(
                     player,
-                    "§cCouldn't register an audio sender for you. This most likely means you have the mod installed and working."
+                    "<red>Couldn't register an audio sender for you. This most likely means you have the mod installed and working."
             );
             this.stop();
             return;
@@ -211,7 +211,7 @@ public final class DiscordBot implements AudioSendHandler, AudioReceiveHandler {
         platform.info("Started voice chat for " + platform.getName(player) + " in channel " + channelName);
         platform.sendMessage(
                 player,
-                "§aStarted a voice chat! To stop it, use §r§f/dvc stop§r§a. If you are having issues, try restarting the session with §r§f/dvc start§r§a. Please join the following voice channel in discord: §r§f" + channelName
+                "<green>Started a voice chat! To stop it, use <white>/dvc stop<green>. If you are having issues, try restarting the session with <white>/dvc start<green>. Please join the following voice channel in discord: <white>" + channelName
         );
 
         hasStarted = true;

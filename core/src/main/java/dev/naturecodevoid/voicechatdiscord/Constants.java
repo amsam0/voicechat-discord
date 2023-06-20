@@ -8,7 +8,6 @@ public final class Constants {
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
     public static final String VOICECHAT_MIN_VERSION = "$voicechatApiVersion";
-    public static final String REPLACE_LEGACY_FORMATTING_CODES = "§([a-z]|[0-9]|[A-Z])";
     public static final List<String> CONFIG_HEADER = List.of(
             "To add a bot, just copy paste the following into bots:",
             "",

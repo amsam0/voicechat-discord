@@ -23,6 +23,7 @@ object Properties {
     const val yamlConfigurationVersion = "1.3.0"
     const val javaSemverVersion = "0.9.0"
     const val gsonVersion = "2.10.1"
+    const val adventureVersion = "4.14.0"
     // NOTE: you may need to click "Get it" on jitpack.io for it to build
     const val jdaConcentusVersion = "a43689aa94"
 

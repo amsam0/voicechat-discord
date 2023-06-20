@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.REPLACE_LEGACY_FORMATTING_CODES;
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.LOGGER;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.getCraftWorld;
@@ -91,20 +90,20 @@ public class PaperPlatform implements Platform {
 
     public void sendMessage(Object sender, String message) {
         if (sender instanceof CommandSender player)
-            player.sendMessage(message);
+            player.sendMessage(mm(message));
         else if (sender instanceof CommandContext<?> context) {
             BukkitBrigadierCommandSource source = (BukkitBrigadierCommandSource) context.getSource();
             if (source.getBukkitEntity() instanceof Player player)
-                player.sendMessage(message);
+                player.sendMessage(mm(message));
             else
-                source.getBukkitSender().sendMessage(message.replaceAll(REPLACE_LEGACY_FORMATTING_CODES, ""));
+                source.getBukkitSender().sendMessage(mm(message));
         } else
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
 
     }
 
     public void sendMessage(de.maxhenkel.voicechat.api.Player player, String message) {
-        ((Player) player.getPlayer()).sendMessage(message);
+        ((Player) player.getPlayer()).sendMessage(mm(message));
     }
 
     public String getName(de.maxhenkel.voicechat.api.Player player) {
@@ -120,8 +119,14 @@ public class PaperPlatform implements Platform {
     }
 
     public void info(String message) {
+        LOGGER.info(ansi(mm(message)));
+    }
+
+    public void infoRaw(String message) {
         LOGGER.info(message);
     }
+
+    // warn and error will already be colored yellow and red respectfully
 
     public void warn(String message) {
         LOGGER.warn(message);
