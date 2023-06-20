@@ -84,6 +84,7 @@ dependencies {
     // We need to be able to use the latest version of adventure (4.14.0), but Paper 1.19.2 uses 4.11.0
     // So we are forced to use the legacy platform implementation
     shadow("net.kyori:adventure-platform-bukkit:4.3.0")
+    shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
     shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
     shadow(project(":core"))
