@@ -62,18 +62,17 @@ public final class AudioCore {
      * Adjusts the volume of an audio stream based on distance.
      */
     public static short @Nullable [] adjustVolumeBasedOnDistance(short[] decoded, Position sourcePosition, Position targetPosition, double maxDistance, boolean whispering) {
-        double distance = Util.distance(sourcePosition, targetPosition);
         if (whispering) {
-            platform.debugExtremelyVerbose("player is whispering, original distance is " + distance);
-            distance *= api.getServerConfig().getDouble("whisper_distance_multiplier", 1);
+            platform.debugExtremelyVerbose("player is whispering, original max distance is " + maxDistance);
+            maxDistance *= api.getServerConfig().getDouble("whisper_distance_multiplier", 1);
         }
         // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
-        double volume = Math.cos((distance / maxDistance) * (Math.PI / 2));
+        double volume = Math.cos((Util.distance(sourcePosition, targetPosition) / maxDistance) * (Math.PI / 2));
         if (volume <= 0) {
-            platform.debugExtremelyVerbose("skipping packet, volume is " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + "; distance: " + distance + ")");
+            platform.debugExtremelyVerbose("skipping packet, volume is " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + "; max distance: " + maxDistance + ")");
             return null;
         }
-        platform.debugExtremelyVerbose("adjusting volume to be " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + "; distance: " + distance + ")");
+        platform.debugExtremelyVerbose("adjusting volume to be " + volume + " (source: " + Util.positionToString(sourcePosition) + "; target: " + Util.positionToString(targetPosition) + "; max distance: " + maxDistance + ")");
         return adjustVolume(decoded, Util.clamp(volume, 0.0, 1.0));
     }
 
