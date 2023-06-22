@@ -174,6 +174,7 @@ This is done automatically on server startup. By default, the update message (if
 
 ### Future
 
+-   Catch config errors such as not in config when getting bots
 -   Use a Rust discord library to hopefully permanently solve the SSL issues. I am unsure the feasibility of this since I heard that JNI is slow, so this may force us to use wasm or rewrite almost all of the mod in Rust (which is not a bad thing, but may cause it to be slower because of JNI). 
 -   An option to lock the voice channels when they are not in use.
 -   Reduce volume of crouching players in the audio that goes to discord. This is currently possible but not yet implemented
