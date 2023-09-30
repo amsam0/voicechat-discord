@@ -183,9 +183,9 @@ public final class Core {
         }
 
         if (version == null || Version.valueOf(version).lessThan(Version.valueOf(VOICECHAT_MIN_VERSION))) {
-            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later";
+            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
             if (version != null) {
-                message += ". You have version " + version + ".";
+                message += " You have version " + version + ".";
             }
             platform.error(message);
             throw new RuntimeException(message);
