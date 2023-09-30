@@ -13,8 +13,8 @@ This document will not go over any of the following topics:
 Since this is a pretty important topic, I've chosen to put this section at the top. This is only relevant for the Paper side of things, since Fabric has intermediary mappings which solves the whole
 problem this section goes over.
 
-On Paper, we cannot easily use methods on classes in the `net.minecraft` package. This is because we want to target 1.19.2+; obfuscated names **will** change between versions, and paperweight will
-only reobfuscate the jar for 1.19.2.
+On Paper, we cannot easily use methods on classes in the `net.minecraft` package. This is because we want to target 1.19.4+; obfuscated names **will** change between versions, and paperweight will
+only reobfuscate the jar for 1.19.4.
 
 Class names are mostly fine as those seem to be unobfuscated by Paper; methods are the main problem.
 
