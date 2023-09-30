@@ -81,7 +81,7 @@ dependencies {
     shadow("org.bspfsystems:yamlconfiguration:${Properties.yamlConfigurationVersion}")
     shadow("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
     shadow("com.google.code.gson:gson:${Properties.gsonVersion}")
-    // We need to be able to use the latest version of adventure (4.14.0), but Paper 1.19.2 uses 4.11.0
+    // We need to be able to use the latest version of adventure (4.14.0), but Paper 1.19.4 uses 4.13.1
     // So we are forced to use the legacy platform implementation
     shadow("net.kyori:adventure-platform-bukkit:4.3.0")
     shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")

@@ -2,7 +2,7 @@ plugins {
     java
     id("com.modrinth.minotaur") version Properties.minotaurVersion
     id("com.github.johnrengelman.shadow") version Properties.shadowVersion
-    id("fabric-loom") version "1.2-SNAPSHOT"
+    id("fabric-loom") version "1.3-SNAPSHOT"
 }
 
 project.version = Properties.pluginVersion
