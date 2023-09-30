@@ -111,14 +111,14 @@ public class FabricPlatform implements Platform {
     }
 
     private Text toNative(Component component) {
-        var json = GsonComponentSerializer.gson().serializeToTree(component);
+        var json = GsonComponentSerializer.gson().serialize(component); // serialize to string instead of JsonElement, the JsonElement won't be compatible with minecraft's JsonElement
         // for some reason loom doesn't remap fromJson calls to the appropriate intermediary name (maybe because we target 1.19? very weird, maybe some bug with subclasses)
         // to work around this, we manually find the intermediary method with reflection
         // if that fails, we try to call it normally
         // and if that fails, we try again to find it with reflection by looking for the correct method signature
         try {
             return (Text) Arrays.stream(Text.Serializer.class.getMethods())
-                    .filter(method -> method.getName().equals("method_10872"))
+                    .filter(method -> method.getName().equals("method_10877"))
                     .findFirst()
                     .orElseThrow()
                     .invoke(null, json);
@@ -132,8 +132,7 @@ public class FabricPlatform implements Platform {
                     return (Text) Arrays.stream(Text.Serializer.class.getMethods())
                             .filter(method ->
                                     method.getParameterCount() == 1 &&
-                                            // we can't use JsonElement.class since that will give the JsonElement in our shadowed gson, not minecraft's
-                                            method.getParameterTypes()[0].getName().contains("JsonElement") &&
+                                            method.getParameterTypes()[0].getName().contains("String") &&
                                             method.getReturnType().equals(MutableText.class)
                             )
                             .findFirst()
