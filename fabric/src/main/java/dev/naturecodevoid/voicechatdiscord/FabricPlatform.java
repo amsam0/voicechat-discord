@@ -13,9 +13,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
@@ -107,6 +111,40 @@ public class FabricPlatform implements Platform {
     }
 
     private Text toNative(Component component) {
-        return Text.Serializer.fromJson(GsonComponentSerializer.gson().serializeToTree(component));
+        var json = GsonComponentSerializer.gson().serializeToTree(component);
+        // for some reason loom doesn't remap fromJson calls to the appropriate intermediary name (maybe because we target 1.19? very weird, maybe some bug with subclasses)
+        // to work around this, we manually find the intermediary method with reflection
+        // if that fails, we try to call it normally
+        // and if that fails, we try again to find it with reflection by looking for the correct method signature
+        try {
+            return (Text) Arrays.stream(Text.Serializer.class.getMethods())
+                    .filter(method -> method.getName().equals("method_10872"))
+                    .findFirst()
+                    .orElseThrow()
+                    .invoke(null, json);
+        } catch (NoSuchElementException ignored) {
+            debug("fromJson method not found with intermediary name, trying without reflection");
+            try {
+                return Text.Serializer.fromJson(json);
+            } catch (NoSuchMethodError ignored2) {
+                debug("fromJson method still not found! Resorting to looking for a method with the correct signature");
+                try {
+                    return (Text) Arrays.stream(Text.Serializer.class.getMethods())
+                            .filter(method ->
+                                    method.getParameterCount() == 1 &&
+                                            // we can't use JsonElement.class since that will give the JsonElement in our shadowed gson, not minecraft's
+                                            method.getParameterTypes()[0].getName().contains("JsonElement") &&
+                                            method.getReturnType().equals(MutableText.class)
+                            )
+                            .findFirst()
+                            .orElseThrow()
+                            .invoke(null, json);
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
