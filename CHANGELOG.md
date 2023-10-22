@@ -2,6 +2,14 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 2.1.1
+
+-   (Fabric) Fixed [#25](https://github.com/naturecodevoid/voicechat-discord/issues/25) - **/dvc now works correctly on 1.20+!** Sorry this took so long to fix; I actually fixed it almost a month ago but never made a release.
+-   Fixed a minor punctuation issue with the message about Simple Voice Chat not being new enough
+-   Increased minimum Minecraft version to 1.19.4 from 1.19.2
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.1.0...2.1.1
+
 ## 2.1.0
 
 This update has some new features and bugfixes. The minimum Simple Voice Chat version has been increased to 2.4.11.

@@ -28,7 +28,7 @@ object Properties {
     const val jdaConcentusVersion = "f9021a872a"
 
     /* Project */
-    const val pluginVersion = "2.1.0"
+    const val pluginVersion = "2.1.1"
     const val mavenGroup = "dev.naturecodevoid.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"
