@@ -7,19 +7,17 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
@@ -111,39 +109,72 @@ public class FabricPlatform implements Platform {
     }
 
     private Text toNative(Component component) {
-        var json = GsonComponentSerializer.gson().serialize(component); // serialize to string instead of JsonElement, the JsonElement won't be compatible with minecraft's JsonElement
-        // for some reason loom doesn't remap fromJson calls to the appropriate intermediary name (maybe because we target 1.19? very weird, maybe some bug with subclasses)
-        // to work around this, we manually find the intermediary method with reflection
-        // if that fails, we try to call it normally
-        // and if that fails, we try again to find it with reflection by looking for the correct method signature
-        try {
-            return (Text) Arrays.stream(Text.Serializer.class.getMethods())
-                    .filter(method -> method.getName().equals("method_10877"))
-                    .findFirst()
-                    .orElseThrow()
-                    .invoke(null, json);
-        } catch (NoSuchElementException ignored) {
-            debug("fromJson method not found with intermediary name, trying without reflection");
-            try {
-                return Text.Serializer.fromJson(json);
-            } catch (NoSuchMethodError ignored2) {
-                debug("fromJson method still not found! Resorting to looking for a method with the correct signature");
-                try {
-                    return (Text) Arrays.stream(Text.Serializer.class.getMethods())
-                            .filter(method ->
-                                    method.getParameterCount() == 1 &&
-                                            method.getParameterTypes()[0].getName().contains("String") &&
-                                            method.getReturnType().equals(MutableText.class)
-                            )
-                            .findFirst()
-                            .orElseThrow()
-                            .invoke(null, json);
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        MutableText text;
+        if (component instanceof TextComponent textComponent)
+            text = MutableText.of(PlainTextContent.of(textComponent.content()));
+        else {
+            warn("Unimplemented component type: " + component.getClass().getName());
+            return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
         }
+
+        Style style = Style.EMPTY;
+
+        var font = component.font();
+        if (font != null) {
+            warn("Fonts are not implemented");
+        }
+
+        var color = component.color();
+        if (color != null)
+            style = style.withColor(TextColor.parse(color.asHexString()).getOrThrow());
+
+        for (var entry : component.decorations().entrySet()) {
+            var decoration = entry.getKey();
+            var state = entry.getValue();
+
+            if (state != TextDecoration.State.TRUE)
+                continue;
+
+            switch (decoration) {
+                case OBFUSCATED -> style = style.withObfuscated(true);
+                case BOLD -> style = style.withBold(true);
+                case STRIKETHROUGH -> style = style.withStrikethrough(true);
+                case UNDERLINED -> style = style.withUnderline(true);
+                case ITALIC -> style = style.withItalic(true);
+                default -> warn("Unknown decoration: " + decoration);
+            }
+        }
+
+        var clickEvent = component.clickEvent();
+        if (clickEvent != null) {
+            ClickEvent.Action action = null;
+            switch (clickEvent.action()) {
+                case OPEN_URL -> action = ClickEvent.Action.OPEN_URL;
+                case OPEN_FILE -> action = ClickEvent.Action.OPEN_FILE;
+                case RUN_COMMAND -> action = ClickEvent.Action.RUN_COMMAND;
+                case SUGGEST_COMMAND -> action = ClickEvent.Action.SUGGEST_COMMAND;
+                case CHANGE_PAGE -> action = ClickEvent.Action.CHANGE_PAGE;
+                case COPY_TO_CLIPBOARD -> action = ClickEvent.Action.COPY_TO_CLIPBOARD;
+                default -> warn("Unknown click event action: " + clickEvent.action());
+            }
+            style = style.withClickEvent(new ClickEvent(action, clickEvent.value()));
+        }
+
+        var hoverEvent = component.hoverEvent();
+        if (hoverEvent != null) {
+            warn("Hover events are not implemented");
+        }
+
+        var insertion = component.insertion();
+        if (insertion != null) {
+            warn("Insertions are not implemented");
+        }
+
+        text.setStyle(style);
+        for (var child : component.children()) {
+            text.append(toNative(child));
+        }
+
+        return text;
     }
 }

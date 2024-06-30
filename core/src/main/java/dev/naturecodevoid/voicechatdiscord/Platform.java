@@ -63,9 +63,6 @@ public interface Platform {
     }
 
     default Component mm(String message) {
-        if (!(message.contains("<") && message.contains(">")))
-            // Assume plain text, no need to use minimessage
-            return Component.text(message);
         return MiniMessage.miniMessage().deserialize(message);
     }
 

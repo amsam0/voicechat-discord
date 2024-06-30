@@ -94,6 +94,10 @@ You can redo this process for however many bots you want. There is some info in 
 > The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the plugin at
 > the same time.
 
+## Troubleshooting
+
+If you run into errors while trying to use a bot, please read the console. The errors will always include the vc_id of the bot, which allows you to identify which bot caused the error.
+
 ## Using it in-game
 
 > **Warning**

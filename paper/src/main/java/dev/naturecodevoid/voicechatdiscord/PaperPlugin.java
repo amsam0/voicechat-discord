@@ -1,23 +1,19 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.github.zafarkhaja.semver.ParseException;
+import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
+import dev.naturecodevoid.voicechatdiscord.post_1_20_6.Post_1_20_6_CommandHelper;
+import dev.naturecodevoid.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.minecraft.commands.CommandSourceStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.lang.reflect.InvocationTargetException;
 
 import static dev.naturecodevoid.voicechatdiscord.Constants.PLUGIN_ID;
 import static dev.naturecodevoid.voicechatdiscord.Core.*;
@@ -26,22 +22,11 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
     public static PaperPlugin INSTANCE;
     public static BukkitAudiences adventure;
+    public static CommandHelper commandHelper;
     private VoicechatPlugin voicechatPlugin;
 
     public static PaperPlugin get() {
         return INSTANCE;
-    }
-
-    public static Class<?> getCraftServer() throws ClassNotFoundException {
-        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".CraftServer");
-    }
-
-    public static Class<?> getCraftWorld() throws ClassNotFoundException {
-        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".CraftWorld");
-    }
-
-    public static Class<?> getVanillaCommandWrapper() throws ClassNotFoundException {
-        return Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".command.VanillaCommandWrapper");
     }
 
     @Override
@@ -49,6 +34,36 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         INSTANCE = this;
         platform = new PaperPlatform();
         adventure = BukkitAudiences.create(this);
+
+        try {
+            var parsed = Version.parse(getServer().getMinecraftVersion(), false);
+            var wanted = Version.of(1, 20, 6);
+            if (parsed.isHigherThanOrEquivalentTo(wanted)) {
+                platform.info("Server is >=1.20.6");
+                commandHelper = new Post_1_20_6_CommandHelper();
+            } else {
+                platform.info("Server is <1.20.6");
+                commandHelper = new Pre_1_20_6_CommandHelper();
+            }
+        } catch (IllegalArgumentException | ParseException e) {
+            var v = getServer().getMinecraftVersion();
+            platform.warn("Unable to parse server version (" + v + "): " + e.getMessage());
+            if (v.equals("1.19.4") ||
+                    v.equals("1.20") ||
+                    v.equals("1.20.0") ||
+                    v.equals("1.20.1") ||
+                    v.equals("1.20.2") ||
+                    v.equals("1.20.3") ||
+                    v.equals("1.20.4") ||
+                    v.equals("1.20.5")
+            ) {
+                platform.info("Server is <1.20.6");
+                commandHelper = new Pre_1_20_6_CommandHelper();
+            } else {
+                platform.info("Server is >=1.20.6");
+                commandHelper = new Post_1_20_6_CommandHelper();
+            }
+        }
 
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
@@ -64,15 +79,7 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
         Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
         checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
 
-        Bukkit.getPluginManager().registerEvents(this, this);
-
-        getServer().getCommandMap().register(getName(), new DvcBrigadierCommand());
-        try {
-            getCraftServer().getMethod("syncCommands").invoke(getServer());
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-                 ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        commandHelper.registerCommands();
     }
 
     @Override
@@ -88,17 +95,6 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
             adventure.close();
             adventure = null;
         }
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes", "UnstableApiUsage"})
-    @EventHandler
-    public void onCommandRegistered(final CommandRegisteredEvent<BukkitBrigadierCommandSource> event) {
-        if (!(event.getCommand() instanceof DvcBrigadierCommand))
-            return;
-
-        platform.debug("registering pluginBrigadierCommand: " + event.getCommandLabel());
-        final LiteralArgumentBuilder<CommandSourceStack> node = SubCommands.build(LiteralArgumentBuilder.literal(event.getCommandLabel()));
-        event.setLiteral((LiteralCommandNode) node.build());
     }
 
     @EventHandler

@@ -39,6 +39,8 @@ tasks.compileJava {
 
     options.release.set(Properties.javaVersionInt)
 
+    options.headerOutputDirectory = layout.buildDirectory.dir("headers")
+
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "Constants.java"
     }.asFileTree
@@ -56,7 +58,6 @@ dependencies {
     compileOnly("com.google.code.gson:gson:${Properties.gsonVersion}")
     compileOnly("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     compileOnly("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    compileOnly("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
     compileOnly("com.mojang:brigadier:1.0.18")
 }
 

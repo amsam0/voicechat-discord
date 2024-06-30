@@ -31,21 +31,21 @@ public final class UpdateChecker {
             List<Version> tags = getTags();
             Version latest = tags.get(0);
             for (Version tag : tags) {
-                if (tag.greaterThan(latest))
+                if (tag.isHigherThan(latest))
                     latest = tag;
             }
 
-            Version current = Version.valueOf(VERSION);
+            Version current = Version.parse(VERSION);
 
             platform.debug("Current version is " + current + ", latest version is " + latest);
-            if (latest.greaterThan(current)) {
+            if (latest.isHigherThan(current)) {
                 platform.debug("New update!");
                 String modrinthVersionPage = getModrinthVersionPage(latest);
                 platform.debugVerbose("Modrinth version page for " + latest + ": " + modrinthVersionPage);
                 String message = "<green>A new version of Simple Voice Chat Discord Bridge is available! " +
                         "You are currently on version <white>" + current +
                         "<green> and the latest version is version <white>" + latest +
-                        "<green>. Go to <dark_green>" + modrinthVersionPage + "<green> to download the update!";
+                        "<green>. Go to <dark_green><click:open_url:" + modrinthVersionPage + ">" + modrinthVersionPage + "</click><green> to download the update!";
                 platform.info(message);
                 updateMessage = message + " To disable these messages, set `alert_ops_of_updates` to false in the config.";
             }
@@ -81,7 +81,7 @@ public final class UpdateChecker {
                 try {
                     String name = jsonName.getAsJsonPrimitive().getAsString();
                     try {
-                        tags.add(Version.valueOf(name));
+                        tags.add(Version.parse(name));
                         platform.debugVerbose("Found tag: " + name);
                     } catch (IllegalArgumentException | ParseException e) {
                         platform.debug("Failed to parse tag: " + name);

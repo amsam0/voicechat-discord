@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.naturecodevoid.voicechatdiscord.pre_1_20_6;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
@@ -21,13 +21,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
+import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftServer;
+import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getVanillaCommandWrapper;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
-import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
+import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.get;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @DefaultQualifier(NonNull.class)
-final class DvcBrigadierCommand extends Command implements PluginIdentifiableCommand {
-    DvcBrigadierCommand() {
+public final class DvcBrigadierCommand extends Command implements PluginIdentifiableCommand {
+    public DvcBrigadierCommand() {
         super("dvc");
     }
 

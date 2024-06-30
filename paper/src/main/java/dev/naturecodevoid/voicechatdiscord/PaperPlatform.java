@@ -1,11 +1,9 @@
 package dev.naturecodevoid.voicechatdiscord;
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
-import io.papermc.paper.chunk.system.entity.EntityLookup;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -16,18 +14,19 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftWorld;
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
 import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
 
 public class PaperPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {
         if (sender instanceof CommandContext<?> context)
-            return ((BukkitBrigadierCommandSource) context.getSource()).getBukkitEntity() instanceof Player;
+            return commandHelper.bukkitEntity(context) instanceof Player;
         return sender instanceof Player;
     }
 
     public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        return api.fromServerPlayer(((BukkitBrigadierCommandSource) context.getSource()).getBukkitEntity());
+        return api.fromServerPlayer(commandHelper.bukkitEntity(context));
     }
 
     public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
@@ -43,8 +42,7 @@ public class PaperPlatform implements Platform {
             // the cast is safe because getBukkitEntity and getBukkitSender return the same thing
             try {
                 net.minecraft.server.level.ServerLevel nmsLevel = (net.minecraft.server.level.ServerLevel) getCraftWorld().getMethod("getHandle").invoke(world);
-                EntityLookup entityLookup = nmsLevel.getEntityLookup();
-                net.minecraft.world.entity.Entity nmsEntity = entityLookup.get(uuid);
+                net.minecraft.world.entity.Entity nmsEntity = nmsLevel.getEntity(uuid);
                 if (nmsEntity == null) return null;
                 @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
                 return api.createPosition(
@@ -58,8 +56,7 @@ public class PaperPlatform implements Platform {
             }
         }
         if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel nmsLevel) {
-            EntityLookup entityLookup = nmsLevel.getEntityLookup();
-            net.minecraft.world.entity.Entity nmsEntity = entityLookup.get(uuid);
+            net.minecraft.world.entity.Entity nmsEntity = nmsLevel.getEntity(uuid);
             if (nmsEntity == null) return null;
             @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
             return api.createPosition(
@@ -74,7 +71,7 @@ public class PaperPlatform implements Platform {
 
     public boolean isOperator(Object sender) {
         if (sender instanceof CommandContext<?> context)
-            return ((BukkitBrigadierCommandSource) context.getSource()).getBukkitSender().isOp();
+            return commandHelper.bukkitSender(context).isOp();
         if (sender instanceof Permissible permissible)
             return permissible.isOp();
 
@@ -91,11 +88,10 @@ public class PaperPlatform implements Platform {
         if (sender instanceof CommandSender player)
             adventure.sender(player).sendMessage(mm(message));
         else if (sender instanceof CommandContext<?> context) {
-            BukkitBrigadierCommandSource source = (BukkitBrigadierCommandSource) context.getSource();
-            if (source.getBukkitEntity() instanceof Player player)
+            if (commandHelper.bukkitEntity(context) instanceof Player player)
                 adventure.player(player).sendMessage(mm(message));
             else
-                adventure.sender(source.getBukkitSender()).sendMessage(mm(message));
+                adventure.sender(commandHelper.bukkitSender(context)).sendMessage(mm(message));
         } else
             warn("Seems like we are trying to send a message to a sender which was not recognized (it is a " + sender.getClass().getSimpleName() + "). Please report this on GitHub issues!");
 

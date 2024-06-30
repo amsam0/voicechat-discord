@@ -2,8 +2,8 @@ plugins {
     java
     id("com.modrinth.minotaur") version Properties.minotaurVersion
     id("com.github.johnrengelman.shadow") version Properties.shadowVersion
-    id("io.papermc.paperweight.userdev") version "1.+"
-    id("xyz.jpenilla.run-paper") version "2.0.0"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("xyz.jpenilla.run-paper") version "2.3.0"
 }
 
 project.version = Properties.pluginVersion
@@ -46,8 +46,6 @@ tasks.shadowJar {
     relocate("com.github.zafarkhaja.semver", "dev.naturecodevoid.voicechatdiscord.shadow.semver")
     relocate("com.google.gson", "dev.naturecodevoid.voicechatdiscord.shadow.gson")
     relocate("net.kyori", "dev.naturecodevoid.voicechatdiscord.shadow.kyori")
-    relocate("net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda")
-    relocate("org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus")
 
     archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
@@ -86,7 +84,6 @@ dependencies {
     shadow("net.kyori:adventure-platform-bukkit:4.3.0")
     shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
     shadow(project(":core"))
 }
 

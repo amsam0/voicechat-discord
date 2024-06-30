@@ -2,7 +2,7 @@ plugins {
     java
     id("com.modrinth.minotaur") version Properties.minotaurVersion
     id("com.github.johnrengelman.shadow") version Properties.shadowVersion
-    id("fabric-loom") version "1.4-SNAPSHOT"
+    id("fabric-loom") version "1.7-SNAPSHOT" // https://fabricmc.net/develop
 }
 
 project.version = Properties.pluginVersion
@@ -12,6 +12,13 @@ java {
     toolchain.languageVersion.set(Properties.javaLanguageVersion)
     sourceCompatibility = Properties.javaVersion
     targetCompatibility = Properties.javaVersion
+}
+
+loom {
+    runConfigs.configureEach {
+        // Without this, none of the run configurations will be generated because this project is not the root project
+        isIdeConfigGenerated = true
+    }
 }
 
 tasks.compileJava {
@@ -50,8 +57,6 @@ tasks.shadowJar {
     relocate("com.github.zafarkhaja.semver", "dev.naturecodevoid.voicechatdiscord.shadow.semver")
     relocate("com.google.gson", "dev.naturecodevoid.voicechatdiscord.shadow.gson")
     relocate("net.kyori", "dev.naturecodevoid.voicechatdiscord.shadow.kyori")
-    relocate("net.dv8tion.jda", "dev.naturecodevoid.voicechatdiscord.shadow.jda")
-    relocate("org.concentus", "dev.naturecodevoid.voicechatdiscord.shadow.concentus")
 
     archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")
@@ -92,14 +97,11 @@ dependencies {
     implementation("net.kyori:adventure-api:${Properties.adventureVersion}")
     implementation("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     implementation("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    implementation("net.kyori:adventure-text-serializer-gson:${Properties.adventureVersion}") // Fabric only
+    implementation("net.kyori:adventure-text-serializer-plain:${Properties.adventureVersion}") // Fabric only
     shadow("net.kyori:adventure-api:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    shadow("net.kyori:adventure-text-serializer-gson:${Properties.adventureVersion}") // Fabric only
-
-    implementation("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
-    shadow("com.github.naturecodevoid:JDA-concentus:${Properties.jdaConcentusVersion}")
+    shadow("net.kyori:adventure-text-serializer-plain:${Properties.adventureVersion}") // Fabric only
 
     implementation(project(":core"))
     shadow(project(":core"))

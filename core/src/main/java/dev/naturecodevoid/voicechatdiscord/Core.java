@@ -1,9 +1,8 @@
 package dev.naturecodevoid.voicechatdiscord;
 
+import com.github.zafarkhaja.semver.ParseException;
 import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
-import dev.naturecodevoid.voicechatdiscord.audiotransfer.DiscordBot;
-import okhttp3.OkHttpClient;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
@@ -28,20 +27,33 @@ public final class Core {
     public static int debugLevel = 0;
     public static boolean alertOpsOfUpdates = true;
 
+    private static native void initLogger();
+
+    private static native void setDebugLevel(int debugLevel);
+
     /**
      * IMPORTANT: Nothing that runs in this function should depend on SVC's API. We don't know if the SVC is new enough yet
      */
     public static void enable() {
+        try {
+            LibraryLoader.load("voicechat_discord");
+        } catch (Exception e) {
+            platform.error("Failed to load natives: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        initLogger();
+
         new Thread(UpdateChecker::checkForUpdate).start();
         loadConfig();
     }
 
     public static void disable() {
-        platform.info("Shutting down " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+        int toShutdown = bots.size();
+        platform.info("Shutting down " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
 
-        stopBots();
+        clearBots();
 
-        platform.info("Successfully shutdown " + bots.size() + " bot" + (bots.size() != 1 ? "s" : ""));
+        platform.info("Successfully shutdown " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
@@ -57,6 +69,7 @@ public final class Core {
         } catch (IOException e) {
             platform.debug("IOException when loading config: " + e);
         } catch (InvalidConfigurationException e) {
+            platform.error("Failed to load config file: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -74,18 +87,30 @@ public final class Core {
         try {
             config.save(configFile);
         } catch (IOException e) {
+            platform.error("Failed to save config file: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
-        if (!bots.isEmpty())
-            bots = new ArrayList<>();
+        bots.clear();
 
         for (LinkedHashMap<String, Object> bot : (List<LinkedHashMap<String, Object>>) config.getList("bots")) {
+            if (bot.get("token") == null) {
+                platform.error(
+                        "Failed to load a bot, missing token property.");
+                continue;
+            }
+
+            if (bot.get("vc_id") == null) {
+                platform.error(
+                        "Failed to load a bot, missing vc_id property.");
+                continue;
+            }
+
             try {
                 bots.add(new DiscordBot((String) bot.get("token"), (Long) bot.get("vc_id")));
             } catch (ClassCastException e) {
                 platform.error(
-                        "Failed to load a bot. Please make sure that the vc_id property is a valid channel ID.");
+                        "Failed to load a bot. Please make sure that the token property is a string and the vc_id property is a number.");
             }
         }
 
@@ -102,21 +127,18 @@ public final class Core {
         try {
             debugLevel = (int) config.get("debug_level");
             if (debugLevel > 0) platform.info("Debug level has been set to " + debugLevel);
+            setDebugLevel(debugLevel);
         } catch (ClassCastException e) {
             platform.error("Please make sure the debug_level option is a valid integer");
         }
     }
 
-    public static void stopBots() {
-        for (DiscordBot bot : bots) {
-            bot.stop();
-            if (bot.jda == null)
-                continue;
-            bot.jda.shutdownNow();
-            OkHttpClient client = bot.jda.getHttpClient();
-            client.connectionPool().evictAll();
-            client.dispatcher().executorService().shutdownNow();
-        }
+    public static void clearBots() {
+        bots.forEach(discordBot -> {
+            discordBot.stop();
+            discordBot.free();
+        });
+        bots.clear();
     }
 
     public static void onPlayerJoin(Object rawPlayer) {
@@ -144,11 +166,8 @@ public final class Core {
 
     public static @Nullable DiscordBot getBotForPlayer(UUID playerUuid, boolean fallbackToAvailableBot) {
         for (DiscordBot bot : bots) {
-            if (bot.player != null && bot.player.getUuid().compareTo(playerUuid) == 0)
-                if (!bot.hasStarted)
-                    return null;
-                else
-                    return bot;
+            if (bot.player() != null && bot.player().getUuid() == playerUuid)
+                return bot;
         }
         if (fallbackToAvailableBot)
             return getAvailableBot();
@@ -157,7 +176,7 @@ public final class Core {
 
     private static @Nullable DiscordBot getAvailableBot() {
         for (DiscordBot bot : bots) {
-            if (bot.player == null)
+            if (bot.player() == null)
                 return bot;
         }
         return null;
@@ -182,13 +201,18 @@ public final class Core {
             }
         }
 
-        if (version == null || Version.valueOf(version).lessThan(Version.valueOf(VOICECHAT_MIN_VERSION))) {
-            String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
-            if (version != null) {
-                message += " You have version " + version + ".";
+        try {
+            if (version == null || Version.parse(version).isLowerThan(Version.parse(VOICECHAT_MIN_VERSION))) {
+                String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
+                if (version != null) {
+                    message += " You have version " + version + ".";
+                }
+                platform.error(message);
+                throw new RuntimeException(message);
             }
-            platform.error(message);
-            throw new RuntimeException(message);
+        } catch (IllegalArgumentException | ParseException e) {
+            platform.error("Failed to parse SVC version: " + e.getMessage());
+            platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
         }
     }
 }

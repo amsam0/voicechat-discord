@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
-import dev.naturecodevoid.voicechatdiscord.audiotransfer.DiscordBot;
 
 import java.util.Collection;
 import java.util.List;
@@ -74,11 +73,12 @@ public final class SubCommands {
         return (sender) -> {
             try {
                 function.accept(sender);
-                return 1;
             } catch (Throwable e) {
+                platform.error(e.getMessage());
                 e.printStackTrace();
-                throw new RuntimeException(e); // This way the user will see "An error occurred when running this command"
+                platform.sendMessage(sender, "<red>An error occurred when running the command. Please check the console or tell your server owner to check the console.");
             }
+            return 1;
         };
     }
 
@@ -94,8 +94,21 @@ public final class SubCommands {
 
         DiscordBot botForPlayer = getBotForPlayer(player.getUuid());
         if (botForPlayer != null) {
-            platform.sendMessage(player, "<red>You have already started a voice chat! <yellow>Restarting your session...");
-            botForPlayer.stop();
+            if (!botForPlayer.isStarted()) {
+                platform.sendMessage(player, "<yellow>Your voice chat is currently starting.");
+            } else {
+                platform.sendMessage(player, "<red>You have already started a voice chat! <yellow>Restarting your session...");
+                new Thread(() -> {
+                    botForPlayer.stop();
+                    try {
+                        // Give some time for any songbird stuff to resolve
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
+                    botForPlayer.logInAndStart(player);
+                }).start();
+            }
+            return;
         }
 
         if (bot == null) {
@@ -106,17 +119,7 @@ public final class SubCommands {
             return;
         }
 
-        if (botForPlayer == null)
-            platform.sendMessage(
-                    player,
-                    "<yellow>Starting a voice chat..." + (!bot.hasLoggedIn ? " this might take a moment since we have to login to the bot." : "")
-            );
-
-        bot.player = player;
-        new Thread(() -> {
-            bot.login();
-            bot.start();
-        }).start();
+        new Thread(() -> bot.logInAndStart(player)).start();
     }
 
     private static void stop(CommandContext<?> sender) {
@@ -128,7 +131,7 @@ public final class SubCommands {
         ServerPlayer player = platform.commandContextToPlayer(sender);
 
         DiscordBot bot = getBotForPlayer(player.getUuid());
-        if (bot == null) {
+        if (bot == null || !bot.isStarted()) {
             platform.sendMessage(player, "<red>You must start a voice chat before you can use this command!");
             return;
         }
@@ -158,12 +161,13 @@ public final class SubCommands {
 
         new Thread(() -> {
             for (DiscordBot bot : bots)
-                if (bot.player != null)
+                if (bot.player() != null)
                     platform.sendMessage(
-                            bot.player,
+                            bot.player(),
                             "<red>The config is being reloaded which stops all bots. Please use <white>/dvc start <red>to restart your session."
                     );
-            stopBots();
+
+            clearBots();
 
             platform.sendMessage(sender, "<green>Successfully stopped bots! <yellow>Reloading config...");
 
@@ -204,15 +208,15 @@ public final class SubCommands {
         ServerPlayer player = platform.commandContextToPlayer(sender);
 
         DiscordBot bot = getBotForPlayer(player.getUuid());
-        if (bot == null) {
+        if (bot == null || !bot.isStarted()) {
             platform.sendMessage(player, "<red>You must start a voice chat before you can use this command!");
             return;
         }
 
-        boolean whispering = !bot.sender.isWhispering();
-        bot.sender.whispering(whispering);
+        var set = !bot.whispering();
+        bot.whispering(set);
 
-        platform.sendMessage(sender, whispering ? "<green>Started whispering!" : "<green>Stopped whispering!");
+        platform.sendMessage(sender, set ? "<green>Started whispering!" : "<green>Stopped whispering!");
     }
 
     private static final class GroupCommands {
@@ -257,7 +261,9 @@ public final class SubCommands {
 
                     String playersMessage = "<red>No players";
                     List<ServerPlayer> players = groupPlayers.get(group.getId());
-                    if (!players.isEmpty())
+                    if (players == null)
+                        playersMessage = "<red>Unable to get players";
+                    else if (!players.isEmpty())
                         playersMessage = players.stream().map(player -> platform.getName(player)).collect(Collectors.joining(", "));
 
                     groupsMessage.append("<green> - ")
@@ -362,7 +368,8 @@ public final class SubCommands {
                 platform.sendMessage(sender, "<red>You are already in a group! Leave it using <white>/dvc group leave<red>, then join this group.");
                 return;
             }
-            if (!connection.isInstalled() && getBotForPlayer(platform.commandContextToPlayer(sender).getUuid()) == null) {
+            var botForPlayer = getBotForPlayer(platform.commandContextToPlayer(sender).getUuid());
+            if (!connection.isInstalled() && (botForPlayer == null || !botForPlayer.isStarted())) {
                 platform.sendMessage(sender, "<red>You must have the mod installed or start a voice chat before you can use this command!");
                 return;
             }

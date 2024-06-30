@@ -1,0 +1,6 @@
+Cargo.lock
+target/
+dev_naturecodevoid_voicechatdiscord_Rust.h
+.vscode
+src/main/resources/natives/*
+!src/main/resources/natives/.gitkeep
