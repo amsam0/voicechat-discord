@@ -120,7 +120,7 @@ jobs:
       - name: Validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v3
 
-      - name: Setup jdk ${{ matrix.java }}
+      - name: Setup JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}

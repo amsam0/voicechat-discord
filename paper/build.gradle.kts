@@ -10,23 +10,21 @@ project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
 java {
-    toolchain.languageVersion.set(Properties.javaLanguageDevVersion)
-    sourceCompatibility = Properties.javaVersionRequired
-    targetCompatibility = Properties.javaVersionRequired
+    toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }
 
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
-    options.release.set(Properties.javaVersionRequiredInt)
+    options.release.set(Properties.javaVersion)
 }
 
 tasks.processResources {
     filteringCharset = Charsets.UTF_8.name()
 
     val properties = mapOf(
-            "version" to Properties.pluginVersion,
-            "paperApiVersion" to Properties.paperApiVersion,
+        "version" to Properties.pluginVersion,
+        "paperApiVersion" to Properties.paperApiVersion,
     )
     inputs.properties(properties)
 

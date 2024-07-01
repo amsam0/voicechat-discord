@@ -7,9 +7,7 @@ project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
 java {
-    toolchain.languageVersion.set(Properties.javaLanguageDevVersion)
-    sourceCompatibility = Properties.javaVersionRequired
-    targetCompatibility = Properties.javaVersionRequired
+    toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }
 
 tasks.jar {
@@ -20,9 +18,9 @@ tasks.register<Copy>("processSources") {
     filteringCharset = Charsets.UTF_8.name()
 
     val properties = mapOf(
-            "version" to Properties.pluginVersion,
-            "modrinthProjectId" to Properties.modrinthProjectId,
-            "voicechatApiVersion" to Properties.voicechatApiVersion,
+        "version" to Properties.pluginVersion,
+        "modrinthProjectId" to Properties.modrinthProjectId,
+        "voicechatApiVersion" to Properties.voicechatApiVersion,
     )
     inputs.properties(properties)
 
@@ -37,7 +35,7 @@ tasks.register<Copy>("processSources") {
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
-    options.release.set(Properties.javaVersionRequiredInt)
+    options.release.set(Properties.javaVersion)
 
     options.headerOutputDirectory = layout.buildDirectory.dir("headers")
 

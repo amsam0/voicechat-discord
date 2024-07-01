@@ -1,15 +1,10 @@
-import org.gradle.api.JavaVersion
-import org.gradle.jvm.toolchain.JavaLanguageVersion
-
 @Suppress("ConstPropertyName", "MemberVisibilityCanBePrivate")
 object Properties {
     // "dev" versions refer to the development environment,
     // while "required" version refer to the version the mod says it needs
     // if not specified, assume "required"
 
-    const val javaVersionRequiredInt = 17
-    val javaVersionRequired = JavaVersion.VERSION_17
-    val javaLanguageDevVersion = JavaLanguageVersion.of(21)
+    const val javaVersion = 21
 
     const val minecraftRequiredVersion = "1.19.4"
 
