@@ -129,8 +129,6 @@ jobs:
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - run: ls -R core
-
       - name: Add nightly suffix to version
         run: sed -e '/pluginVersion = .*/s/"$/-nightly.${{ github.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
 
