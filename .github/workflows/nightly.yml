@@ -40,6 +40,7 @@ jobs:
         with:
           name: natives-${{ matrix.arch }}-unknown-linux-gnu
           path: core/target/${{ matrix.arch }}-unknown-linux-gnu/release/libvoicechat_discord.dylib
+          if-no-files-found: error
 
   build:
     concurrency:
