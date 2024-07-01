@@ -73,7 +73,7 @@ jobs:
       cancel-in-progress: true
     strategy:
       matrix:
-        java: [17]
+        java: [21]
         os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     needs: [natives]
