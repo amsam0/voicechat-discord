@@ -18,6 +18,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
@@ -110,9 +112,30 @@ public class FabricPlatform implements Platform {
 
     private Text toNative(Component component) {
         MutableText text;
-        if (component instanceof TextComponent textComponent)
-            text = MutableText.of(PlainTextContent.of(textComponent.content()));
-        else {
+        if (component instanceof TextComponent textComponent) {
+            TextContent content;
+            try {
+                // This should work in >=1.20.3
+                content = PlainTextContent.of(textComponent.content());
+                debug("used PlainTextContent");
+            } catch (NoClassDefFoundError ignored) {
+                // In <=1.20.2, we can try to use reflection
+                try {
+                    // Try to get the LiteralTextContent class and use its constructor
+                    content = (TextContent) Class
+                            .forName("net.minecraft.class_2585")
+                            .getDeclaredConstructor(String.class)
+                            .newInstance(textComponent.content());
+                    debug("used LiteralTextContent");
+                } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
+                         IllegalAccessException | InvocationTargetException ignored2) {
+                    // If we can't use the official classes, try using our potentially broken TextContent implementation
+                    content = new Literal(textComponent.content());
+                    debug("used scuffed TextContent implementation");
+                }
+            }
+            text = MutableText.of(content);
+        } else {
             warn("Unimplemented component type: " + component.getClass().getName());
             return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
         }
@@ -126,7 +149,7 @@ public class FabricPlatform implements Platform {
 
         var color = component.color();
         if (color != null)
-            style = style.withColor(TextColor.parse(color.asHexString()).getOrThrow());
+            style = style.withColor(TextColor.fromRgb(Integer.parseInt(color.asHexString().substring(1), 16)));
 
         for (var entry : component.decorations().entrySet()) {
             var decoration = entry.getKey();
@@ -176,5 +199,28 @@ public class FabricPlatform implements Platform {
         }
 
         return text;
+    }
+
+    private record Literal(String string) implements TextContent {
+        public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
+            return visitor.accept(this.string);
+        }
+
+        @Override
+        public Type<?> getType() {
+            try {
+                return PlainTextContent.TYPE;
+            } catch (NoClassDefFoundError ignored) {
+                return KeybindTextContent.TYPE;
+            }
+        }
+
+        public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
+            return visitor.accept(style, this.string);
+        }
+
+        public String toString() {
+            return "literal{" + this.string + "}";
+        }
     }
 }
