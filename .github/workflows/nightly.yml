@@ -6,6 +6,46 @@ on:
       - '*'
 
 jobs:
+  natives:
+    strategy:
+      matrix:
+        triple: [unknown-linux-gnu, apple-darwin, pc-windows-gnu]
+        arch: [aarch64, x86_64, i686]
+        exclude:
+          - triple: pc-windows-gnu
+            arch: aarch64
+          - triple: pc-windows-gnu
+            arch: i686
+          - triple: apple-darwin
+            arch: i686
+        include:
+          - triple: unknown-linux-gnu
+            filename: libvoicechat_discord.so
+          - triple: apple-darwin
+            filename: libvoicechat_discord.dylib
+          - triple: pc-windows-gnu
+            filename: voicechat_discord.dll
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
+        run: cross build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+        working-directory: core
+
+      - name: Upload ${{ matrix.filename }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: natives-${{ matrix.arch }}-${{ matrix.triple }}
+          path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/release/${{ matrix.filename }}
+
   build:
     concurrency:
       group: ${{ github.ref }}
@@ -16,43 +56,81 @@ jobs:
         os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: validate gradle wrapper
+      - name: Validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
-      - name: setup jdk ${{ matrix.java }}
+      - name: Setup jdk ${{ matrix.java }}
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
           distribution: adopt
 
-      - name: make gradle wrapper executable
+      - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: add nightly suffix to version
+      - name: Download linux-aarch64
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-aarch64-unknown-linux-gnu
+          path: core/src/main/resources/natives/linux-aarch64/
+
+      - name: Download linux-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-x86_64-unknown-linux-gnu
+          path: core/src/main/resources/natives/linux-x64/
+
+      - name: Download linux-x86
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-i686-unknown-linux-gnu
+          path: core/src/main/resources/natives/linux-x86/
+
+      - name: Download mac-aarch64
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-aarch64-apple-darwin
+          path: core/src/main/resources/natives/mac-aarch64/
+
+      - name: Download mac-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-x86_64-apple-darwin
+          path: core/src/main/resources/natives/mac-x64/
+
+      - name: Download windows-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: natives-x86_64-pc-windows-gnu
+          path: core/src/main/resources/natives/windows-x64/
+
+      - run: ls -R core
+
+      - name: Add nightly suffix to version
         run: sed -e '/pluginVersion = .*/s/"$/-nightly.${{ github.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
 
-      - name: get version
+      - name: Get version
         id: version
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
-      - name: build paper
+      - name: Build paper
         run: ../gradlew build
         working-directory: ./paper
 
-      - name: upload paper artifact
+      - name: Upload paper artifact
         uses: actions/upload-artifact@v3
         with:
           name: voicechat-discord-paper-nightly.jar
           path: paper/build/libs/voicechat-discord-paper-${{ steps.version.outputs.version }}.jar
 
-      - name: build fabric
+      - name: Build fabric
         run: ../gradlew build
         working-directory: ./fabric
 
-      - name: upload fabric artifact
+      - name: Upload fabric artifact
         uses: actions/upload-artifact@v3
         with:
           name: voicechat-discord-fabric-nightly.jar
