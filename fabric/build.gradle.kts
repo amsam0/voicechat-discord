@@ -9,9 +9,9 @@ project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
 java {
-    toolchain.languageVersion.set(Properties.javaLanguageVersion)
-    sourceCompatibility = Properties.javaVersion
-    targetCompatibility = Properties.javaVersion
+    toolchain.languageVersion.set(Properties.javaLanguageDevVersion)
+    sourceCompatibility = Properties.javaVersionRequired
+    targetCompatibility = Properties.javaVersionRequired
 }
 
 loom {
@@ -24,7 +24,7 @@ loom {
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
-    options.release.set(Properties.javaVersionInt)
+    options.release.set(Properties.javaVersionRequiredInt)
 }
 
 tasks.processResources {
@@ -32,10 +32,10 @@ tasks.processResources {
 
     val properties = mapOf(
             "version" to Properties.pluginVersion,
-            "fabricLoaderVersion" to Properties.fabricLoaderVersion,
-            "minecraftVersion" to Properties.minecraftVersion,
+            "fabricLoaderVersion" to Properties.fabricLoaderRequiredVersion,
+            "minecraftVersion" to Properties.minecraftRequiredVersion,
             "voicechatApiVersion" to Properties.voicechatApiVersion,
-            "javaVersion" to Properties.javaVersionInt.toString(),
+            "javaVersion" to Properties.javaVersionRequiredInt.toString(),
     )
     inputs.properties(properties)
 
@@ -74,15 +74,15 @@ tasks.remapJar {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${Properties.minecraftVersion}")
-    mappings("net.fabricmc:yarn:${Properties.yarnMappings}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${Properties.fabricApiVersion}")
+    minecraft("com.mojang:minecraft:${Properties.fabricMinecraftDevVersion}")
+    mappings("net.fabricmc:yarn:${Properties.yarnMappingsDevVersion}:v2")
+    modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderDevVersion}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${Properties.fabricApiDevVersion}")
 
     modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     include("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
 
-    modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${Properties.minecraftVersion}-${Properties.voicechatApiVersion}")
+    modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${Properties.fabricMinecraftDevVersion}-${Properties.voicechatModRuntimeVersion}")
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
 
     implementation("org.bspfsystems:yamlconfiguration:${Properties.yamlConfigurationVersion}")

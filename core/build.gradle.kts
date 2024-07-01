@@ -7,9 +7,9 @@ project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
 java {
-    toolchain.languageVersion.set(Properties.javaLanguageVersion)
-    sourceCompatibility = Properties.javaVersion
-    targetCompatibility = Properties.javaVersion
+    toolchain.languageVersion.set(Properties.javaLanguageDevVersion)
+    sourceCompatibility = Properties.javaVersionRequired
+    targetCompatibility = Properties.javaVersionRequired
 }
 
 tasks.jar {
@@ -37,7 +37,7 @@ tasks.register<Copy>("processSources") {
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
-    options.release.set(Properties.javaVersionInt)
+    options.release.set(Properties.javaVersionRequiredInt)
 
     options.headerOutputDirectory = layout.buildDirectory.dir("headers")
 

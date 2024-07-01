@@ -10,15 +10,15 @@ project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
 java {
-    toolchain.languageVersion.set(Properties.javaLanguageVersion)
-    sourceCompatibility = Properties.javaVersion
-    targetCompatibility = Properties.javaVersion
+    toolchain.languageVersion.set(Properties.javaLanguageDevVersion)
+    sourceCompatibility = Properties.javaVersionRequired
+    targetCompatibility = Properties.javaVersionRequired
 }
 
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
-    options.release.set(Properties.javaVersionInt)
+    options.release.set(Properties.javaVersionRequiredInt)
 }
 
 tasks.processResources {
@@ -36,7 +36,7 @@ tasks.processResources {
 }
 
 tasks.runServer {
-    minecraftVersion(Properties.minecraftVersion)
+    minecraftVersion(Properties.paperMinecraftDevVersion)
 }
 
 tasks.shadowJar {
