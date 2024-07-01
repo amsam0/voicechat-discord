@@ -6,14 +6,35 @@ on:
       - '*'
 
 jobs:
-  natives-linux:
+  natives:
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [aarch64, x86_64, i686]
+        exclude:
+          - os: macos-latest
+            arch: i686
+          - os: windows-latest
+            arch: aarch64
+          - os: windows-latest
+            arch: i686
         include:
-          - arch: aarch64
+          - os: ubuntu-latest
+            triple: unknown-linux-gnu
+            filename: libvoicechat_discord.so
+            pre-install: sudo apt-get update -y
+          - os: macos-latest
+            triple: apple-darwin
+            filename: libvoicechat_discord.dylib
+          - os: windows-latest
+            triple: pc-windows-gnu
+            filename: voicechat_discord.dll
+
+          - os: ubuntu-latest
+            arch: aarch64
             install: sudo apt-get install -y gcc-aarch64-linux-gnu
-          - arch: i686
+          - os: ubuntu-latest
+            arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
     runs-on: ubuntu-latest
     steps:
@@ -22,24 +43,22 @@ jobs:
 
       - name: Install required packages
         if: ${{ matrix.install }}
-        run: sudo apt-get update -y && ${{ matrix.install }}
+        run: "${{ matrix.pre-install }} && ${{ matrix.install }}"
 
       - name: Install rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.arch }}-unknown-linux-gnu
+          targets: ${{ matrix.arch }}-${{ matrix.triple }}
 
-      - name: Build ${{ matrix.arch }}
-        run: cargo build --target ${{ matrix.arch }}-unknown-linux-gnu --release
+      - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
+        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
         working-directory: core
 
-      - run: ls -R core
-
-      - name: Upload
+      - name: Upload ${{ matrix.filename }}
         uses: actions/upload-artifact@v4
         with:
-          name: natives-${{ matrix.arch }}-unknown-linux-gnu
-          path: core/target/${{ matrix.arch }}-unknown-linux-gnu/release/libvoicechat_discord.dylib
+          name: natives-${{ matrix.arch }}-${{ matrix.triple }}
+          path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/release/${{ matrix.filename }}
           if-no-files-found: error
 
   build:
@@ -51,7 +70,7 @@ jobs:
         java: [17]
         os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
-    needs: [natives-linux]
+    needs: [natives]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
