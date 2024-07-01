@@ -33,6 +33,8 @@ jobs:
         run: cargo build --target ${{ matrix.arch }}-unknown-linux-gnu --release
         working-directory: core
 
+      - run: ls -R core
+
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
