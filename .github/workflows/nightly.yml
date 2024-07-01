@@ -7,16 +7,13 @@ on:
 
 jobs:
   natives-linux:
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
     strategy:
       matrix:
-        arch:
-          - name: aarch64
+        arch: [aarch64, x86_64, i686]
+        include:
+          - arch: aarch64
             install: sudo apt-get install -y gcc-aarch64-linux-gnu
-          - name: x86_64
-          - name: i686
+          - arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
     runs-on: ubuntu-latest
     steps:
@@ -24,13 +21,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install required packages
-        if: ${{ matrix.arch.install }}
-        run: sudo apt-get update -y && ${{ matrix.arch.install }}
+        if: ${{ matrix.install }}
+        run: sudo apt-get update -y && ${{ matrix.install }}
 
       - name: Install rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.arch.name }}-unknown-linux-gnu
+          targets: ${{ matrix.arch }}-unknown-linux-gnu
 
       - name: Build ${{ matrix.arch }}
         run: cargo build --target ${{ matrix.arch }}-unknown-linux-gnu --release
