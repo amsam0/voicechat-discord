@@ -52,6 +52,7 @@ jobs:
         java: [21]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    needs: [natives]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

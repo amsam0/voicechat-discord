@@ -6,45 +6,41 @@ on:
       - '*'
 
 jobs:
-  natives:
+  natives-linux:
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       matrix:
-        triple: [unknown-linux-gnu, apple-darwin, pc-windows-gnu]
-        arch: [aarch64, x86_64, i686]
-        exclude:
-          - triple: pc-windows-gnu
-            arch: aarch64
-          - triple: pc-windows-gnu
-            arch: i686
-          - triple: apple-darwin
-            arch: i686
-        include:
-          - triple: unknown-linux-gnu
-            filename: libvoicechat_discord.so
-          - triple: apple-darwin
-            filename: libvoicechat_discord.dylib
-          - triple: pc-windows-gnu
-            filename: voicechat_discord.dll
+        arch:
+          - name: aarch64
+            install: sudo apt-get install -y gcc-aarch64-linux-gnu
+          - name: x86_64
+          - name: i686
+            install: sudo apt-get install -y gcc-i686-linux-gnu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install required packages
+        if: ${{ matrix.arch.install }}
+        run: sudo apt-get update -y && ${{ matrix.arch.install }}
+
       - name: Install rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.arch.name }}-unknown-linux-gnu
 
-      - name: Install cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
-
-      - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
-        run: cross build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+      - name: Build ${{ matrix.arch }}
+        run: cargo build --target ${{ matrix.arch }}-unknown-linux-gnu --release
         working-directory: core
 
-      - name: Upload ${{ matrix.filename }}
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: natives-${{ matrix.arch }}-${{ matrix.triple }}
-          path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/release/${{ matrix.filename }}
+          name: natives-${{ matrix.arch }}-unknown-linux-gnu
+          path: core/target/${{ matrix.arch }}-unknown-linux-gnu/release/libvoicechat_discord.dylib
 
   build:
     concurrency:
@@ -55,21 +51,10 @@ jobs:
         java: [17]
         os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
+    needs: [natives-linux]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-
-      - name: Setup jdk ${{ matrix.java }}
-        uses: actions/setup-java@v2
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: adopt
-
-      - name: Make gradle wrapper executable
-        run: chmod +x ./gradlew
 
       - name: Download linux-aarch64
         uses: actions/download-artifact@v4
@@ -106,6 +91,18 @@ jobs:
         with:
           name: natives-x86_64-pc-windows-gnu
           path: core/src/main/resources/natives/windows-x64/
+
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup jdk ${{ matrix.java }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: adopt
+
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - run: ls -R core
 
