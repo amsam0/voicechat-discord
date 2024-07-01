@@ -115,10 +115,10 @@ jobs:
           path: core/src/main/resources/natives/windows-x64/
 
       - name: Validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/actions/wrapper-validation@v3
 
       - name: Setup jdk ${{ matrix.java }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
           distribution: adopt
