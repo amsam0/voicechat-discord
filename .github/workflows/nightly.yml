@@ -36,7 +36,7 @@ jobs:
           - os: ubuntu-latest
             arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
