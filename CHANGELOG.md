@@ -100,7 +100,7 @@ Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.2.0.
 
 ## 1.2.0
 
-> **Warning**
+> ⚠️ **Warning**
 >
 > This is the last release that supports spigot and bukkit. Later releases require Paper. If you are on Paper or Purpur, don't use this release, use the latest release. Only use this release if you
 > are using Spigot/CraftBukkit and cannot use Paper or Purpur.

@@ -1,4 +1,4 @@
-> **Note**
+> ℹ️ **Note**
 >
 > As explained in the [Project Status Update](https://github.com/naturecodevoid/voicechat-discord/issues/12), this project is now in **Maintenance Mode**. This means that I currently do not plan to
 > implement any more features into the addon (PRs are welcome though!). I will try my best to make bug fixes and support the latest Minecraft versions, but I cannot guarantee these fixes will be made
@@ -9,7 +9,7 @@
 [<img alt="Modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
 [<img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg">](https://modrinth.com/mod/fabric-api)
 
-> **Warning**
+> ⚠️ **Warning**
 >
 > This is not an official addon. **Please don't go to the Simple Voice Chat discord server for support! Instead, please use [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues)
 > for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
@@ -24,14 +24,14 @@ Changelog: https://github.com/naturecodevoid/voicechat-discord/blob/master/CHANG
 First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) installed and correctly configured. Please refer to
 [the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
 
-> **Note**
+> ℹ️ **Note**
 >
 > Simple Voice Chat Discord Bridge requires version 2.4.11 or later of Simple Voice Chat. Please ensure you have updated!
 
 Then, you'll want to [download](https://modrinth.com/mod/simple-voice-chat-discord-bridge/versions) the latest version of Simple Voice Chat Discord Bridge that is compatible with your Minecraft
 version.
 
-> **Note**
+> ℹ️ **Note**
 >
 > If you are using the Fabric mod, it requires the [Fabric API](https://modrinth.com/mod/fabric-api).
 
@@ -78,7 +78,7 @@ but replace `YOUR_APPLICATION_ID_HERE` with the application ID you just copied. 
 Now, follow the steps at [support.discord.com/articles/Where-can-I-find-my-User-Server-Message-ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
 to enable Developer Mode in Discord. Then, right click the voice channel you want the bot to use as a bridge between Simple Voice Chat and Discord and click `Copy ID`.
 
-> **Warning**
+> ⚠️ **Warning**
 >
 > There cannot be more than one person speaking in the voice channel at a time, or there will be weird audio glitches. **We recommend limiting bot voice channels to 2 users to ensure that this does
 > not cause an issue.**
@@ -93,7 +93,7 @@ bots:
 
 You can redo this process for however many bots you want. There is some info in [the configuration file](#finding-the-configuration-file) about having multiple bots.
 
-> **Note**
+> ℹ️ **Note**
 >
 > The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the addon at
 > the same time.
@@ -104,7 +104,7 @@ If you run into errors while trying to use a bot, please read the console. The e
 
 ## Using it in-game
 
-> **Warning**
+> ⚠️ **Warning**
 >
 > There cannot be more than one person speaking in the voice channel at a time, or there will be weird audio glitches. **We recommend limiting bot voice channels to 2 users to ensure that this does
 > not cause an issue.**
