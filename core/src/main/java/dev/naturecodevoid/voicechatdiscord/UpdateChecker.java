@@ -19,7 +19,6 @@ import static dev.naturecodevoid.voicechatdiscord.Constants.MODRINTH_PROJECT_ID;
 import static dev.naturecodevoid.voicechatdiscord.Constants.VERSION;
 import static dev.naturecodevoid.voicechatdiscord.Core.platform;
 
-@SuppressWarnings("CallToPrintStackTrace")
 public final class UpdateChecker {
     public static @Nullable String updateMessage = null;
 
@@ -51,8 +50,8 @@ public final class UpdateChecker {
             }
             return true;
         } catch (Throwable e) {
-            platform.error("Failed to check for update:");
-            e.printStackTrace();
+            platform.error("Failed to check for update: " + e.getMessage());
+            platform.debugStackTrace(e);
             return false;
         }
     }
@@ -85,8 +84,8 @@ public final class UpdateChecker {
                         platform.debugVerbose("Found tag: " + name);
                     } catch (IllegalArgumentException | ParseException e) {
                         platform.debug("Failed to parse tag: " + name);
-                        if (Core.debugLevel >= 1)
-                            e.printStackTrace();
+                        platform.debug("with error: " + e.getMessage());
+                        platform.debugStackTrace(e);
                     }
                 } catch (IllegalStateException | AssertionError ignored) {
                     platform.debug("name is not string for tag: " + jsonTag);

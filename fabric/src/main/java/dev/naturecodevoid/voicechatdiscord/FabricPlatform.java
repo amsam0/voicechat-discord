@@ -111,94 +111,100 @@ public class FabricPlatform implements Platform {
     }
 
     private Text toNative(Component component) {
-        MutableText text;
-        if (component instanceof TextComponent textComponent) {
-            TextContent content;
-            try {
-                // This should work in >=1.20.3
-                content = PlainTextContent.of(textComponent.content());
-                debug("used PlainTextContent");
-            } catch (NoClassDefFoundError ignored) {
-                // In <=1.20.2, we can try to use reflection
+        try {
+            MutableText text;
+            if (component instanceof TextComponent textComponent) {
+                TextContent content;
                 try {
-                    // Try to get the LiteralTextContent class and use its constructor
-                    content = (TextContent) Class
-                            .forName("net.minecraft.class_2585")
-                            .getDeclaredConstructor(String.class)
-                            .newInstance(textComponent.content());
-                    debug("used LiteralTextContent");
-                } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                         IllegalAccessException | InvocationTargetException ignored2) {
-                    // If we can't use the official classes, try using our potentially broken TextContent implementation
-                    content = new Literal(textComponent.content());
-                    debug("used scuffed TextContent implementation");
+                    // This should work in >=1.20.3
+                    content = PlainTextContent.of(textComponent.content());
+                    debug("used PlainTextContent");
+                } catch (NoClassDefFoundError ignored) {
+                    // In <=1.20.2, we can try to use reflection
+                    try {
+                        // Try to get the LiteralTextContent class and use its constructor
+                        content = (TextContent) Class
+                                .forName("net.minecraft.class_2585")
+                                .getDeclaredConstructor(String.class)
+                                .newInstance(textComponent.content());
+                        debug("used LiteralTextContent");
+                    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
+                             IllegalAccessException | InvocationTargetException ignored2) {
+                        // If we can't use the official classes, try using our potentially broken TextContent implementation
+                        content = new Literal(textComponent.content());
+                        debug("used scuffed TextContent implementation");
+                    }
+                }
+                text = MutableText.of(content);
+            } else {
+                warn("Unimplemented component type: " + component.getClass().getName());
+                return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
+            }
+
+            Style style = Style.EMPTY;
+
+            var font = component.font();
+            if (font != null) {
+                warn("Fonts are not implemented");
+            }
+
+            var color = component.color();
+            if (color != null)
+                style = style.withColor(TextColor.fromRgb(Integer.parseInt(color.asHexString().substring(1), 16)));
+
+            for (var entry : component.decorations().entrySet()) {
+                var decoration = entry.getKey();
+                var state = entry.getValue();
+
+                if (state != TextDecoration.State.TRUE)
+                    continue;
+
+                switch (decoration) {
+                    case OBFUSCATED -> style = style.withObfuscated(true);
+                    case BOLD -> style = style.withBold(true);
+                    case STRIKETHROUGH -> style = style.withStrikethrough(true);
+                    case UNDERLINED -> style = style.withUnderline(true);
+                    case ITALIC -> style = style.withItalic(true);
+                    default -> warn("Unknown decoration: " + decoration);
                 }
             }
-            text = MutableText.of(content);
-        } else {
-            warn("Unimplemented component type: " + component.getClass().getName());
+
+            var clickEvent = component.clickEvent();
+            if (clickEvent != null) {
+                ClickEvent.Action action = null;
+                switch (clickEvent.action()) {
+                    case OPEN_URL -> action = ClickEvent.Action.OPEN_URL;
+                    case OPEN_FILE -> action = ClickEvent.Action.OPEN_FILE;
+                    case RUN_COMMAND -> action = ClickEvent.Action.RUN_COMMAND;
+                    case SUGGEST_COMMAND -> action = ClickEvent.Action.SUGGEST_COMMAND;
+                    case CHANGE_PAGE -> action = ClickEvent.Action.CHANGE_PAGE;
+                    case COPY_TO_CLIPBOARD -> action = ClickEvent.Action.COPY_TO_CLIPBOARD;
+                    default -> warn("Unknown click event action: " + clickEvent.action());
+                }
+                style = style.withClickEvent(new ClickEvent(action, clickEvent.value()));
+            }
+
+            var hoverEvent = component.hoverEvent();
+            if (hoverEvent != null) {
+                warn("Hover events are not implemented");
+            }
+
+            var insertion = component.insertion();
+            if (insertion != null) {
+                warn("Insertions are not implemented");
+            }
+
+            text.setStyle(style);
+            for (var child : component.children()) {
+                text.append(toNative(child));
+            }
+
+            return text;
+        } catch (Throwable e) {
+            warn("Error when converting component to native: " + e.getMessage());
+            debugStackTrace(e);
             return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
         }
-
-        Style style = Style.EMPTY;
-
-        var font = component.font();
-        if (font != null) {
-            warn("Fonts are not implemented");
-        }
-
-        var color = component.color();
-        if (color != null)
-            style = style.withColor(TextColor.fromRgb(Integer.parseInt(color.asHexString().substring(1), 16)));
-
-        for (var entry : component.decorations().entrySet()) {
-            var decoration = entry.getKey();
-            var state = entry.getValue();
-
-            if (state != TextDecoration.State.TRUE)
-                continue;
-
-            switch (decoration) {
-                case OBFUSCATED -> style = style.withObfuscated(true);
-                case BOLD -> style = style.withBold(true);
-                case STRIKETHROUGH -> style = style.withStrikethrough(true);
-                case UNDERLINED -> style = style.withUnderline(true);
-                case ITALIC -> style = style.withItalic(true);
-                default -> warn("Unknown decoration: " + decoration);
-            }
-        }
-
-        var clickEvent = component.clickEvent();
-        if (clickEvent != null) {
-            ClickEvent.Action action = null;
-            switch (clickEvent.action()) {
-                case OPEN_URL -> action = ClickEvent.Action.OPEN_URL;
-                case OPEN_FILE -> action = ClickEvent.Action.OPEN_FILE;
-                case RUN_COMMAND -> action = ClickEvent.Action.RUN_COMMAND;
-                case SUGGEST_COMMAND -> action = ClickEvent.Action.SUGGEST_COMMAND;
-                case CHANGE_PAGE -> action = ClickEvent.Action.CHANGE_PAGE;
-                case COPY_TO_CLIPBOARD -> action = ClickEvent.Action.COPY_TO_CLIPBOARD;
-                default -> warn("Unknown click event action: " + clickEvent.action());
-            }
-            style = style.withClickEvent(new ClickEvent(action, clickEvent.value()));
-        }
-
-        var hoverEvent = component.hoverEvent();
-        if (hoverEvent != null) {
-            warn("Hover events are not implemented");
-        }
-
-        var insertion = component.insertion();
-        if (insertion != null) {
-            warn("Insertions are not implemented");
-        }
-
-        text.setStyle(style);
-        for (var child : component.children()) {
-            text.append(toNative(child));
-        }
-
-        return text;
     }
 
     private record Literal(String string) implements TextContent {

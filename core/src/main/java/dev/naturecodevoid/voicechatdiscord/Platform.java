@@ -57,6 +57,12 @@ public interface Platform {
         debug(message, 3);
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
+    default void debugStackTrace(Throwable throwable) {
+        if (debugLevel >= 1)
+            throwable.printStackTrace();
+    }
+
     private void debug(String message, int levelToLog) {
         // debugs are used so frequently and without color that there's no point in using minimessage
         if (debugLevel >= levelToLog) infoRaw("[DEBUG " + levelToLog + "] " + message);

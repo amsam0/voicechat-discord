@@ -212,6 +212,7 @@ public final class Core {
             }
         } catch (IllegalArgumentException | ParseException e) {
             platform.error("Failed to parse SVC version: " + e.getMessage());
+            platform.debugStackTrace(e);
             platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
         }
     }

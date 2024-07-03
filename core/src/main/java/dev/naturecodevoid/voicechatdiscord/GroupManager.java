@@ -20,7 +20,6 @@ public final class GroupManager {
     public static final BiMap<UUID, Integer> groupFriendlyIds = new BiMap<>();
     public static final Map<UUID, List<ServerPlayer>> groupPlayers = new HashMap<>();
 
-    @SuppressWarnings("CallToPrintStackTrace")
     public static @Nullable String getPassword(Group group) {
         // https://github.com/henkelmax/enhanced-groups/blob/f5535f84fc41a2b1798b2b43adddcd6b6b28c22a/src/main/java/de/maxhenkel/enhancedgroups/events/ForceGroupTypeEvents.java#LL46C53-L57C10
         try {
@@ -31,8 +30,8 @@ public final class GroupManager {
             passwordField.setAccessible(true);
             return (String) passwordField.get(groupObject);
         } catch (Throwable e) {
-            platform.warn("Could not get password of group \"" + group.getName() + "\" (" + group.getId() + "):");
-            e.printStackTrace();
+            platform.warn("Could not get password of group \"" + group.getName() + "\" (" + group.getId() + "): " + e.getMessage());
+            platform.debugStackTrace(e);
             return null;
         }
     }

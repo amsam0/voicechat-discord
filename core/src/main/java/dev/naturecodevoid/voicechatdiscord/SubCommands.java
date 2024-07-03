@@ -68,14 +68,13 @@ public final class SubCommands {
                 );
     }
 
-    @SuppressWarnings("CallToPrintStackTrace")
     private static Command<Object> wrapInTry(Consumer<CommandContext<?>> function) {
         return (sender) -> {
             try {
                 function.accept(sender);
             } catch (Throwable e) {
                 platform.error(e.getMessage());
-                e.printStackTrace();
+                platform.debugStackTrace(e);
                 platform.sendMessage(sender, "<red>An error occurred when running the command. Please check the console or tell your server owner to check the console.");
             }
             return 1;
