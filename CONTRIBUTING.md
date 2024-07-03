@@ -29,7 +29,20 @@ Brigadier classes are completely fine to use. However, instead of using `net.min
 casting as it should have all the methods you will need.
 
 Keep in mind that classes in the `org.bukkit.craftbukkit` package, such as everything in `org.bukkit.craftbukkit.<version>.command.VanillaCommandWrapper`, can be used safely with the original method
-name through reflection. See `PaperPlugin`'s `get...` methods and `DvcBrigadierCommand.getListener(sender)` for examples of this.
+name through reflection. See `BukkitHelper`'s `get...` methods and `DvcBrigadierCommand.getListener(sender)` for examples of this.
+
+## Native Rust library
+
+As of 3.0.0, voicechat-discord uses JNI and a rust library to communicate with Discord. You will need the following dependencies to build it:
+
+-   Rust and cargo
+-   `libopus`
+-   `pkg-config`
+
+I recommend installing rust with rustup. As for `libopus`, you can install it with your system's package manager. If you use nix, a `shell.nix` file is provided in the `core` directory.
+
+The source code of the rust library is in `core/src/main/rust`. To build the rust library, simply run `cargo build` in `core`. To copy the build library into the correct directory so that it is loaded
+by the addon, run the `copy_natives.sh` script. (If you made a release build, run `copy_natives.sh release`. Otherwise it will copy the debug binary.)
 
 ## `buildSrc` and `Properties`
 
@@ -53,8 +66,11 @@ explanatory based on their name. If it's not clear, try thinking of a better nam
 
 The project is split into 3 sub projects:
 
--   `core`: The core of the project. As much as possible of the mod/plugin is implemented here, to reduce duplicate code between Paper and Fabric.
+-   `core`: The core of the project. As much as possible of the mod/plugin is implemented here, to reduce duplicate code between Paper and Fabric. This sub project also includes the native rust
+    library.
 -   `paper` and `fabric`: The Paper plugin and Fabric mod, providing implementations of [`Platform`](#platform-supporting-both-paper-and-fabric) to allow `core` to handle almost everything.
+
+Note: some of this is a bit outdated. I updated some of it for 3.0.0 but there may be some incorrect information.
 
 ### `DiscordBot`: The core of the audio transfer system
 
@@ -62,16 +78,9 @@ The main part of the audio transfer system is in `DiscordBot`. It does the follo
 
 -   `login()` and `start()`: Handles logging into the Discord bot, starting the voice connection with Discord and creating the SVC audio listener & audio sender.
 -   `stop()`: Handles cleaning up everything related to the bot, providing a clean slate if the bot is reused.
--   Handles outgoing (going to Discord) audio.
-    -   `handleOutgoingSoundPacket(packet)`: Handles packets received by the SVC audio listener.
-    -   `pollOutgoingAudio()`: Returns 20ms of unencoded audio that should go to Discord.
--   Handles incoming (going to SVC) audio.
-    -   `handleEncodedAudio(packet)`: Handles packets received by Discord. These are sent directly to the SVC audio sender.
+-   Handles audio going from SVC to Discord and from Discord to SVC. Much of this is done on the Rust side; various functions are called on the Java side to orchestrate everything.
 
-An `AudioSource` is an source of audio that's going to Discord. These are identified by UUID. Each `AudioSource` has a dedicated queue of outgoing audio and opus decoder.
-
-The `resetWatcher` thread handles resetting the audio sender, discord encoder and decoders for all audio sources. It checks every 100ms if it has been 100ms since they were last used, and if so, it
-resets them.
+The `resetWatcher` thread handles resetting the audio sender and decoders for all audio sources. It checks every 100ms if it has been 100ms since they were last used, and if so, it resets them.
 
 ### `Core`: Shared events between Paper and Fabric and manager of things
 
@@ -108,5 +117,3 @@ All commands should be extracted to private methods, and larger commands such as
 
 `Constants` has `static final` constants, usually `String`s, that are used elsewhere. These can be replaced with properties at compile time. See `core/build.gradle.kts` if you want to add more
 properties.
-
-`AudioCore` has various algorithms and utilities for modifying and combining audio.
