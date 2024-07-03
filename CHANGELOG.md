@@ -2,6 +2,20 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.0
+
+-   Major internal changes, which should result in better stability and performance
+    -   The JDA Java discord library is no longer used and it has been replaced by the Serenity and Songbird Rust discord libraries
+    -   This means that the plugin requires some native libraries, which unfortunately increased the JAR size
+    -   The advantage is that SSL is bundled with the libraries instead of requiring Java's SSL, fixing [#11](https://github.com/naturecodevoid/voicechat-discord/issues/11)
+    -   The new implementation should be faster and less prone to getting into a buggy state
+-   Many fixes to fix support for 1.20.3 and later
+    -   On the Fabric side, usage of JSON to convert between adventure and native component classes was removed. Now, components are manually converted which should be much more robust and slightly more performant
+    -   On the Paper side, in 1.20.6 and later, the new Commands API is used, and in <1.20.6, reflection is used in more places due to Paperweight's new mapping behavior breaking stuff
+-   Require Java 21 (the mod still supports 1.19.4)
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.1.1...3.0.0
+
 ## 2.1.1
 
 -   (Fabric) Fixed [#25](https://github.com/naturecodevoid/voicechat-discord/issues/25) - **/dvc now works correctly on 1.20+!** Sorry this took so long to fix; I actually fixed it almost a month ago but never made a release.
