@@ -10,8 +10,8 @@ Project Status Update: https://github.com/naturecodevoid/voicechat-discord/issue
 > This is not an official addon. **Please don't go to the Simple Voice Chat discord server for support! Instead, please use [GitHub issues](https://github.com/naturecodevoid/voicechat-discord/issues)
 > for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
 
-Simple Voice Chat Discord Bridge is a Fabric mod and Paper/Purpur plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **This means
-that Bedrock edition players connected through Geyser can use voice chat!**
+Simple Voice Chat Discord Bridge is a Simple Voice Chat addon for Fabric and Paper/Purpur that makes a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **For example,
+this addon allows Bedrock edition players connected through Geyser to use voice chat!**
 
 Changelog: https://github.com/naturecodevoid/voicechat-discord/blob/master/CHANGELOG.md
 
@@ -91,7 +91,7 @@ You can redo this process for however many bots you want. There is some info in 
 
 > **Note**
 >
-> The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the plugin at
+> The amount of bots you have is equivalent to the amount of people who can be connected to Simple Voice Chat through Discord at one time. So if you have 3 bots, up to 3 people can use the addon at
 > the same time.
 
 ## Troubleshooting
@@ -169,7 +169,7 @@ the config without have to reload/restart the server. **Using this subcommand wi
 
 ### `/dvc checkforupdate`
 
-Checks for an update to the mod/plugin by first contacting GitHub's API, and then if a new version is found, using Modrinth's API to provide a link to that version's download page.
+Checks for an update to the addon by first contacting GitHub's API, and then if a new version is found, using Modrinth's API to provide a link to that version's download page.
 
 This is done automatically on server startup. By default, the update message (if there is an update) is sent to operators when they join the server. This can be disabled by disabling the
 `alert_ops_of_updates` option in [the configuration file](#finding-the-configuration-file). However, this will not disable logging update messages to the console on startup.
@@ -178,8 +178,9 @@ This is done automatically on server startup. By default, the update message (if
 
 ### Future
 
+Disclaimer: The items in this list are purely ideas and there is no guarantee of them being implemented.
+
 -   Catch config errors such as not in config when getting bots
--   Use a Rust discord library to hopefully permanently solve the SSL issues. I am unsure the feasibility of this since I heard that JNI is slow, so this may force us to use wasm or rewrite almost all of the mod in Rust (which is not a bad thing, but may cause it to be slower because of JNI). 
 -   An option to lock the voice channels when they are not in use.
 -   Reduce volume of crouching players in the audio that goes to discord. This is currently possible but not yet implemented
 -   Action bar HUD for groups showing players in your group
