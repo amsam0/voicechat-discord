@@ -90,7 +90,7 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                  ClassNotFoundException e) {
             platform.error("Unable to run brigadier command: " + e.getMessage());
-            platform.debugStackTrace(e);
+            platform.debug(e);
             platform.sendMessage(sender, "<red>Unable to run command. The addon needs to be updated. Please tell your server owner to create a GitHub issue with logs attached.");
         }
 
@@ -133,7 +133,7 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                  ClassNotFoundException e) {
             platform.error("Unable to get suggestions for brigadier command: " + e.getMessage());
-            platform.debugStackTrace(e);
+            platform.debug(e);
             platform.sendMessage(sender, "<red>Unable to get suggestions. The addon needs to be updated. Please tell your server owner to create a GitHub issue with logs attached.");
             return List.of();
         }

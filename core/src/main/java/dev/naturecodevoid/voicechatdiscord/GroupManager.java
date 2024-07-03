@@ -31,7 +31,7 @@ public final class GroupManager {
             return (String) passwordField.get(groupObject);
         } catch (Throwable e) {
             platform.warn("Could not get password of group \"" + group.getName() + "\" (" + group.getId() + "): " + e.getMessage());
-            platform.debugStackTrace(e);
+            platform.debug(e);
             return null;
         }
     }

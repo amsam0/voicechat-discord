@@ -202,7 +202,7 @@ public class FabricPlatform implements Platform {
             return text;
         } catch (Throwable e) {
             warn("Error when converting component to native: " + e.getMessage());
-            debugStackTrace(e);
+            debug(e);
             return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
         }
     }

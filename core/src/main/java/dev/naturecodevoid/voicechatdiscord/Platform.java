@@ -58,7 +58,7 @@ public interface Platform {
     }
 
     @SuppressWarnings("CallToPrintStackTrace")
-    default void debugStackTrace(Throwable throwable) {
+    default void debug(Throwable throwable) {
         if (debugLevel >= 1)
             throwable.printStackTrace();
     }

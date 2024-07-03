@@ -74,7 +74,7 @@ public final class SubCommands {
                 function.accept(sender);
             } catch (Throwable e) {
                 platform.error(e.getMessage());
-                platform.debugStackTrace(e);
+                platform.debug(e);
                 platform.sendMessage(sender, "<red>An error occurred when running the command. Please check the console or tell your server owner to check the console.");
             }
             return 1;
