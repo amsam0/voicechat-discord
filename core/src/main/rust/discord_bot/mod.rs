@@ -115,7 +115,8 @@ impl DiscordBot {
         let mut state_lock = self.state.write();
 
         let State::Started { http, guild_id, .. } = &*state_lock else {
-            return Err(eyre!("Bot is not started. An error may have occurred when logging in or starting - please check the console."));
+            info!("Bot is not started");
+            return Ok(());
         };
 
         self.disconnect(*guild_id);
