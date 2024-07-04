@@ -12,7 +12,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 -   Many fixes to fix support for 1.20.3 and later
     -   On the Fabric side, usage of JSON to convert between adventure and native component classes was removed. Now, components are manually converted which should be much more robust and slightly more performant
     -   On the Paper side, in 1.20.6 and later, the new Commands API is used, and in <1.20.6, reflection is used in more places due to Paperweight's new mapping behavior breaking stuff
--   Require Java 21 (the mod still supports 1.19.4)
+-   Require Java 21 (the addon still supports 1.19.4)
 
 Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.1.1...3.0.0
 
