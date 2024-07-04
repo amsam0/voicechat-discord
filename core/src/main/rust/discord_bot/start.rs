@@ -5,7 +5,7 @@ use eyre::{eyre, Context as _, Report};
 use serenity::all::{Channel, ChannelType};
 use songbird::CoreEvent;
 
-use crate::RUNTIME;
+use crate::runtime::RUNTIME;
 
 use super::discord_receive::VoiceHandler;
 use super::discord_speak::create_playable_input;

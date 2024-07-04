@@ -118,6 +118,8 @@ public final class SubCommands {
             return;
         }
 
+        platform.sendMessage(player, "<yellow>Starting a voice chat...");
+
         new Thread(() -> bot.logInAndStart(player)).start();
     }
 

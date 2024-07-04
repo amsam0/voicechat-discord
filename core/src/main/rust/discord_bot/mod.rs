@@ -20,7 +20,7 @@ use tokio::task::AbortHandle;
 use tracing::{debug, info, trace, warn};
 
 use crate::audio_util::{RawAudio, MAX_AUDIO_BUFFER};
-use crate::RUNTIME;
+use crate::runtime::RUNTIME;
 
 mod discord_receive;
 mod discord_speak;

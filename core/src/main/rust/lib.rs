@@ -1,19 +1,11 @@
 use std::fmt::{Debug, Display};
 
 use jni::JNIEnv;
-use once_cell::sync::Lazy;
-use tokio::runtime::{Builder, Runtime};
-
-static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
-    Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .expect("Unable to create tokio runtime")
-});
 
 mod audio_util;
 mod discord_bot;
 mod logging;
+mod runtime;
 
 trait DisplayDebugThrow: Display + Debug {
     fn throw(&self, env: &mut JNIEnv<'_>) {

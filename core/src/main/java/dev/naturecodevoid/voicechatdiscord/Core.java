@@ -31,6 +31,8 @@ public final class Core {
 
     private static native void setDebugLevel(int debugLevel);
 
+    private static native void shutdown();
+
     /**
      * IMPORTANT: Nothing that runs in this function should depend on SVC's API. We don't know if the SVC is new enough yet
      */
@@ -54,6 +56,10 @@ public final class Core {
         clearBots();
 
         platform.info("Successfully shutdown " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
+
+        shutdown();
+
+        platform.info("Successfully shutdown native runtime");
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
@@ -67,7 +73,8 @@ public final class Core {
         try {
             config.load(configFile);
         } catch (IOException e) {
-            platform.debug("IOException when loading config: " + e);
+            platform.warn("IOException when loading config: " + e.getMessage());
+            platform.debug(e);
         } catch (InvalidConfigurationException e) {
             platform.error("Failed to load config file: " + e.getMessage());
             throw new RuntimeException(e);
@@ -212,7 +219,7 @@ public final class Core {
             }
         } catch (IllegalArgumentException | ParseException e) {
             platform.error("Failed to parse SVC version: " + e.getMessage());
-            platform.debugStackTrace(e);
+            platform.debug(e);
             platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
         }
     }
