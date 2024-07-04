@@ -9,7 +9,7 @@ jobs:
   natives:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-20.04, macos-latest, windows-latest]
         arch: [aarch64, x86_64, i686]
         exclude:
           - os: macos-latest
@@ -19,7 +19,7 @@ jobs:
           - os: windows-latest
             arch: i686
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
             pre-install: sudo apt-get update -y
@@ -30,10 +30,10 @@ jobs:
             triple: pc-windows-gnu
             filename: voicechat_discord.dll
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             arch: aarch64
             install: sudo apt-get install -y gcc-aarch64-linux-gnu
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
     runs-on: ${{ matrix.os }}
@@ -71,7 +71,7 @@ jobs:
     strategy:
       matrix:
         java: [21]
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     needs: [natives]
     steps:
