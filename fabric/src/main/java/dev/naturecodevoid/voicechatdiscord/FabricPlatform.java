@@ -9,7 +9,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,8 +18,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.Core.api;
@@ -114,31 +112,32 @@ public class FabricPlatform implements Platform {
         try {
             MutableText text;
             if (component instanceof TextComponent textComponent) {
-                TextContent content;
-                try {
-                    // This should work in >=1.20.3
-                    content = PlainTextContent.of(textComponent.content());
-                    debug("used PlainTextContent");
-                } catch (NoClassDefFoundError ignored) {
-                    // In <=1.20.2, we can try to use reflection
-                    try {
-                        // Try to get the LiteralTextContent class and use its constructor
-                        content = (TextContent) Class
-                                .forName("net.minecraft.class_2585")
-                                .getDeclaredConstructor(String.class)
-                                .newInstance(textComponent.content());
-                        debug("used LiteralTextContent");
-                    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                             IllegalAccessException | InvocationTargetException ignored2) {
-                        // If we can't use the official classes, try using our potentially broken TextContent implementation
-                        content = new Literal(textComponent.content());
-                        debug("used scuffed TextContent implementation");
-                    }
-                }
-                text = MutableText.of(content);
+                text = Text.literal(textComponent.content());
+//                TextContent content;
+//                try {
+//                    // This should work in >=1.20.3
+//                    content = PlainTextContent.of(textComponent.content());
+//                    debug("used PlainTextContent");
+//                } catch (NoClassDefFoundError ignored) {
+//                    // In <=1.20.2, we can try to use reflection
+//                    try {
+//                        // Try to get the LiteralTextContent class and use its constructor
+//                        content = (TextContent) Class
+//                                .forName("net.minecraft.class_2585")
+//                                .getDeclaredConstructor(String.class)
+//                                .newInstance(textComponent.content());
+//                        debug("used LiteralTextContent");
+//                    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
+//                             IllegalAccessException | InvocationTargetException ignored2) {
+//                        // If we can't use the official classes, try using our potentially broken TextContent implementation
+//                        content = new Literal(textComponent.content());
+//                        debug("used scuffed TextContent implementation");
+//                    }
+//                }
+//                text = MutableText.of(content);
             } else {
                 warn("Unimplemented component type: " + component.getClass().getName());
-                return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
+                return Text.of(LegacyComponentSerializer.legacySection().serialize(component));
             }
 
             Style style = Style.EMPTY;
@@ -203,30 +202,30 @@ public class FabricPlatform implements Platform {
         } catch (Throwable e) {
             warn("Error when converting component to native: " + e.getMessage());
             debug(e);
-            return Text.of(PlainTextComponentSerializer.plainText().serialize(component));
+            return Text.of(LegacyComponentSerializer.legacySection().serialize(component));
         }
     }
 
-    private record Literal(String string) implements TextContent {
-        public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
-            return visitor.accept(this.string);
-        }
-
-        @Override
-        public Type<?> getType() {
-            try {
-                return PlainTextContent.TYPE;
-            } catch (NoClassDefFoundError ignored) {
-                return KeybindTextContent.TYPE;
-            }
-        }
-
-        public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
-            return visitor.accept(style, this.string);
-        }
-
-        public String toString() {
-            return "literal{" + this.string + "}";
-        }
-    }
+//    private record Literal(String string) implements TextContent {
+//        public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
+//            return visitor.accept(this.string);
+//        }
+//
+//        @Override
+//        public Type<?> getType() {
+//            try {
+//                return PlainTextContent.TYPE;
+//            } catch (NoClassDefFoundError ignored) {
+//                return KeybindTextContent.TYPE;
+//            }
+//        }
+//
+//        public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
+//            return visitor.accept(style, this.string);
+//        }
+//
+//        public String toString() {
+//            return "literal{" + this.string + "}";
+//        }
+//    }
 }

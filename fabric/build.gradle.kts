@@ -95,11 +95,11 @@ dependencies {
     implementation("net.kyori:adventure-api:${Properties.adventureVersion}")
     implementation("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     implementation("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    implementation("net.kyori:adventure-text-serializer-plain:${Properties.adventureVersion}") // Fabric only
+    implementation("net.kyori:adventure-text-serializer-legacy:${Properties.adventureVersion}") // Fabric only
     shadow("net.kyori:adventure-api:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-minimessage:${Properties.adventureVersion}")
     shadow("net.kyori:adventure-text-serializer-ansi:${Properties.adventureVersion}")
-    shadow("net.kyori:adventure-text-serializer-plain:${Properties.adventureVersion}") // Fabric only
+    shadow("net.kyori:adventure-text-serializer-legacy:${Properties.adventureVersion}") // Fabric only
 
     implementation(project(":core"))
     shadow(project(":core"))
