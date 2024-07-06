@@ -42,7 +42,12 @@ public class PaperPlatform implements Platform {
             // the cast is safe because getBukkitEntity and getBukkitSender return the same thing
             try {
                 net.minecraft.server.level.ServerLevel nmsLevel = (net.minecraft.server.level.ServerLevel) getCraftWorld().getMethod("getHandle").invoke(world);
-                net.minecraft.world.entity.Entity nmsEntity = nmsLevel.getEntity(uuid);
+                net.minecraft.world.entity.Entity nmsEntity;
+                try {
+                    nmsEntity = nmsLevel.moonrise$getEntityLookup().get(uuid);
+                } catch (NoSuchMethodError ignored) {
+                    nmsEntity = nmsLevel.getEntity(uuid);
+                }
                 if (nmsEntity == null) return null;
                 @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
                 return api.createPosition(
