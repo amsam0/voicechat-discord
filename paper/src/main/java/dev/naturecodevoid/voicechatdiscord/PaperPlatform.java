@@ -12,6 +12,7 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftWorld;
@@ -29,46 +30,65 @@ public class PaperPlatform implements Platform {
         return api.fromServerPlayer(commandHelper.bukkitEntity(context));
     }
 
-    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
-        if (level.getServerLevel() instanceof World world) {
-            // Stupid Bukkit API prevents us from using world.getEntity(uuid) since we aren't on the main thread
-            // Using Bukkit.getScheduler().callSyncMethod takes too much time
-            // so we are forced to use reflection to get the inner ServerLevel
-            // from there we can get Paper's EntityLookup, which allows us to get the entity
-            // but wait - we aren't done yet!
-            // the NMS Entity getX/Y/Z methods will be obfuscated, which obviously doesn't work well across versions (this is when I wish Paper had support for Fabric's Intermediary mappings, which solves this kind of issue on Fabric)
-            // so instead we need to get the Bukkit entity
-            // but for some reason getBukkitEntity doesn't exist so instead we cast the CommandSender to an Entity
-            // the cast is safe because getBukkitEntity and getBukkitSender return the same thing
+    private Method CraftWorld$getHandle;
+    private Method ServerLevel$getEntityLookup;
+    private Method EntityLookup$get;
+
+    private @Nullable Position getEntityPosition(net.minecraft.server.level.ServerLevel nmsLevel, UUID uuid) {
+        net.minecraft.world.entity.Entity nmsEntity;
+        try {
+            // Works on 1.21+
+            nmsEntity = nmsLevel.moonrise$getEntityLookup().get(uuid);
+        } catch (NoSuchMethodError ignored) {
             try {
-                net.minecraft.server.level.ServerLevel nmsLevel = (net.minecraft.server.level.ServerLevel) getCraftWorld().getMethod("getHandle").invoke(world);
-                net.minecraft.world.entity.Entity nmsEntity;
-                try {
-                    nmsEntity = nmsLevel.moonrise$getEntityLookup().get(uuid);
-                } catch (NoSuchMethodError ignored) {
-                    nmsEntity = nmsLevel.getEntity(uuid);
-                }
-                if (nmsEntity == null) return null;
-                @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
-                return api.createPosition(
-                        entity.getLocation().getX(),
-                        entity.getLocation().getY(),
-                        entity.getLocation().getZ()
-                );
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-                     ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                if (ServerLevel$getEntityLookup == null)
+                    ServerLevel$getEntityLookup = nmsLevel.getClass().getDeclaredMethod("getEntityLookup");
+
+                var entityLookup = ServerLevel$getEntityLookup.invoke(nmsLevel);
+
+                if (EntityLookup$get == null)
+                    EntityLookup$get = entityLookup.getClass().getDeclaredMethod("get", UUID.class);
+
+                nmsEntity = (net.minecraft.world.entity.Entity) EntityLookup$get.invoke(entityLookup, uuid);
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                debug(e);
+                nmsEntity = nmsLevel.getEntity(uuid);
             }
         }
-        if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel nmsLevel) {
-            net.minecraft.world.entity.Entity nmsEntity = nmsLevel.getEntity(uuid);
-            if (nmsEntity == null) return null;
-            @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
-            return api.createPosition(
-                    entity.getLocation().getX(),
-                    entity.getLocation().getY(),
-                    entity.getLocation().getZ()
-            );
+        if (nmsEntity == null) return null;
+        @SuppressWarnings("DataFlowIssue") Entity entity = (Entity) nmsEntity.getBukkitSender(null);
+        return api.createPosition(
+                entity.getLocation().getX(),
+                entity.getLocation().getY(),
+                entity.getLocation().getZ()
+        );
+    }
+
+    public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
+        try {
+            if (level.getServerLevel() instanceof World world) {
+                // Stupid Bukkit API prevents us from using world.getEntity(uuid) since we aren't on the main thread
+                // Using Bukkit.getScheduler().callSyncMethod takes too much time
+                // so we are forced to use reflection to get the inner ServerLevel
+                // from there we can get Paper's EntityLookup, which allows us to get the entity
+                // but wait - we aren't done yet!
+                // the NMS Entity getX/Y/Z methods will be obfuscated, which obviously doesn't work well across versions (this is when I wish Paper had support for Fabric's Intermediary mappings, which solves this kind of issue on Fabric)
+                // so instead we need to get the Bukkit entity
+                // but for some reason getBukkitEntity doesn't exist so instead we cast the CommandSender to an Entity
+                // the cast is safe because getBukkitEntity and getBukkitSender return the same thing
+
+                if (CraftWorld$getHandle == null)
+                    CraftWorld$getHandle = getCraftWorld().getMethod("getHandle");
+
+                net.minecraft.server.level.ServerLevel nmsLevel = (net.minecraft.server.level.ServerLevel) CraftWorld$getHandle.invoke(world);
+                return getEntityPosition(nmsLevel, uuid);
+            }
+            if (level.getServerLevel() instanceof net.minecraft.server.level.ServerLevel nmsLevel) {
+                return getEntityPosition(nmsLevel, uuid);
+            }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                 ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
         error("level is not World or ServerLevel, it is " + level.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
         return null;
