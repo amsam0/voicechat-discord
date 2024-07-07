@@ -58,10 +58,10 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
                     v.equals("1.20.4") ||
                     v.equals("1.20.5")
             ) {
-                platform.info("Server is <1.20.6");
+                platform.info("Server is most likely <1.20.6");
                 commandHelper = new Pre_1_20_6_CommandHelper();
             } else {
-                platform.info("Server is >=1.20.6");
+                platform.info("Server is most likely >=1.20.6");
                 commandHelper = new Post_1_20_6_CommandHelper();
             }
         }
