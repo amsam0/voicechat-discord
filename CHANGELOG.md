@@ -2,6 +2,16 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.2
+
+-   (Paper) Fix the bot not disconnecting from Discord when the player leaves the game ([#57](https://github.com/naturecodevoid/voicechat-discord/issues/57))
+    -   This also fixes issues with the update checker not alerting operators of an update on Paper
+-   Fix the bot not disconnecting from Discord when the server stops
+-   (Fabric) Fix the addon's shutdown process blocking the server from shutting down
+-   Add failsafe if an error occurs during the bot stop process
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.1...3.0.2
+
 ## 3.0.1
 
 -   Hopefully add compatibility for older glibc versions ([#54](https://github.com/naturecodevoid/voicechat-discord/issues/54))
