@@ -2,7 +2,6 @@ use jni::{objects::JClass, sys::jint, JNIEnv};
 use parking_lot::Mutex;
 use tracing::{info, level_filters::LevelFilter, subscriber::Interest, Level, Metadata};
 use tracing_subscriber::{
-    filter::{self, FilterFn},
     fmt,
     layer::{Context, Filter, SubscriberExt},
     reload::{self, Handle},

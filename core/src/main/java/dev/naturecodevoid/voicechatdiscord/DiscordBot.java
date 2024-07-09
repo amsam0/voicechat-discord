@@ -220,7 +220,7 @@ public class DiscordBot {
         lastTimeAudioProvidedToSVC = null;
         if (resetThread != null) {
             resetThread.interrupt();
-            while (resetThread.isAlive()) {
+            while (resetThread != null && resetThread.isAlive()) {
                 try {
                     platform.debug("waiting for reset thread to end");
                     Thread.sleep(100);
@@ -232,7 +232,7 @@ public class DiscordBot {
 
         if (senderThread != null) {
             senderThread.interrupt(); // this really doesn't help stop the thread
-            while (senderThread.isAlive()) {
+            while (senderThread != null && senderThread.isAlive()) {
                 try {
                     platform.debug("waiting for sender thread to end");
                     Thread.sleep(100);

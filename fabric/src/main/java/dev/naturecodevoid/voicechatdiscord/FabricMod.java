@@ -32,6 +32,6 @@ public class FabricMod implements DedicatedServerModInitializer {
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onPlayerLeave(handler.player.getUuid()));
 
-        ServerLifecycleEvents.SERVER_STOPPING.register((server -> disable()));
+        ServerLifecycleEvents.SERVER_STOPPED.register((server -> disable()));
     }
 }

@@ -31,7 +31,7 @@ public final class Core {
 
     private static native void setDebugLevel(int debugLevel);
 
-    private static native void shutdown();
+    private static native void shutdownRuntime();
 
     /**
      * IMPORTANT: Nothing that runs in this function should depend on SVC's API. We don't know if the SVC is new enough yet
@@ -57,7 +57,7 @@ public final class Core {
 
         platform.info("Successfully shutdown " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
 
-        shutdown();
+        shutdownRuntime();
 
         platform.info("Successfully shutdown native runtime");
     }
