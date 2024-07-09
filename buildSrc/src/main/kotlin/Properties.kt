@@ -29,7 +29,7 @@ object Properties {
     const val adventureVersion = "4.14.0"
 
     /* Project */
-    const val pluginVersion = "3.0.0"
+    const val pluginVersion = "3.0.1"
     const val mavenGroup = "dev.naturecodevoid.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"

@@ -2,6 +2,13 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.1
+
+-   Hopefully add compatibility for older glibc versions ([#54](https://github.com/naturecodevoid/voicechat-discord/issues/54))
+-   (Paper) Fix getEntityPosition failing ([#56](https://github.com/naturecodevoid/voicechat-discord/issues/56))
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.0...3.0.1
+
 ## 3.0.0
 
 -   Major internal changes, which should result in better stability and performance
