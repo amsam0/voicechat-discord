@@ -142,7 +142,12 @@ public final class Core {
 
     public static void clearBots() {
         bots.forEach(discordBot -> {
-            discordBot.stop();
+            try {
+                discordBot.stop();
+            } catch (Throwable e) {
+                platform.error("Error when stopping bot: " + e.getMessage());
+                platform.debug(e);
+            }
             discordBot.free();
         });
         bots.clear();
