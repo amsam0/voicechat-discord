@@ -8,6 +8,7 @@ import dev.naturecodevoid.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -79,6 +80,8 @@ public final class PaperPlugin extends JavaPlugin implements Listener {
 
         Plugin svcPlugin = getServer().getPluginManager().getPlugin("voicechat");
         checkSVCVersion(svcPlugin != null ? svcPlugin.getDescription().getVersion() : null);
+
+        Bukkit.getPluginManager().registerEvents(this, this);
 
         commandHelper.registerCommands();
     }
