@@ -9,13 +9,6 @@ use tracing::{error, info};
 
 pub static RUNTIME: Lazy<RuntimeHolder> = Lazy::new(RuntimeHolder::new);
 
-#[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_shutdownRuntime<'local>(
-    _env: JNIEnv<'local>,
-    _class: JClass<'local>,
-) {
-    RUNTIME.shutdown();
-}
 
 pub struct RuntimeHolder {
     runtime: MaybeUninit<Runtime>,

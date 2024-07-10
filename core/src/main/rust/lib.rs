@@ -1,6 +1,7 @@
 use std::fmt::{Debug, Display};
 
 use jni::JNIEnv;
+use tracing::warn;
 
 mod audio_util;
 mod discord_bot;
@@ -38,4 +39,25 @@ impl<T, E: Display + Debug> ResultExt<T> for Result<T, E> {
             }
         }
     }
+}
+
+
+#[no_mangle]
+pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeNatives<'local>(
+    _env: JNIEnv<'local>,
+    _class: JClass<'local>,
+) {
+    logging::ensure_init();
+    info!("Initializing rustls");
+    if rustls::crypto::ring::default_provider().install_default().is_err() {
+        warn!("rustls already has a default provider. This is probably fine");
+    }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_shutdownNatives<'local>(
+    _env: JNIEnv<'local>,
+    _class: JClass<'local>,
+) {
+    RUNTIME.shutdown();
 }

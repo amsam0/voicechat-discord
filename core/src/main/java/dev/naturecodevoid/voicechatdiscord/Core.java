@@ -27,11 +27,11 @@ public final class Core {
     public static int debugLevel = 0;
     public static boolean alertOpsOfUpdates = true;
 
-    private static native void initLogger();
+    private static native void initializeNatives();
 
     private static native void setDebugLevel(int debugLevel);
 
-    private static native void shutdownRuntime();
+    private static native void shutdownNatives();
 
     /**
      * IMPORTANT: Nothing that runs in this function should depend on SVC's API. We don't know if the SVC is new enough yet
@@ -43,7 +43,7 @@ public final class Core {
             platform.error("Failed to load natives: " + e.getMessage());
             throw new RuntimeException(e);
         }
-        initLogger();
+        initializeNatives();
 
         new Thread(UpdateChecker::checkForUpdate).start();
         loadConfig();
@@ -57,7 +57,7 @@ public final class Core {
 
         platform.info("Successfully shutdown " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
 
-        shutdownRuntime();
+        shutdownNatives();
 
         platform.info("Successfully shutdown native runtime");
     }

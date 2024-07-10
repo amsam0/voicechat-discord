@@ -72,11 +72,7 @@ impl<S: tracing::Subscriber> Layer<S> for CustomFilter {
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initLogger<'local>(
-    _env: JNIEnv<'local>,
-    _class: JClass<'local>,
-) {
+pub fn ensure_init() {
     let (filter, reload_handle) = reload::Layer::new(CustomFilter::new(Level::WARN));
     if tracing_subscriber::registry()
         .with(filter)
