@@ -1,7 +1,8 @@
 use std::fmt::{Debug, Display};
 
-use jni::JNIEnv;
-use tracing::warn;
+use jni::{objects::JClass, JNIEnv};
+use runtime::RUNTIME;
+use tracing::{info, warn};
 
 mod audio_util;
 mod discord_bot;
@@ -41,7 +42,6 @@ impl<T, E: Display + Debug> ResultExt<T> for Result<T, E> {
     }
 }
 
-
 #[no_mangle]
 pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeNatives<'local>(
     _env: JNIEnv<'local>,
@@ -49,7 +49,10 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeN
 ) {
     logging::ensure_init();
     info!("Initializing rustls");
-    if rustls::crypto::ring::default_provider().install_default().is_err() {
+    if rustls::crypto::ring::default_provider()
+        .install_default()
+        .is_err()
+    {
         warn!("rustls already has a default provider. This is probably fine");
     }
     // don't initialize the runtime here, in case it is never used

@@ -1,14 +1,14 @@
-use std::{
-    mem::MaybeUninit, ops::Deref, sync::atomic::{AtomicBool, Ordering}, thread, time::Duration
-};
+use std::mem::MaybeUninit;
+use std::ops::Deref;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread;
+use std::time::Duration;
 
-use jni::{objects::JClass, JNIEnv};
 use once_cell::sync::Lazy;
 use tokio::runtime::{Builder, Runtime};
 use tracing::{error, info};
 
 pub static RUNTIME: Lazy<RuntimeHolder> = Lazy::new(RuntimeHolder::new);
-
 
 pub struct RuntimeHolder {
     runtime: MaybeUninit<Runtime>,
@@ -31,7 +31,7 @@ impl RuntimeHolder {
     }
 
     #[inline]
-    fn shutdown(&self) {
+    pub(super) fn shutdown(&self) {
         if self.is_initialized.load(Ordering::Relaxed) {
             info!("Waiting for everything to quiet down");
             thread::sleep(Duration::from_millis(500));
