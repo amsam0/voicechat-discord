@@ -52,6 +52,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeN
     if rustls::crypto::ring::default_provider().install_default().is_err() {
         warn!("rustls already has a default provider. This is probably fine");
     }
+    // don't initialize the runtime here, in case it is never used
 }
 
 #[no_mangle]
