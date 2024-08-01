@@ -22,7 +22,7 @@ jobs:
           - os: ubuntu-20.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
-            pre-install: sudo apt-get update -y
+            pre-install: sudo apt-get update -y && sudo apt-get install -y curl
             container: debian:buster
           - os: macos-latest
             triple: apple-darwin
@@ -44,9 +44,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install required packages
+      - name: Install non-architecture packages
+        if: ${{ matrix.pre-install }}
+        run: ${{ matrix.pre-install }}
+
+      - name: Install architecture packages
         if: ${{ matrix.install }}
-        run: "${{ matrix.pre-install }} && ${{ matrix.install }}"
+        run: ${{ matrix.install }}
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
