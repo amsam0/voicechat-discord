@@ -22,7 +22,7 @@ jobs:
           - os: ubuntu-latest
             triple: unknown-linux-musl
             filename: libvoicechat_discord.so
-            pre-install: sudo apt-get update -y
+            pre-install: sudo apt-get update -y && sudo apt-get install -y musl-tools
             rustflags: -C target-feature=-crt-static
           - os: macos-latest
             triple: apple-darwin
