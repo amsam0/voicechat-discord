@@ -23,6 +23,7 @@ jobs:
             triple: unknown-linux-musl
             filename: libvoicechat_discord.so
             pre-install: sudo apt-get update -y
+            rustflags: -C target-feature=-crt-static
           - os: macos-latest
             triple: apple-darwin
             filename: libvoicechat_discord.dylib
@@ -57,7 +58,7 @@ jobs:
           targets: ${{ matrix.arch }}-${{ matrix.triple }}
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
-        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+        run: RUSTFLAGS="${{ matrix.rustflags }}" cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
         working-directory: core
 
       - name: Upload ${{ matrix.filename }}
