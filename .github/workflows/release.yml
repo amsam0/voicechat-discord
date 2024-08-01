@@ -9,7 +9,7 @@ jobs:
   natives:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-20.04, macos-latest, windows-latest]
         arch: [aarch64, x86_64, i686]
         exclude:
           - os: macos-latest
@@ -19,11 +19,10 @@ jobs:
           - os: windows-latest
             arch: i686
         include:
-          - os: ubuntu-latest
-            triple: unknown-linux-musl
+          - os: ubuntu-20.04
+            triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
-            pre-install: sudo apt-get update -y && sudo apt-get install -y musl-tools
-            rustflags: -C target-feature=-crt-static
+            pre-install: sudo apt-get update -y
           - os: macos-latest
             triple: apple-darwin
             filename: libvoicechat_discord.dylib
@@ -31,10 +30,10 @@ jobs:
             triple: pc-windows-gnu
             filename: voicechat_discord.dll
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             arch: aarch64
             install: sudo apt-get install -y gcc-aarch64-linux-gnu
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
     runs-on: ${{ matrix.os }}
@@ -42,13 +41,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install non-architecture packages
-        if: ${{ matrix.pre-install }}
-        run: ${{ matrix.pre-install }}
-
-      - name: Install architecture packages
+      - name: Install required packages
         if: ${{ matrix.install }}
-        run: ${{ matrix.install }}
+        run: "${{ matrix.pre-install }} && ${{ matrix.install }}"
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -62,7 +57,7 @@ jobs:
           targets: ${{ matrix.arch }}-${{ matrix.triple }}
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
-        run: RUSTFLAGS="${{ matrix.rustflags }}" cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
         working-directory: core
 
       - name: Upload ${{ matrix.filename }}
@@ -76,7 +71,7 @@ jobs:
     strategy:
       matrix:
         java: [21]
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     needs: [natives]
     steps:
@@ -86,19 +81,19 @@ jobs:
       - name: Download linux-aarch64
         uses: actions/download-artifact@v4
         with:
-          name: natives-aarch64-unknown-linux-musl
+          name: natives-aarch64-unknown-linux-gnu
           path: core/src/main/resources/natives/linux-aarch64/
 
       - name: Download linux-x64
         uses: actions/download-artifact@v4
         with:
-          name: natives-x86_64-unknown-linux-musl
+          name: natives-x86_64-unknown-linux-gnu
           path: core/src/main/resources/natives/linux-x64/
 
       - name: Download linux-x86
         uses: actions/download-artifact@v4
         with:
-          name: natives-i686-unknown-linux-musl
+          name: natives-i686-unknown-linux-gnu
           path: core/src/main/resources/natives/linux-x86/
 
       - name: Download mac-aarch64
