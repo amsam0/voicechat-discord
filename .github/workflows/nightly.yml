@@ -23,7 +23,7 @@ jobs:
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
             pre-install: sudo apt-get update -y
-            container: quay.io/pypa/manylinux2014_x86_64 # https://kobzol.github.io/rust/ci/2021/05/07/building-rust-binaries-in-ci-that-work-with-older-glibc.html
+            container: quay.io/pypa/manylinux_2_28_x86_64 # https://kobzol.github.io/rust/ci/2021/05/07/building-rust-binaries-in-ci-that-work-with-older-glibc.html
           - os: macos-latest
             triple: apple-darwin
             filename: libvoicechat_discord.dylib
