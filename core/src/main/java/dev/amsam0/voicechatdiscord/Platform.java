@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Player;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Core.debugLevel;
+import static dev.amsam0.voicechatdiscord.Core.debugLevel;
 
 public interface Platform {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -20,7 +20,8 @@ public interface Platform {
 
     ServerPlayer commandContextToPlayer(CommandContext<?> context);
 
-    @Nullable Position getEntityPosition(ServerLevel level, UUID uuid);
+    @Nullable
+    Position getEntityPosition(ServerLevel level, UUID uuid);
 
     boolean isOperator(Object sender);
 

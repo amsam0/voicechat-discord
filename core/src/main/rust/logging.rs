@@ -87,7 +87,7 @@ pub fn ensure_init() {
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_setDebugLevel<'local>(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_Core_setDebugLevel<'local>(
     _env: JNIEnv<'local>,
     _class: JClass<'local>,
     debug_level: jint,

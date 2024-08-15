@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord.util;
+package dev.amsam0.voicechatdiscord.util;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;

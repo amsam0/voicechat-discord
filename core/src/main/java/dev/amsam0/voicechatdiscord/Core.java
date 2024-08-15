@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.github.zafarkhaja.semver.ParseException;
 import com.github.zafarkhaja.semver.Version;
@@ -14,8 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.CONFIG_HEADER;
-import static dev.naturecodevoid.voicechatdiscord.Constants.VOICECHAT_MIN_VERSION;
+import static dev.amsam0.voicechatdiscord.Constants.CONFIG_HEADER;
+import static dev.amsam0.voicechatdiscord.Constants.VOICECHAT_MIN_VERSION;
 
 /**
  * Core code between Paper and Fabric.

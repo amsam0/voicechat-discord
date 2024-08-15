@@ -1,9 +1,9 @@
 name: voicechat-discord
 version: ${version}
-main: dev.naturecodevoid.voicechatdiscord.PaperPlugin
+main: dev.amsam0.voicechatdiscord.PaperPlugin
 api-version: ${paperApiVersion}
 prefix: voicechat-discord
-authors: [ "naturecodevoid", "Totobird" ]
+authors: [ "amsam0", "Totobird" ]
 description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.
-website: https://naturecodevoid.dev
+website: https://github.com/amsam0/voicechat-discord
 depend: [ voicechat ]

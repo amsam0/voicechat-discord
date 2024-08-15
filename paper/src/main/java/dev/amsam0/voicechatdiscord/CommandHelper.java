@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.command.CommandSender;

@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Player;
@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
-import static dev.naturecodevoid.voicechatdiscord.FabricMod.LOGGER;
+import static dev.amsam0.voicechatdiscord.Core.api;
+import static dev.amsam0.voicechatdiscord.FabricMod.LOGGER;
 
 public class FabricPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {

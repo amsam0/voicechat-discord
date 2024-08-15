@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerPlayer;
@@ -8,13 +8,13 @@ import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.LocationalSoundPacket;
 import de.maxhenkel.voicechat.api.packets.SoundPacket;
 import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
-import dev.naturecodevoid.voicechatdiscord.util.Util;
+import dev.amsam0.voicechatdiscord.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.Core.api;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 public class DiscordBot {
     // Make sure to mirror this value on the Rust side (`DiscordBot::reset_senders::DURATION_UNTIL_RESET`)

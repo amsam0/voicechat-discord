@@ -11,7 +11,7 @@ use crate::ResultExt;
 use super::DiscordBot;
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1new<'local>(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1new<'local>(
     mut env: JNIEnv<'local>,
     _class: JClass<'local>,
     token: JString<'local>,
@@ -27,7 +27,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1new
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1isStarted(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1isStarted(
     mut _env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -37,7 +37,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1isS
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1logIn(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1logIn(
     mut env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -47,7 +47,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1log
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1start(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1start(
     mut env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -69,7 +69,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1sta
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1stop(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1stop(
     mut env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -79,7 +79,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1sto
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1free(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1free(
     mut _env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -88,7 +88,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1fre
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1addAudioToHearingBuffer<
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1addAudioToHearingBuffer<
     'local,
 >(
     env: JNIEnv<'local>,
@@ -121,7 +121,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1add
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1blockForSpeakingBufferOpusData(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1blockForSpeakingBufferOpusData(
     env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,
@@ -147,7 +147,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1blo
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_DiscordBot__1resetSenders(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1resetSenders(
     _env: JNIEnv<'_>,
     _obj: jobject,
     ptr: jlong,

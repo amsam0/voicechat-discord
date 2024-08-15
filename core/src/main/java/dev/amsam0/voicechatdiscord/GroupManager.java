@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.ServerPlayer;
@@ -7,14 +7,14 @@ import de.maxhenkel.voicechat.api.events.CreateGroupEvent;
 import de.maxhenkel.voicechat.api.events.JoinGroupEvent;
 import de.maxhenkel.voicechat.api.events.LeaveGroupEvent;
 import de.maxhenkel.voicechat.api.events.RemoveGroupEvent;
-import dev.naturecodevoid.voicechatdiscord.util.BiMap;
+import dev.amsam0.voicechatdiscord.util.BiMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.Core.api;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 public final class GroupManager {
     public static final BiMap<UUID, Integer> groupFriendlyIds = new BiMap<>();

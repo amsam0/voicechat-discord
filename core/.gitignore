@@ -1,5 +1,5 @@
 target/
-dev_naturecodevoid_voicechatdiscord_Rust.h
+dev_amsam0_voicechatdiscord_Rust.h
 .vscode
 src/main/resources/natives/*
 !src/main/resources/natives/.gitkeep

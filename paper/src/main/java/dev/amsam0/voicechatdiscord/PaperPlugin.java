@@ -1,10 +1,10 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.github.zafarkhaja.semver.ParseException;
 import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
-import dev.naturecodevoid.voicechatdiscord.post_1_20_6.Post_1_20_6_CommandHelper;
-import dev.naturecodevoid.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
+import dev.amsam0.voicechatdiscord.post_1_20_6.Post_1_20_6_CommandHelper;
+import dev.amsam0.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +16,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.PLUGIN_ID;
-import static dev.naturecodevoid.voicechatdiscord.Core.*;
+import static dev.amsam0.voicechatdiscord.Constants.PLUGIN_ID;
+import static dev.amsam0.voicechatdiscord.Core.*;
 
 public final class PaperPlugin extends JavaPlugin implements Listener {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);

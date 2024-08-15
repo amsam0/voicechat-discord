@@ -43,7 +43,7 @@ impl<T, E: Display + Debug> ResultExt<T> for Result<T, E> {
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeNatives<'local>(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_Core_initializeNatives<'local>(
     _env: JNIEnv<'local>,
     _class: JClass<'local>,
 ) {
@@ -59,7 +59,7 @@ pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_initializeN
 }
 
 #[no_mangle]
-pub extern "system" fn Java_dev_naturecodevoid_voicechatdiscord_Core_shutdownNatives<'local>(
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_Core_shutdownNatives<'local>(
     _env: JNIEnv<'local>,
     _class: JClass<'local>,
 ) {

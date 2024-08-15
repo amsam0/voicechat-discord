@@ -39,11 +39,11 @@ tasks.runServer {
 
 tasks.shadowJar {
     configurations = listOf(project.configurations.getByName("shadow"))
-    relocate("org.bspfsystems.yamlconfiguration", "dev.naturecodevoid.voicechatdiscord.shadow.yamlconfiguration")
-    relocate("org.yaml.snakeyaml", "dev.naturecodevoid.voicechatdiscord.shadow.snakeyaml")
-    relocate("com.github.zafarkhaja.semver", "dev.naturecodevoid.voicechatdiscord.shadow.semver")
-    relocate("com.google.gson", "dev.naturecodevoid.voicechatdiscord.shadow.gson")
-    relocate("net.kyori", "dev.naturecodevoid.voicechatdiscord.shadow.kyori")
+    relocate("org.bspfsystems.yamlconfiguration", "dev.amsam0.voicechatdiscord.shadow.yamlconfiguration")
+    relocate("org.yaml.snakeyaml", "dev.amsam0.voicechatdiscord.shadow.snakeyaml")
+    relocate("com.github.zafarkhaja.semver", "dev.amsam0.voicechatdiscord.shadow.semver")
+    relocate("com.google.gson", "dev.amsam0.voicechatdiscord.shadow.gson")
+    relocate("net.kyori", "dev.amsam0.voicechatdiscord.shadow.kyori")
 
     archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
     archiveClassifier.set("")

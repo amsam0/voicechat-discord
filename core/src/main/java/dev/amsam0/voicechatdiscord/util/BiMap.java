@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord.util;
+package dev.amsam0.voicechatdiscord.util;
 
 import org.jetbrains.annotations.Nullable;
 

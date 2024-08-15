@@ -1,13 +1,13 @@
-package dev.naturecodevoid.voicechatdiscord.pre_1_20_6;
+package dev.amsam0.voicechatdiscord.pre_1_20_6;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.destroystokyo.paper.event.brigadier.CommandRegisteredEvent;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.naturecodevoid.voicechatdiscord.CommandHelper;
-import dev.naturecodevoid.voicechatdiscord.PaperPlugin;
-import dev.naturecodevoid.voicechatdiscord.SubCommands;
+import dev.amsam0.voicechatdiscord.CommandHelper;
+import dev.amsam0.voicechatdiscord.PaperPlugin;
+import dev.amsam0.voicechatdiscord.SubCommands;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -17,8 +17,8 @@ import org.bukkit.event.Listener;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftServer;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.BukkitHelper.getCraftServer;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 @SuppressWarnings("removal") // new brigadier APIs didn't exist in 1.19.4
 public class Pre_1_20_6_CommandHelper implements CommandHelper, Listener {

@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Position;
@@ -15,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
-import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftWorld;
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
-import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.*;
+import static dev.amsam0.voicechatdiscord.BukkitHelper.getCraftWorld;
+import static dev.amsam0.voicechatdiscord.Core.api;
+import static dev.amsam0.voicechatdiscord.PaperPlugin.*;
 
 public class PaperPlatform implements Platform {
     public boolean isValidPlayer(Object sender) {

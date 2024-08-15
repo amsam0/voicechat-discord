@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.github.zafarkhaja.semver.ParseException;
 import com.github.zafarkhaja.semver.Version;
@@ -15,9 +15,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.MODRINTH_PROJECT_ID;
-import static dev.naturecodevoid.voicechatdiscord.Constants.VERSION;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.Constants.MODRINTH_PROJECT_ID;
+import static dev.amsam0.voicechatdiscord.Constants.VERSION;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 public final class UpdateChecker {
     public static @Nullable String updateMessage = null;
@@ -60,7 +60,7 @@ public final class UpdateChecker {
         HttpURLConnection connection = null;
 
         try {
-            URL url = new URL("https://api.github.com/repos/naturecodevoid/voicechat-discord/tags");
+            URL url = new URL("https://api.github.com/repos/amsam0/voicechat-discord/tags");
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Accept", "application/vnd.github+json");
             connection.setRequestProperty("X-GitHub-Api-Version", "2022-11-28");
@@ -106,7 +106,7 @@ public final class UpdateChecker {
             //                                                                                                 [  "                                   "  ]
             URL url = new URL("https://api.modrinth.com/v2/project/" + MODRINTH_PROJECT_ID + "/version?loaders=%5B%22" + platform.getLoader().name + "%22%5D");
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "naturecodevoid/voicechat-discord/" + VERSION);
+            connection.setRequestProperty("User-Agent", "amsam0/voicechat-discord/" + VERSION);
             connection.setUseCaches(false);
 
             InputStream inputStream = connection.getInputStream();

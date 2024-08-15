@@ -30,7 +30,7 @@ object Properties {
 
     /* Project */
     const val pluginVersion = "3.0.4"
-    const val mavenGroup = "dev.naturecodevoid.voicechatdiscord"
+    const val mavenGroup = "dev.amsam0.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"
     val supportedMinecraftVersions = listOf(

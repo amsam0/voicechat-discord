@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static dev.naturecodevoid.voicechatdiscord.Constants.PLUGIN_ID;
-import static dev.naturecodevoid.voicechatdiscord.Core.*;
+import static dev.amsam0.voicechatdiscord.Constants.PLUGIN_ID;
+import static dev.amsam0.voicechatdiscord.Core.*;
 
 public class FabricMod implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);

@@ -3,7 +3,7 @@ name: Bug Report
 about: Found a bug? Use this template!
 title: ''
 labels: 'bug'
-assignees: 'naturecodevoid'
+assignees: 'amsam0'
 ---
 
 **Describe the bug**

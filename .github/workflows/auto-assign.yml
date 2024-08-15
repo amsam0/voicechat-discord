@@ -13,4 +13,4 @@ jobs:
             - name: "Auto-assign issue/PR"
               uses: pozil/auto-assign-issue@v1
               with:
-                  assignees: naturecodevoid
+                  assignees: amsam0

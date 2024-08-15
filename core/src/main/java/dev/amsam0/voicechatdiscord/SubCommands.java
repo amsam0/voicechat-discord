@@ -1,4 +1,4 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -19,10 +19,10 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-import static dev.naturecodevoid.voicechatdiscord.Constants.RELOAD_CONFIG_PERMISSION;
-import static dev.naturecodevoid.voicechatdiscord.Core.*;
-import static dev.naturecodevoid.voicechatdiscord.GroupManager.*;
-import static dev.naturecodevoid.voicechatdiscord.util.Util.getArgumentOr;
+import static dev.amsam0.voicechatdiscord.Constants.RELOAD_CONFIG_PERMISSION;
+import static dev.amsam0.voicechatdiscord.Core.*;
+import static dev.amsam0.voicechatdiscord.GroupManager.*;
+import static dev.amsam0.voicechatdiscord.util.Util.getArgumentOr;
 
 /**
  * Subcommands for /dvc
@@ -241,7 +241,7 @@ public final class SubCommands {
                              - `<white>/dvc group info<red>`: Get info about your current group
                              - `<white>/dvc group leave<red>`: Leave your current group
                              - `<white>/dvc group remove <ID><red>`: Removes a persistent group if there is no one in it
-                            See <white>https://github.com/naturecodevoid/voicechat-discord#dvc-group<red> for more info on how to use these commands."""
+                            See <white>https://github.com/amsam0/voicechat-discord#dvc-group<red> for more info on how to use these commands."""
             );
             return 1;
         }

@@ -1,10 +1,11 @@
-package dev.naturecodevoid.voicechatdiscord.pre_1_20_6;
+package dev.amsam0.voicechatdiscord.pre_1_20_6;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
+import dev.amsam0.voicechatdiscord.PaperPlugin;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.bukkit.Bukkit;
@@ -23,10 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getCraftServer;
-import static dev.naturecodevoid.voicechatdiscord.BukkitHelper.getVanillaCommandWrapper;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
-import static dev.naturecodevoid.voicechatdiscord.PaperPlugin.get;
+import static dev.amsam0.voicechatdiscord.BukkitHelper.getCraftServer;
+import static dev.amsam0.voicechatdiscord.BukkitHelper.getVanillaCommandWrapper;
+import static dev.amsam0.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.PaperPlugin.*;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @DefaultQualifier(NonNull.class)

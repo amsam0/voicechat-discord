@@ -6,33 +6,33 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 - Adjust error message for when an audio sender can't be registered to hopefully make it less confusing
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.3...3.0.4
+Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.3...3.0.4
 
 ## 3.0.3
 
 - Fix crash when running /dvc start by forcing ring to be used for cryptography instead of
-  aws-lc ([#59](https://github.com/naturecodevoid/voicechat-discord/issues/59))
+  aws-lc ([#59](https://github.com/amsam0/voicechat-discord/issues/59))
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.2...3.0.3
+Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.2...3.0.3
 
 ## 3.0.2
 
 - (Paper) Fix the bot not disconnecting from Discord when the player leaves the
-  game ([#57](https://github.com/naturecodevoid/voicechat-discord/issues/57))
+  game ([#57](https://github.com/amsam0/voicechat-discord/issues/57))
     - This also fixes issues with the update checker not alerting operators of an update on Paper
 - Fix the bot not disconnecting from Discord when the server stops
 - (Fabric) Fix the addon's shutdown process blocking the server from shutting down
 - Add failsafe if an error occurs during the bot stop process
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.1...3.0.2
+Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.1...3.0.2
 
 ## 3.0.1
 
 - Hopefully add compatibility for older glibc
-  versions ([#54](https://github.com/naturecodevoid/voicechat-discord/issues/54))
-- (Paper) Fix getEntityPosition failing ([#56](https://github.com/naturecodevoid/voicechat-discord/issues/56))
+  versions ([#54](https://github.com/amsam0/voicechat-discord/issues/54))
+- (Paper) Fix getEntityPosition failing ([#56](https://github.com/amsam0/voicechat-discord/issues/56))
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.0...3.0.1
+Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.0...3.0.1
 
 ## 3.0.0
 
@@ -41,7 +41,7 @@ Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.0.
       libraries
     - This means that the plugin requires some native libraries, which unfortunately increased the JAR size
     - The advantage is that SSL is bundled with the libraries instead of requiring Java's SSL,
-      fixing [#11](https://github.com/naturecodevoid/voicechat-discord/issues/11)
+      fixing [#11](https://github.com/amsam0/voicechat-discord/issues/11)
     - The new implementation should be faster and less prone to getting into a buggy state
 - Many fixes to fix support for 1.20.3 and later
     - On the Fabric side, usage of JSON to convert between adventure and native component classes was removed. Now,
@@ -50,16 +50,16 @@ Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.0.
       places due to Paperweight's new mapping behavior breaking stuff
 - Require Java 21 (the addon still supports 1.19.4)
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.1.1...3.0.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/2.1.1...3.0.0
 
 ## 2.1.1
 
-- (Fabric) Fixed [#25](https://github.com/naturecodevoid/voicechat-discord/issues/25) - **/dvc now works correctly on
+- (Fabric) Fixed [#25](https://github.com/amsam0/voicechat-discord/issues/25) - **/dvc now works correctly on
   1.20+!** Sorry this took so long to fix; I actually fixed it almost a month ago but never made a release.
 - Fixed a minor punctuation issue with the message about Simple Voice Chat not being new enough
 - Increased minimum Minecraft version to 1.19.4 from 1.19.2
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.1.0...2.1.1
+Code changes: https://github.com/amsam0/voicechat-discord/compare/2.1.0...2.1.1
 
 ## 2.1.0
 
@@ -71,14 +71,14 @@ This update has some new features and bugfixes. The minimum Simple Voice Chat ve
 - Switch to using adventure and minimessage for messages. This means that we no longer use the legacy formatting codes,
   and some messages will have colors in the console!
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.0.1...2.1.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/2.0.1...2.1.0
 
 ## 2.0.1
 
 This update fixes one of the major issues with 2.0.0. If you are on Fabric, you probably didn't experience it, but you
 should still update because of the other fixes and improvements.
 
-- Fixed [#22](https://github.com/naturecodevoid/voicechat-discord/issues/22)
+- Fixed [#22](https://github.com/amsam0/voicechat-discord/issues/22)
 - Switch to a simpler volume adjustment method. While this seems to work fine, please report any issues with the audio
   going to Discord!
 - Slight improvement: packets with a volume less than or equal to 0 (which ends up being silent) won't be sent to
@@ -86,7 +86,7 @@ should still update because of the other fixes and improvements.
 - Improve reset watcher to be slower, this may fix some audio related issues
 - Make NMS usage and reflection on Paper safer and hopefully future proof it more
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/2.0.0...2.0.1
+Code changes: https://github.com/amsam0/voicechat-discord/compare/2.0.0...2.0.1
 
 ## 2.0.0
 
@@ -94,14 +94,14 @@ Huge thanks to [Totobird](https://github.com/Totobird-Creations) for being a hug
 the main reason I started working on it again.
 
 - **All commands have been moved to subcommands on the `/dvc` command**
-    - See https://github.com/naturecodevoid/voicechat-discord#using-it-in-game for docs
+    - See https://github.com/amsam0/voicechat-discord#using-it-in-game for docs
     - `/startdiscordvoicechat` was moved to `/dvc start`
         - Running `/dvc start` while in a voice chat session restarts the session
     - New subcommand: `/dvc stop`
         - Only usable while currently in a discord voice chat session
         - Disconnects the bot and stops the session
     - New subcommand: `/dvc group`
-        - See https://github.com/naturecodevoid/voicechat-discord#dvc-group for docs
+        - See https://github.com/amsam0/voicechat-discord#dvc-group for docs
     - New subcommand: `/dvc togglewhisper`
         - Allows mod users to whisper
     - New subcommand: `/dvc reloadconfig`
@@ -112,35 +112,35 @@ the main reason I started working on it again.
         - Checks for a new update using the GitHub API. If one is found, finds the version on Modrinth and links to the
           version page.
 - **Group support** (`/dvc group`)
-    - See https://github.com/naturecodevoid/voicechat-discord#dvc-group for docs
+    - See https://github.com/amsam0/voicechat-discord#dvc-group for docs
 - **Whispering support** (`/dvc togglewhisper`)
 - Added support for people using the mod to hear static/entity/locational audio channels
 - Use the new audio sender API to improve compatibility with other addons
 - [Fabric only] Use the Fabric Permissions API to support mods like LuckPerms for the reload config permission
 - Added version checker to ensure the plugin/mod is updated
 - Added Simple Voice Chat version checker to ensure we have a new enough version of the mod
-- Hopefully fixed [#5](https://github.com/naturecodevoid/voicechat-discord/issues/5)
+- Hopefully fixed [#5](https://github.com/amsam0/voicechat-discord/issues/5)
 - Better login failure error handling and logging
 - Improvements to messages sent to players to be more clear
 - Optional debug logging to hopefully help with debugging issues
 - Major refactors and command handling improvements
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.4.0...2.0.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/1.4.0...2.0.0
 
 ## 1.4.0
 
 This release should be functionally identical to 1.3.0 on fabric, but it fixed this paper specific
-bug: [(#4)](https://github.com/naturecodevoid/voicechat-discord/issues/4) On paper, the plugin
+bug: [(#4)](https://github.com/amsam0/voicechat-discord/issues/4) On paper, the plugin
 configuration folder is not created
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.3.0...1.4.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/1.3.0...1.4.0
 
 ## 1.3.0
 
-- Fixed [#2](https://github.com/naturecodevoid/voicechat-discord/issues/2)
+- Fixed [#2](https://github.com/amsam0/voicechat-discord/issues/2)
 - Dropped Bukkit and Spigot support
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.2.0...1.3.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/1.2.0...1.3.0
 
 ## 1.2.0
 
@@ -150,19 +150,19 @@ Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.2.0.
 > don't use this release, use the latest release. Only use this release if you
 > are using Spigot/CraftBukkit and cannot use Paper or Purpur.
 
-- Fixed some issues with multiple bots ([#1](https://github.com/naturecodevoid/voicechat-discord/issues/1))
+- Fixed some issues with multiple bots ([#1](https://github.com/amsam0/voicechat-discord/issues/1))
 - Fixed 2 users being able to start a voice chat with the same bot
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.1.0...1.2.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/1.1.0...1.2.0
 
 ## 1.1.0
 
 - Internal changes to support Bukkit and Fabric with the same codebase
 
-Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/1.0.0-build4...1.1.0
+Code changes: https://github.com/amsam0/voicechat-discord/compare/1.0.0-build4...1.1.0
 
 ## 1.0.0
 
 - Initial release
 
-Code: https://github.com/naturecodevoid/voicechat-discord/tree/1.0.0-build4
+Code: https://github.com/amsam0/voicechat-discord/tree/1.0.0-build4

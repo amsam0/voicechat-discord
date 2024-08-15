@@ -1,9 +1,9 @@
-package dev.naturecodevoid.voicechatdiscord.post_1_20_6;
+package dev.amsam0.voicechatdiscord.post_1_20_6;
 
 import com.mojang.brigadier.context.CommandContext;
-import dev.naturecodevoid.voicechatdiscord.CommandHelper;
-import dev.naturecodevoid.voicechatdiscord.PaperPlugin;
-import dev.naturecodevoid.voicechatdiscord.SubCommands;
+import dev.amsam0.voicechatdiscord.CommandHelper;
+import dev.amsam0.voicechatdiscord.PaperPlugin;
+import dev.amsam0.voicechatdiscord.SubCommands;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;

@@ -1,12 +1,12 @@
-package dev.naturecodevoid.voicechatdiscord;
+package dev.amsam0.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.*;
 
-import static dev.naturecodevoid.voicechatdiscord.Constants.PLUGIN_ID;
-import static dev.naturecodevoid.voicechatdiscord.Core.api;
-import static dev.naturecodevoid.voicechatdiscord.Core.platform;
+import static dev.amsam0.voicechatdiscord.Constants.PLUGIN_ID;
+import static dev.amsam0.voicechatdiscord.Core.api;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 public class VoicechatPlugin implements de.maxhenkel.voicechat.api.VoicechatPlugin {
     @Override
