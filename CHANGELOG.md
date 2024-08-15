@@ -2,6 +2,12 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.4
+
+-   Adjust error message for when an audio sender can't be registered to hopefully make it less confusing
+
+Code changes: https://github.com/naturecodevoid/voicechat-discord/compare/3.0.3...3.0.4
+
 ## 3.0.3
 
 -   Fix crash when running /dvc start by forcing ring to be used for cryptography instead of aws-lc ([#59](https://github.com/naturecodevoid/voicechat-discord/issues/59))

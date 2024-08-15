@@ -137,7 +137,7 @@ public class DiscordBot {
             platform.error("Couldn't register audio sender. The player has the mod installed.");
             platform.sendMessage(
                     player,
-                    "<red>Couldn't register an audio sender for you. Please check that you DO NOT have Simple Voice Chat installed on your client."
+                    "<red>It seems that you have Simple Voice Chat installed on your client. To use the addon, you must not have Simple Voice Chat installed on your client."
             );
             stop();
             return;
