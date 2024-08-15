@@ -22,8 +22,8 @@ jobs:
           - os: ubuntu-20.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
-            pre-install: sudo apt-get update -y && sudo apt-get install -y curl
-            container: debian:buster
+            pre-install: apt-get update -y #&& apt-get install -y curl
+            #container: debian:buster
           - os: macos-latest
             triple: apple-darwin
             filename: libvoicechat_discord.dylib
@@ -33,22 +33,22 @@ jobs:
 
           - os: ubuntu-20.04
             arch: aarch64
-            install: sudo apt-get install -y gcc-aarch64-linux-gnu
+            install: apt-get install -y gcc-aarch64-linux-gnu
           - os: ubuntu-20.04
             arch: i686
-            install: sudo apt-get install -y gcc-i686-linux-gnu
+            install: apt-get install -y gcc-i686-linux-gnu
     runs-on: ${{ matrix.os }}
-    container:
-      image: ${{ matrix.container }}
+    #container:
+    #  image: ${{ matrix.container }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install non-architecture packages
+      - name: Pre-package installation
         if: ${{ matrix.pre-install }}
         run: ${{ matrix.pre-install }}
 
-      - name: Install architecture packages
+      - name: Install packages
         if: ${{ matrix.install }}
         run: ${{ matrix.install }}
 
