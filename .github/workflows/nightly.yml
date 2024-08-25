@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: natives-${{ matrix.arch }}-${{ matrix.triple }}
-          path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/release/${{ matrix.filename }}
+          path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/debug/${{ matrix.filename }}
           if-no-files-found: error
 
   build:
