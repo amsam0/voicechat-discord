@@ -105,7 +105,7 @@ public final class SubCommands {
                     } catch (InterruptedException ignored) {
                     }
                     botForPlayer.logInAndStart(player);
-                }).start();
+                }, "voicechat-discord: Bot Restart for " + player.getUuid()).start();
             }
             return;
         }
@@ -120,7 +120,7 @@ public final class SubCommands {
 
         platform.sendMessage(player, "<yellow>Starting a voice chat...");
 
-        new Thread(() -> bot.logInAndStart(player)).start();
+        new Thread(() -> bot.logInAndStart(player), "voicechat-discord: Bot Start for " + player.getUuid()).start();
     }
 
     private static void stop(CommandContext<?> sender) {
@@ -143,7 +143,7 @@ public final class SubCommands {
             bot.stop();
 
             platform.sendMessage(sender, "<green>Successfully stopped the bot!");
-        }).start();
+        }, "voicechat-discord: Bot Stop for " + player.getUuid()).start();
     }
 
     private static void reloadConfig(CommandContext<?> sender) {
@@ -178,7 +178,7 @@ public final class SubCommands {
                     sender,
                     "<green>Successfully reloaded config! Using " + bots.size() + " bot" + (bots.size() != 1 ? "s" : "") + "."
             );
-        }).start();
+        }, "voicechat-discord: Reload Config").start();
     }
 
     private static void checkForUpdate(CommandContext<?> sender) {
@@ -197,7 +197,7 @@ public final class SubCommands {
                 platform.sendMessage(sender, Objects.requireNonNullElse(UpdateChecker.updateMessage, "<red>No update found."));
             else
                 platform.sendMessage(sender, "<red>An error occurred when checking for updates. Check the console for the error message.");
-        }).start();
+        }, "voicechat-discord: Check for Update").start();
     }
 
     private static void toggleWhisper(CommandContext<?> sender) {

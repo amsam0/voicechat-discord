@@ -169,7 +169,7 @@ public class DiscordBot {
                 _resetSenders(ptr);
             }
             platform.debug("reset thread " + startConnectionNumber + " ending");
-        });
+        }, "voicechat-discord: Reset Thread #" + connectionNumber);
         resetThread.start();
 
         senderThread = new Thread(() -> {
@@ -188,7 +188,7 @@ public class DiscordBot {
                 }
             }
             platform.debug("sender thread " + startConnectionNumber + " ending");
-        });
+        }, "voicechat-discord: Sender Thread #" + connectionNumber);
         senderThread.start();
 
         connection.setConnected(true);

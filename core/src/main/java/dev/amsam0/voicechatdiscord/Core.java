@@ -45,7 +45,7 @@ public final class Core {
         }
         initializeNatives();
 
-        new Thread(UpdateChecker::checkForUpdate).start();
+        new Thread(UpdateChecker::checkForUpdate, "voicechat-discord: Update Checker").start();
         loadConfig();
     }
 

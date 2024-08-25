@@ -18,11 +18,18 @@ pub struct RuntimeHolder {
 impl RuntimeHolder {
     #[inline]
     fn new() -> RuntimeHolder {
-        info!("Initializing runtime");
+        let cpus = std::thread::available_parallelism().map_or(1, NonZeroUsize::get);
+        let worker_threads = cpus / 2;
+        info!(%worker_threads, "Initializing runtime");
         RuntimeHolder {
             runtime: MaybeUninit::new(
                 Builder::new_multi_thread()
                     .enable_all()
+                    .thread_name("voicechat-discord: Runtime")
+                    .worker_threads(worker_threads)
+                    .max_blocking_threads(4)
+                    .event_interval(120)
+                    .max_io_events_per_tick(512)
                     .build()
                     .expect("Unable to create tokio runtime"),
             ),
