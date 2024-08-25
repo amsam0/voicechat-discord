@@ -64,7 +64,7 @@ jobs:
           targets: ${{ matrix.arch }}-${{ matrix.triple }}
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
-        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }}
         working-directory: core
 
       - name: Upload ${{ matrix.filename }}
