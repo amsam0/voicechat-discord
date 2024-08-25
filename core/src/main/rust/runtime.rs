@@ -1,4 +1,5 @@
 use std::mem::MaybeUninit;
+use std::num::NonZeroUsize;
 use std::ops::Deref;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
