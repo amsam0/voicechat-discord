@@ -2,6 +2,13 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.5
+
+- Add thread names to make future debugging easier
+- Try to reduce tokio runtime overhead while idle
+
+Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.4...3.0.5
+
 ## 3.0.4
 
 - Adjust error message for when an audio sender can't be registered to hopefully make it less confusing
